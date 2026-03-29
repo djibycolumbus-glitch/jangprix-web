@@ -204,7 +204,7 @@
               <div
                 key={commodityId}
                 className={`commodity-card ${isSelected ? 'selected' : ''}`}
-                onClick={() => onSelect({ commodity_id: parseInt(commodityId), commodity, group })}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSelect({ commodity_id: parseInt(commodityId), commodity, group }); }}
               >
                 <div className="card-top">
                   <div className="card-emoji">{emoji}</div>
@@ -418,13 +418,18 @@
                 selected={selected}
                 onSelect={async (item) => {
                   setSelected(item)
+                  setHistory([])
+                  setTimeout(() => {
+                    const el = document.getElementById('detail-panel')
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }, 100)
                   const h = await fetchHistory(item.commodity_id)
                   setHistory(h)
                 }}
               />
             )}
             {selected && (
-              <div className="detail-section">
+              <div id="detail-panel" className="detail-section">
                 <PriceChart selected={selected} history={history} />
                 <MarketComparison selected={selected} />
               </div>
