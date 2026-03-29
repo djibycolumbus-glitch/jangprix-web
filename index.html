@@ -201,11 +201,7 @@
             const isSelected = selected?.commodity_id === parseInt(commodityId)
 
             return (
-              <div
-                key={commodityId}
-                className={`commodity-card ${isSelected ? 'selected' : ''}`}
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSelect({ commodity_id: parseInt(commodityId), commodity, group }); }}
-              >
+              <div key={commodityId} className={`commodity-card ${isSelected ? 'selected' : ''}`}>
                 <div className="card-top">
                   <div className="card-emoji">{emoji}</div>
                   <div className="card-info">
@@ -229,6 +225,12 @@
                   ))}
                 </div>
                 <div className="card-date">Mis à jour: {new Date(group[0].price_date).toLocaleDateString('fr-FR')}</div>
+                <button
+                  style={{ marginTop: 12, width: '100%', padding: '8px', background: isSelected ? '#4ade80' : '#1a2e1a', border: '1px solid #2d4a2d', borderRadius: 8, color: isSelected ? '#000' : '#4ade80', cursor: 'pointer', fontFamily: 'DM Mono, monospace', fontSize: 11, fontWeight: 700 }}
+                  onClick={(e) => { e.stopPropagation(); onSelect({ commodity_id: parseInt(commodityId), commodity, group }); }}
+                >
+                  {isSelected ? '▲ MASQUER' : '▼ VOIR HISTORIQUE'}
+                </button>
               </div>
             )
           })}
