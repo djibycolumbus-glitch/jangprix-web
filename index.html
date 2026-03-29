@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jàng Prix — Prix Agricoles Dakar</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.10.0/umd/Recharts.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080e08; --bg2: #0d160d; --bg3: #111a11;
+      --border: #1f2f1f; --border2: #2d4a2d;
+      --green: #4ade80; --green2: #166534; --green3: #14532d;
+      --text: #e8f5e9; --text2: #9ca3af; --text3: #4a7a4a;
+      --amber: #f59e0b; --blue: #60a5fa; --red: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+    .header-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 70px; }
+    .logo-block { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { font-size: 28px; }
+    .logo-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--text); line-height: 1; }
+    .logo-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 1px; margin-top: 3px; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .live-badge { display: flex; align-items: center; gap: 6px; background: var(--green3); border: 1px solid var(--green2); padding: 4px 10px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--green); font-weight: 500; }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .header-date { font-size: 12px; color: var(--text2); text-transform: capitalize; }
+    .header-zone { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 1px; }
+    .stats-bar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+    .stat-item { display: flex; align-items: center; gap: 10px; }
+    .stat-icon { font-size: 18px; }
+    .stat-value { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--green); line-height: 1; }
+    .stat-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.5px; margin-top: 2px; }
+    .main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); }
+    .category-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .cat-tab { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); color: var(--text3); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; }
+    .cat-tab:hover { border-color: var(--border2); color: var(--text2); }
+    .cat-tab.active { background: var(--green); color: #000; border-color: var(--green); }
+    .loading { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 80px; color: var(--text3); }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border2); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .commodity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+    .commodity-card { background: var(--bg3); border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+    .commodity-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .commodity-card.selected { border-color: var(--green); background: #0f2010; }
+    .card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+    .card-emoji { font-size: 28px; flex-shrink: 0; }
+    .card-info { flex: 1; }
+    .card-name { font-weight: 700; font-size: 14px; color: var(--text); line-height: 1.3; }
+    .card-markets { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 3px; }
+    .card-price { margin-bottom: 14px; }
+    .price-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); }
+    .price-unit { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+    .card-footer { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .price-source { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    .source-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .source-name { color: var(--text3); font-family: 'DM Mono', monospace; flex: 1; }
+    .source-price { color: var(--text2); font-family: 'DM Mono', monospace; }
+    .card-date { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
+    .detail-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+    @media (max-width: 900px) { .detail-section { grid-template-columns: 1fr; } }
+    .chart-panel, .comparison-panel { background: var(--bg2); border: 1.5px solid var(--border2); border-radius: 20px; padding: 24px; }
+    .chart-header { margin-bottom: 20px; }
+    .chart-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text); }
+    .chart-sub { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 4px; }
+    .comparison-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+    .comparison-row { display: flex; align-items: center; gap: 12px; }
+    .comp-market { width: 140px; flex-shrink: 0; }
+    .comp-market-name { display: block; font-size: 13px; color: var(--text); font-weight: 600; }
+    .comp-source { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
+    .comp-bar-wrap { flex: 1; background: var(--border); border-radius: 4px; height: 8px; overflow: hidden; }
+    .comp-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .comp-price-wrap { display: flex; align-items: center; gap: 8px; min-width: 120px; justify-content: flex-end; }
+    .comp-price { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); font-weight: 500; }
+    .comp-tag { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-family: 'DM Mono', monospace; }
+    .comp-tag.best { background: #14532d; color: var(--green); }
+    .comp-tag.worst { background: #450a0a; color: var(--red); }
+    .comparison-insight { display: flex; align-items: center; gap: 10px; background: #1a1a00; border: 1px solid #854d0e; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--amber); line-height: 1.5; }
+    .insight-icon { font-size: 16px; flex-shrink: 0; }
+    .footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 24px; margin-top: 60px; }
+    .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    .footer-brand { display: flex; align-items: center; gap: 12px; font-family: 'Playfair Display', serif; font-size: 16px; color: var(--text); }
+    .footer-tagline { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text3); font-weight: 400; }
+    .footer-sources { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 0.5px; }
+    .footer-note { font-size: 11px; color: var(--text3); font-style: italic; }
+    .empty { padding: 60px; text-align: center; color: var(--text3); }
+    @media (max-width: 768px) {
+      .stats-bar { gap: 20px; }
+      .header-date, .header-zone { display: none; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+      .commodity-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const SUPABASE_URL = 'https://rwidbemcvfkkkloozrjn.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aWRiZW1jdmZra2tsb296cmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzI4NTYsImV4cCI6MjA5MDMwODg1Nn0.2z9JjrGlwGkH7QMEqHIqMj3O2aotGKTpdW6GYr5RMZM'
+
+    async function supabaseQuery(table, params = '') {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      return res.json()
+    }
+
+    const CATEGORY_EMOJI = {
+      'cereals and tubers': '🌾',
+      'pulses and nuts': '🥜',
+      'vegetables': '🥬',
+      'livestock': '🐑',
+    }
+
+    const SOURCE_LABEL = {
+      'wfp_hdx': 'WFP',
+      'auchan_scrape': 'Auchan',
+      'fao_giews': 'FAO',
+      'manual': 'Manuel',
+    }
+
+    function Header() {
+      const today = new Date().toLocaleDateString('fr-FR', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      })
+      return (
+        <header className="header">
+          <div className="header-inner">
+            <div className="logo-block">
+              <div className="logo-icon">🌾</div>
+              <div>
+                <div className="logo-name">Jàng Prix</div>
+                <div className="logo-sub">Intelligence des marchés agricoles</div>
+              </div>
+            </div>
+            <div className="header-right">
+              <div className="live-badge"><span className="live-dot" /> LIVE</div>
+              <div className="header-date">{today}</div>
+              <div className="header-zone">Dakar · Keur Massar · Niayes</div>
+            </div>
+          </div>
+        </header>
+      )
+    }
+
+    function StatsBar({ prices }) {
+      const markets = [...new Set(prices.map(p => p.market_name).filter(Boolean))]
+      const commodityCount = [...new Set(prices.map(p => p.commodity_id).filter(Boolean))].length
+      const sources = [...new Set(prices.map(p => p.source))]
+      const latestDate = prices.length
+        ? new Date(Math.max(...prices.map(p => new Date(p.price_date)))).toLocaleDateString('fr-FR')
+        : '—'
+      const stats = [
+        { label: 'Produits suivis', value: commodityCount, icon: '📦' },
+        { label: 'Marchés couverts', value: markets.length, icon: '🏪' },
+        { label: 'Sources de données', value: sources.length, icon: '📡' },
+        { label: 'Dernière mise à jour', value: latestDate, icon: '🕐' },
+      ]
+      return (
+        <div className="stats-bar">
+          {stats.map(s => (
+            <div key={s.label} className="stat-item">
+              <span className="stat-icon">{s.icon}</span>
+              <div>
+                <div className="stat-value">{s.value}</div>
+                <div className="stat-label">{s.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    function CommodityGrid({ prices, commodities, markets, onSelect, selected }) {
+      if (!prices.length) return <div className="empty"><p>Aucun prix disponible.</p></div>
+
+      const byCommodity = {}
+      prices.forEach(p => {
+        if (!byCommodity[p.commodity_id]) byCommodity[p.commodity_id] = []
+        byCommodity[p.commodity_id].push(p)
+      })
+
+      return (
+        <div className="commodity-grid">
+          {Object.entries(byCommodity).map(([commodityId, group]) => {
+            const commodity = commodities.find(c => c.id === parseInt(commodityId))
+            if (!commodity) return null
+            const avgPrice = group.reduce((sum, p) => sum + p.price, 0) / group.length
+            const emoji = CATEGORY_EMOJI[commodity.category] || '📦'
+            const isSelected = selected?.commodity_id === parseInt(commodityId)
+
+            return (
+              <div
+                key={commodityId}
+                className={`commodity-card ${isSelected ? 'selected' : ''}`}
+                onClick={() => onSelect({ commodity_id: parseInt(commodityId), commodity, group })}
+              >
+                <div className="card-top">
+                  <div className="card-emoji">{emoji}</div>
+                  <div className="card-info">
+                    <div className="card-name">{commodity.name_fr}</div>
+                    <div className="card-markets">
+                      {group.map(p => p.market_name).filter(Boolean).join(' · ')}
+                    </div>
+                  </div>
+                </div>
+                <div className="card-price">
+                  <span className="price-value">{Math.round(avgPrice).toLocaleString('fr-FR')}</span>
+                  <span className="price-unit"> FCFA / {commodity.unit || 'kg'}</span>
+                </div>
+                <div className="card-footer">
+                  {group.map(p => (
+                    <div key={p.id} className="price-source">
+                      <span className="source-dot" style={{ background: p.price_type === 'retail' ? '#f59e0b' : '#4ade80' }} />
+                      <span className="source-name">{SOURCE_LABEL[p.source] || p.source}</span>
+                      <span className="source-price">{Math.round(p.price).toLocaleString('fr-FR')} FCFA</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="card-date">Mis à jour: {new Date(group[0].price_date).toLocaleDateString('fr-FR')}</div>
+              </div>
+            )
+          })}
+        </div>
+      )
+    }
+
+    function PriceChart({ selected, history }) {
+      if (!selected || !history.length) return null
+      const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } = Recharts
+
+      const byDate = {}
+      history.forEach(h => {
+        const date = h.price_date?.slice(0, 7)
+        if (!byDate[date]) byDate[date] = { date }
+        byDate[date][h.market_name || 'Marché'] = h.price
+      })
+
+      const chartData = Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date))
+      const marketNames = [...new Set(history.map(h => h.market_name).filter(Boolean))]
+      const colors = ['#4ade80', '#f59e0b', '#60a5fa', '#c084fc']
+
+      const formatDate = (d) => {
+        if (!d) return ''
+        const [year, month] = d.split('-')
+        const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']
+        return `${months[parseInt(month)-1]} ${year.slice(2)}`
+      }
+
+      return (
+        <div className="chart-panel">
+          <div className="chart-header">
+            <h3 className="chart-title">Historique — {selected.commodity?.name_fr}</h3>
+            <div className="chart-sub">{chartData.length} mois · {marketNames.length} marché(s)</div>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f2f1f" />
+              <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fill: '#4a7a4a', fontSize: 10 }} tickLine={false} />
+              <YAxis tick={{ fill: '#4a7a4a', fontSize: 10 }} tickLine={false} axisLine={false} />
+              <Tooltip
+                formatter={(value, name) => [`${value?.toLocaleString('fr-FR')} FCFA`, name]}
+                labelFormatter={formatDate}
+                contentStyle={{ background: '#0d160d', border: '1px solid #2d4a2d', borderRadius: 8, color: '#e8f5e9' }}
+              />
+              <Legend wrapperStyle={{ color: '#4a7a4a', fontSize: 11 }} />
+              {marketNames.map((m, i) => (
+                <Line key={m} type="monotone" dataKey={m} stroke={colors[i % 4]} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    }
+
+    function MarketComparison({ selected }) {
+      if (!selected || !selected.group || selected.group.length < 2) return null
+      const sorted = [...selected.group].sort((a, b) => a.price - b.price)
+      const min = sorted[0].price
+      const max = sorted[sorted.length - 1].price
+
+      return (
+        <div className="comparison-panel">
+          <div className="chart-header">
+            <h3 className="chart-title">Comparaison des marchés</h3>
+            <div className="chart-sub">{selected.commodity?.name_fr} · Prix par marché</div>
+          </div>
+          <div className="comparison-list">
+            {sorted.map(p => {
+              const pct = max > min ? ((p.price - min) / (max - min)) * 100 : 50
+              const isBest = p.price === min
+              const isWorst = p.price === max
+              return (
+                <div key={p.id} className="comparison-row">
+                  <div className="comp-market">
+                    <span className="comp-market-name">{p.market_name}</span>
+                    <span className="comp-source">{p.source === 'auchan_scrape' ? 'Détail' : 'Gros'}</span>
+                  </div>
+                  <div className="comp-bar-wrap">
+                    <div className="comp-bar" style={{ width: `${Math.max(pct, 5)}%`, background: isBest ? '#4ade80' : isWorst ? '#f87171' : '#f59e0b' }} />
+                  </div>
+                  <div className="comp-price-wrap">
+                    <span className="comp-price">{Math.round(p.price).toLocaleString('fr-FR')} F</span>
+                    {isBest && <span className="comp-tag best">Meilleur</span>}
+                    {isWorst && <span className="comp-tag worst">Plus cher</span>}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          <div className="comparison-insight">
+            <span className="insight-icon">💡</span>
+            <span>Écart de <strong>{Math.round(max - min).toLocaleString('fr-FR')} FCFA/kg</strong> entre le marché le moins cher et le plus cher.</span>
+          </div>
+        </div>
+      )
+    }
+
+    function App() {
+      const [prices, setPrices] = React.useState([])
+      const [commodities, setCommodities] = React.useState([])
+      const [markets, setMarkets] = React.useState([])
+      const [selected, setSelected] = React.useState(null)
+      const [history, setHistory] = React.useState([])
+      const [loading, setLoading] = React.useState(true)
+      const [activeCategory, setActiveCategory] = React.useState('all')
+
+      React.useEffect(() => { fetchData() }, [])
+
+      async function fetchData() {
+        setLoading(true)
+        const [priceData, commodityData, marketData] = await Promise.all([
+          supabaseQuery('prices', '?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=500'),
+          supabaseQuery('commodities', '?select=*'),
+          supabaseQuery('markets', '?select=*'),
+        ])
+
+        const mMap = {}
+        if (marketData) marketData.forEach(m => mMap[m.id] = m)
+
+        const enriched = (priceData || []).map(p => ({
+          ...p,
+          market_name: mMap[p.market_id]?.name || 'Inconnu'
+        }))
+
+        const latest = {}
+        enriched.forEach(p => {
+          const key = `${p.commodity_id}_${p.market_id}`
+          if (!latest[key]) latest[key] = p
+        })
+
+        setPrices(Object.values(latest))
+        setCommodities(commodityData || [])
+        setMarkets(marketData || [])
+        setLoading(false)
+      }
+
+      async function fetchHistory(commodityId) {
+        const mData = await supabaseQuery('markets', '?select=*')
+        const mMap = {}
+        if (mData) mData.forEach(m => mMap[m.id] = m)
+
+        const data = await supabaseQuery('prices',
+          `?commodity_id=eq.${commodityId}&order=price_date.asc&limit=200&select=price,price_date,market_id`)
+
+        return (data || []).map(p => ({ ...p, market_name: mMap[p.market_id]?.name || 'Marché' }))
+      }
+
+      const categories = ['all', 'cereals and tubers', 'pulses and nuts']
+
+      const filteredPrices = activeCategory === 'all'
+        ? prices
+        : prices.filter(p => {
+            const c = commodities.find(c => c.id === p.commodity_id)
+            return c?.category === activeCategory
+          })
+
+      return (
+        <div>
+          <Header />
+          <StatsBar prices={prices} />
+          <main className="main">
+            <div className="section-header">
+              <h2 className="section-title">Prix du Marché</h2>
+              <div className="category-tabs">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    className={`cat-tab ${activeCategory === cat ? 'active' : ''}`}
+                    onClick={() => setActiveCategory(cat)}
+                  >
+                    {cat === 'all' ? 'Tout' : cat === 'cereals and tubers' ? 'Céréales' : 'Légumineuses'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {loading ? (
+              <div className="loading">
+                <div className="spinner" />
+                <p>Chargement des prix...</p>
+              </div>
+            ) : (
+              <CommodityGrid
+                prices={filteredPrices}
+                commodities={commodities}
+                markets={markets}
+                selected={selected}
+                onSelect={async (item) => {
+                  setSelected(item)
+                  const h = await fetchHistory(item.commodity_id)
+                  setHistory(h)
+                }}
+              />
+            )}
+            {selected && (
+              <div className="detail-section">
+                <PriceChart selected={selected} history={history} />
+                <MarketComparison selected={selected} />
+              </div>
+            )}
+          </main>
+          <footer className="footer">
+            <div className="footer-inner">
+              <div className="footer-brand">
+                <span>🌾 Jàng Prix</span>
+                <span className="footer-tagline">Intelligence des marchés agricoles — Dakar, Sénégal</span>
+              </div>
+              <div className="footer-sources">Sources: WFP VAM · Auchan Sénégal · FAO GIEWS · DAPSA</div>
+              <div className="footer-note">Les prix sont indicatifs. Vérifiez toujours sur place avant de vendre.</div>
+            </div>
+          </footer>
+        </div>
+      )
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'))
+    root.render(<App />)
+  </script>
+</body>
+</html>
