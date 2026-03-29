@@ -368,6 +368,23 @@
         setLoading(false)
       }
 
+      function handleSelect(item) {
+        if (selected?.commodity_id === item.commodity_id) {
+          setSelected(null)
+          setHistory([])
+          return
+        }
+        setSelected(item)
+        setHistory([])
+        fetchHistory(item.commodity_id).then(h => {
+          setHistory(h)
+          setTimeout(() => {
+            const el = document.getElementById('detail-panel')
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }, 200)
+        })
+      }
+
       async function fetchHistory(commodityId) {
         const mData = await supabaseQuery('markets', '?select=*')
         const mMap = {}
@@ -418,16 +435,7 @@
                 commodities={commodities}
                 markets={markets}
                 selected={selected}
-                onSelect={async (item) => {
-                  setSelected(item)
-                  setHistory([])
-                  setTimeout(() => {
-                    const el = document.getElementById('detail-panel')
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  }, 100)
-                  const h = await fetchHistory(item.commodity_id)
-                  setHistory(h)
-                }}
+                onSelect={handleSelect}
               />
             )}
             {selected && (
