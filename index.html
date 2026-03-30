@@ -7,460 +7,1119 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/recharts@2.10.0/umd/Recharts.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #080e08; --bg2: #0d160d; --bg3: #111a11;
-      --border: #1f2f1f; --border2: #2d4a2d;
-      --green: #4ade80; --green2: #166534; --green3: #14532d;
-      --text: #e8f5e9; --text2: #9ca3af; --text3: #4a7a4a;
-      --amber: #f59e0b; --blue: #60a5fa; --red: #f87171;
+      --bg:#1c1917;--bg2:#292524;--bg3:#3d3532;--bg4:#44403c;
+      --border:#3d3532;--border2:#57534e;
+      --accent:#b45309;--accent2:#92400e;
+      --green:#4ade80;--green-bg:#052e16;
+      --red:#f87171;--red-bg:#450a0a;
+      --amber:#fbbf24;--amber-bg:#2d1f00;
+      --blue:#60a5fa;--blue-bg:#0c1a2e;
+      --text:#fafaf9;--text2:#d6d3d1;--text3:#a8a29e;--text4:#78716c;--text5:#57534e;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-    .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
-    .header-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 70px; }
-    .logo-block { display: flex; align-items: center; gap: 12px; }
-    .logo-icon { font-size: 28px; }
-    .logo-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--text); line-height: 1; }
-    .logo-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 1px; margin-top: 3px; }
-    .header-right { display: flex; align-items: center; gap: 16px; }
-    .live-badge { display: flex; align-items: center; gap: 6px; background: var(--green3); border: 1px solid var(--green2); padding: 4px 10px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--green); font-weight: 500; }
-    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-    .header-date { font-size: 12px; color: var(--text2); text-transform: capitalize; }
-    .header-zone { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 1px; }
-    .stats-bar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
-    .stat-item { display: flex; align-items: center; gap: 10px; }
-    .stat-icon { font-size: 18px; }
-    .stat-value { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--green); line-height: 1; }
-    .stat-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.5px; margin-top: 2px; }
-    .main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
-    .section-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); }
-    .category-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-    .cat-tab { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); color: var(--text3); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; }
-    .cat-tab:hover { border-color: var(--border2); color: var(--text2); }
-    .cat-tab.active { background: var(--green); color: #000; border-color: var(--green); }
-    .loading { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 80px; color: var(--text3); }
-    .spinner { width: 36px; height: 36px; border: 3px solid var(--border2); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .commodity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
-    .commodity-card { background: var(--bg3); border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.2s; }
-    .commodity-card:hover { border-color: var(--border2); transform: translateY(-2px); }
-    .commodity-card.selected { border-color: var(--green); background: #0f2010; }
-    .card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
-    .card-emoji { font-size: 28px; flex-shrink: 0; }
-    .card-info { flex: 1; }
-    .card-name { font-weight: 700; font-size: 14px; color: var(--text); line-height: 1.3; }
-    .card-markets { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 3px; }
-    .card-price { margin-bottom: 14px; }
-    .price-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); }
-    .price-unit { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
-    .card-footer { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-    .price-source { display: flex; align-items: center; gap: 6px; font-size: 11px; }
-    .source-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .source-name { color: var(--text3); font-family: 'DM Mono', monospace; flex: 1; }
-    .source-price { color: var(--text2); font-family: 'DM Mono', monospace; }
-    .card-date { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
-    .detail-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
-    @media (max-width: 900px) { .detail-section { grid-template-columns: 1fr; } }
-    .chart-panel, .comparison-panel { background: var(--bg2); border: 1.5px solid var(--border2); border-radius: 20px; padding: 24px; }
-    .chart-header { margin-bottom: 20px; }
-    .chart-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text); }
-    .chart-sub { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 4px; }
-    .comparison-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
-    .comparison-row { display: flex; align-items: center; gap: 12px; }
-    .comp-market { width: 140px; flex-shrink: 0; }
-    .comp-market-name { display: block; font-size: 13px; color: var(--text); font-weight: 600; }
-    .comp-source { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
-    .comp-bar-wrap { flex: 1; background: var(--border); border-radius: 4px; height: 8px; overflow: hidden; }
-    .comp-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .comp-price-wrap { display: flex; align-items: center; gap: 8px; min-width: 120px; justify-content: flex-end; }
-    .comp-price { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); font-weight: 500; }
-    .comp-tag { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-family: 'DM Mono', monospace; }
-    .comp-tag.best { background: #14532d; color: var(--green); }
-    .comp-tag.worst { background: #450a0a; color: var(--red); }
-    .comparison-insight { display: flex; align-items: center; gap: 10px; background: #1a1a00; border: 1px solid #854d0e; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--amber); line-height: 1.5; }
-    .insight-icon { font-size: 16px; flex-shrink: 0; }
-    .footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 24px; margin-top: 60px; }
-    .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-    .footer-brand { display: flex; align-items: center; gap: 12px; font-family: 'Playfair Display', serif; font-size: 16px; color: var(--text); }
-    .footer-tagline { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text3); font-weight: 400; }
-    .footer-sources { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 0.5px; }
-    .footer-note { font-size: 11px; color: var(--text3); font-style: italic; }
-    .empty { padding: 60px; text-align: center; color: var(--text3); }
-    @media (max-width: 768px) {
-      .stats-bar { gap: 20px; }
-      .header-date, .header-zone { display: none; }
-      .section-header { flex-direction: column; align-items: flex-start; }
-      .commodity-grid { grid-template-columns: 1fr; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:14px;line-height:1.5;}
+    .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;position:sticky;top:0;z-index:100;}
+    .header-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;height:60px;}
+    .logo-block{display:flex;align-items:center;gap:10px;}
+    .logo-mark{width:30px;height:30px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:white;}
+    .logo-name{font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:var(--text);}
+    .logo-sub{font-size:11px;color:var(--text5);margin-top:1px;}
+    .header-right{display:flex;align-items:center;gap:20px;}
+    .live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--green);letter-spacing:0.5px;}
+    .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+    .header-date{font-size:12px;color:var(--text4);}
+    .header-zone{font-size:12px;color:var(--text5);}
+    .tabaski-banner{background:var(--amber-bg);border-bottom:1px solid #3d2e00;padding:9px 32px;}
+    .tabaski-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .tabaski-label{font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;background:rgba(251,191,36,0.08);padding:2px 8px;border-radius:4px;border:0.5px solid rgba(251,191,36,0.2);}
+    .tabaski-days{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--amber);}
+    .tabaski-jours{font-size:13px;color:#78580a;}
+    .tabaski-tip{font-size:12px;color:#78580a;}
+    .stats-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;}
+    .stats-inner{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;}
+    .stat-item{padding:14px 40px 14px 0;}
+    .stat-value{font-family:'Merriweather',serif;font-size:20px;font-weight:700;color:var(--accent);line-height:1;}
+    .stat-label{font-size:11px;color:var(--text5);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;}
+    .main{max-width:1400px;margin:0 auto;padding:28px 32px;}
+    .page-title{font-family:'Merriweather',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;}
+    .search-filter-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .search-input{flex:1;min-width:260px;padding:9px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;}
+    .search-input::placeholder{color:var(--text5);}
+    .search-input:focus{border-color:var(--accent);}
+    .cat-tab{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg2);color:var(--text3);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+    .cat-tab:hover{border-color:var(--border2);color:var(--text2);}
+    .cat-tab.active{background:var(--accent);color:white;border-color:var(--accent);}
+    .loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:80px;color:var(--text4);}
+    .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .commodity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;margin-bottom:32px;}
+    .commodity-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.15s;}
+    .commodity-card:hover{border-color:var(--border2);}
+    .commodity-card.selected{border-color:var(--accent);}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:10px;}
+    .card-name{font-weight:700;font-size:15px;color:var(--text);line-height:1.3;}
+    .card-meta{font-size:11px;color:var(--text5);margin-top:3px;}
+    .rec-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;flex-shrink:0;white-space:nowrap;}
+    .rec-sell{background:var(--green-bg);color:var(--green);border:0.5px solid rgba(74,222,128,0.2);}
+    .rec-wait{background:var(--red-bg);color:var(--red);border:0.5px solid rgba(248,113,113,0.2);}
+    .rec-pending{background:var(--bg3);color:var(--text4);border:0.5px solid var(--border);}
+    .price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
+    .price-value{font-family:'Merriweather',serif;font-size:30px;font-weight:700;color:var(--text);}
+    .price-unit{font-size:12px;color:var(--text4);}
+    .rec-reason{font-size:12px;line-height:1.5;padding:8px 12px;border-radius:6px;margin-bottom:10px;}
+    .rec-reason.sell{background:var(--green-bg);border-left:2px solid var(--green);color:#86efac;}
+    .rec-reason.wait{background:var(--red-bg);border-left:2px solid var(--red);color:#fca5a5;}
+    .rec-reason.pending{background:var(--bg3);border-left:2px solid var(--border2);color:var(--text4);}
+
+    /* PREDICTION SUMMARY ON CARD */
+    .pred-summary{font-size:11px;padding:7px 10px;border-radius:6px;margin-bottom:10px;display:flex;align-items:flex-start;gap:6px;}
+    .pred-summary.up{background:var(--red-bg);border:0.5px solid rgba(248,113,113,0.15);color:#fca5a5;}
+    .pred-summary.down{background:var(--green-bg);border:0.5px solid rgba(74,222,128,0.15);color:#86efac;}
+    .pred-summary.stable{background:var(--bg3);border:0.5px solid var(--border);color:var(--text4);}
+    .pred-arrow{font-size:14px;flex-shrink:0;margin-top:1px;}
+
+    .sources-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+    .sources-table td{padding:5px 0;font-size:12px;border-bottom:1px solid var(--bg3);}
+    .sources-table tr:last-child td{border-bottom:none;}
+    .td-source{color:var(--text4);width:55px;font-weight:500;}
+    .td-market{color:var(--text3);}
+    .td-price{color:var(--text);font-weight:600;text-align:right;}
+    .td-type{text-align:right;}
+    .type-tag{font-size:10px;color:var(--text5);background:var(--bg3);padding:1px 5px;border-radius:3px;border:0.5px solid var(--border);}
+    .card-date{font-size:11px;color:var(--text5);margin-bottom:12px;}
+    .voir-btn{width:100%;padding:8px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;border:1px solid var(--border);background:var(--bg3);color:var(--text3);}
+    .voir-btn:hover{background:var(--accent2);border-color:var(--accent);color:white;}
+    .voir-btn.active{background:var(--accent);color:white;border-color:var(--accent);}
+
+    /* DETAIL PANEL */
+    .detail-panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:32px;}
+    .detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+    .detail-title{font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:var(--text);}
+    .detail-sub{font-size:12px;color:var(--text4);margin-top:3px;}
+    .detail-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+    .detail-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+    .detail-tab:hover{border-color:var(--border2);color:var(--text2);}
+    .detail-tab.active{background:var(--accent);color:white;border-color:var(--accent);}
+    .market-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+    .mkt-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+    .mkt-btn:hover{border-color:var(--border2);color:var(--text2);}
+    .mkt-btn.active{background:var(--bg4);color:var(--text);border-color:var(--border2);}
+
+    /* PREDICTION TAB */
+    .pred-months{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+    .pred-month-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;}
+    .pred-month-card.active-month{border-color:var(--accent);}
+    .pred-month-name{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+    .pred-month-price{font-family:'Merriweather',serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+    .pred-month-price.up{color:var(--red);}
+    .pred-month-price.down{color:var(--green);}
+    .pred-month-price.stable{color:var(--text2);}
+    .pred-month-change{font-size:11px;margin-bottom:8px;}
+    .pred-month-change.up{color:var(--red);}
+    .pred-month-change.down{color:var(--green);}
+    .pred-month-change.stable{color:var(--text4);}
+    .pred-month-driver{font-size:11px;color:var(--text4);line-height:1.4;}
+    .pred-confidence{display:flex;align-items:center;gap:6px;margin-top:8px;}
+    .pred-conf-bar-wrap{flex:1;background:var(--bg);border-radius:2px;height:4px;overflow:hidden;}
+    .pred-conf-bar{height:100%;border-radius:2px;background:var(--accent);}
+    .pred-conf-label{font-size:10px;color:var(--text5);white-space:nowrap;}
+
+    .pred-factors{margin-top:20px;}
+    .pred-factors-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+    .factor-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg3);}
+    .factor-row:last-child{border-bottom:none;}
+    .factor-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+    .factor-icon.positive{background:var(--green-bg);}
+    .factor-icon.negative{background:var(--red-bg);}
+    .factor-icon.neutral{background:var(--bg3);}
+    .factor-name{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:2px;}
+    .factor-desc{font-size:12px;color:var(--text4);line-height:1.4;}
+    .factor-impact{font-size:11px;font-weight:600;margin-top:3px;}
+    .factor-impact.positive{color:var(--green);}
+    .factor-impact.negative{color:var(--red);}
+    .factor-impact.neutral{color:var(--text4);}
+
+    .pred-disclaimer{margin-top:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text5);line-height:1.5;}
+
+    /* COMPARISON */
+    .comparison-list{display:flex;flex-direction:column;gap:14px;max-width:600px;}
+    .comparison-row{display:flex;align-items:center;gap:12px;}
+    .comp-market{width:140px;flex-shrink:0;}
+    .comp-market-name{font-size:13px;color:var(--text);font-weight:600;display:block;}
+    .comp-source-tag{font-size:10px;color:var(--text5);}
+    .comp-bar-wrap{flex:1;background:var(--bg3);border-radius:3px;height:6px;overflow:hidden;max-width:180px;}
+    .comp-bar{height:100%;border-radius:3px;}
+    .comp-price-wrap{display:flex;align-items:center;gap:8px;min-width:120px;justify-content:flex-end;}
+    .comp-price{font-size:13px;color:var(--text);font-weight:600;}
+    .comp-tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;}
+    .comp-tag.best{background:var(--green-bg);color:var(--green);border:0.5px solid rgba(74,222,128,0.2);}
+    .comp-tag.worst{background:var(--red-bg);color:var(--red);border:0.5px solid rgba(248,113,113,0.2);}
+    .insight-box{margin-top:16px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:7px;padding:12px 16px;font-size:13px;color:var(--text3);max-width:600px;}
+
+    /* TREND & HISTORY TABLES */
+    .trend-table{width:100%;border-collapse:collapse;max-width:700px;}
+    .trend-table th{padding:8px 12px;font-size:11px;font-weight:600;color:var(--text4);text-align:left;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg3);}
+    .trend-table td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--bg3);color:var(--text2);}
+    .trend-table tr:last-child td{border-bottom:none;}
+    .trend-table tr:hover td{background:var(--bg3);}
+    .trend-price{color:var(--text);font-weight:600;}
+    .trend-change.up{color:var(--red);}
+    .trend-change.down{color:var(--green);}
+    .trend-change.flat{color:var(--text4);}
+    .history-wrap{max-height:400px;overflow-y:auto;border-radius:7px;border:1px solid var(--border);}
+    .history-table{width:100%;border-collapse:collapse;}
+    .history-table th{padding:8px 12px;font-size:11px;font-weight:600;color:var(--text4);text-align:left;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;}
+    .history-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--bg3);color:var(--text3);}
+    .history-table tr:last-child td{border-bottom:none;}
+    .history-table tr:hover td{background:var(--bg3);}
+    .h-price{color:var(--text);font-weight:600;}
+
+    /* REPORTING */
+    .report-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text4);font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;margin-top:6px;}
+    .report-btn:hover{border-color:var(--accent);color:var(--accent);}
+    .report-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;}
+    .report-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;width:100%;max-width:420px;}
+    .report-modal-title{font-family:'Merriweather',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
+    .report-modal-sub{font-size:12px;color:var(--text4);margin-bottom:20px;}
+    .form-group{margin-bottom:14px;}
+    .form-label{display:block;font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+    .form-input{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;}
+    .form-input:focus{border-color:var(--accent);}
+    .form-input::placeholder{color:var(--text5);}
+    .form-select{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+    .form-select:focus{border-color:var(--accent);}
+    .form-row{display:flex;gap:10px;}
+    .form-row .form-group{flex:1;}
+    .modal-actions{display:flex;gap:8px;margin-top:20px;}
+    .btn-primary{flex:1;padding:9px;border-radius:7px;background:var(--accent);color:white;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+    .btn-primary:hover{background:var(--accent2);}
+    .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+    .btn-secondary{padding:9px 16px;border-radius:7px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .btn-secondary:hover{border-color:var(--border2);color:var(--text2);}
+    .report-success{text-align:center;padding:20px 0;}
+    .report-success-icon{font-size:32px;margin-bottom:12px;}
+    .report-success-title{font-size:16px;font-weight:600;color:var(--green);margin-bottom:6px;}
+    .report-success-sub{font-size:13px;color:var(--text3);}
+    .report-notice{font-size:11px;color:var(--text5);margin-top:12px;line-height:1.5;padding:8px 10px;background:var(--bg3);border-radius:5px;}
+
+    /* YEAR COMPARISON */
+    .year-comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;}
+    .year-comp-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:14px;}
+    .year-comp-card.current-year{border-color:var(--accent);}
+    .year-label{font-size:11px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+    .year-price{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;}
+    .year-vs-now{font-size:12px;font-weight:600;}
+    .year-vs-now.higher{color:var(--red);}
+    .year-vs-now.lower{color:var(--green);}
+    .year-vs-now.same{color:var(--text4);}
+    .year-months{font-size:11px;color:var(--text5);margin-top:4px;}
+    .year-insight{background:var(--bg3);border:0.5px solid var(--border2);border-radius:7px;padding:12px 16px;font-size:13px;color:var(--text3);margin-top:4px;line-height:1.6;}
+
+    /* CALCULATOR */
+    .calc-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+    .calc-label{font-size:11px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+    .calc-input-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+    .calc-input{flex:1;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;min-width:0;}
+    .calc-input:focus{border-color:var(--accent);}
+    .calc-unit{font-size:12px;color:var(--text4);white-space:nowrap;}
+    .calc-results{display:flex;flex-direction:column;gap:6px;}
+    .calc-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--bg);border-radius:6px;border:0.5px solid var(--border);}
+    .calc-row.best-market{border-color:rgba(74,222,128,0.3);background:var(--green-bg);}
+    .calc-market{font-size:12px;color:var(--text3);}
+    .calc-earning{font-size:14px;font-weight:700;color:var(--text);}
+    .calc-earning.best{color:var(--green);}
+    .calc-best-label{font-size:10px;font-weight:600;color:var(--green);background:rgba(74,222,128,0.1);padding:1px 6px;border-radius:3px;}
+
+    .empty{padding:60px;text-align:center;color:var(--text4);}
+    .no-data{padding:32px;text-align:center;color:var(--text4);font-size:13px;}
+    .footer{background:var(--bg2);border-top:1px solid var(--border);padding:20px 32px;margin-top:48px;}
+    .footer-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .footer-brand{font-family:'Merriweather',serif;font-size:14px;font-weight:700;color:var(--text4);}
+    .footer-right{text-align:right;}
+    .footer-sources{font-size:11px;color:var(--text5);}
+    .footer-note{font-size:11px;color:var(--text5);margin-top:2px;font-style:italic;}
+
+    @media(max-width:768px){
+      .header-date,.header-zone,.tabaski-tip{display:none;}
+      .main{padding:20px 16px;}
+      .header,.stats-bar,.tabaski-banner{padding-left:16px;padding-right:16px;}
+      .commodity-grid{grid-template-columns:1fr;}
+      .pred-months{grid-template-columns:1fr;}
+      .footer{padding:16px;}
+      .footer-inner{flex-direction:column;align-items:flex-start;}
+      .footer-right{text-align:left;}
     }
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const SUPABASE_URL = 'https://rwidbemcvfkkkloozrjn.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aWRiZW1jdmZra2tsb296cmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzI4NTYsImV4cCI6MjA5MDMwODg1Nn0.2z9JjrGlwGkH7QMEqHIqMj3O2aotGKTpdW6GYr5RMZM'
+<div id="root"></div>
+<script type="text/babel">
 
-    async function supabaseQuery(table, params = '') {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json'
-        }
+const SUPABASE_URL = 'https://rwidbemcvfkkkloozrjn.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aWRiZW1jdmZra2tsb296cmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzI4NTYsImV4cCI6MjA5MDMwODg1Nn0.2z9JjrGlwGkH7QMEqHIqMj3O2aotGKTpdW6GYr5RMZM'
+
+async function sq(table,params){
+  const r=await fetch(SUPABASE_URL+'/rest/v1/'+table+(params||''),{
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+  })
+  return r.json()
+}
+
+const SOURCE_LABEL={'wfp_hdx':'WFP','auchan_scrape':'Auchan','fao_giews':'FAO','manual':'Manuel'}
+const CAT_LABEL={'cereals and tubers':'Céréales','pulses and nuts':'Légumineuses','vegetables':'Légumes','livestock':'Bétail'}
+const NAMES_FR={
+  'Millet':'Mil','Rice (imported)':'Riz importé','Rice (local)':'Riz local',
+  'Rice (ordinary, first quality)':'Riz 1ère qualité','Rice (ordinary, second quality)':'Riz 2ème qualité',
+  'Rice (broken)':'Riz brisé','Rice (broken, imported)':'Riz brisé importé',
+  'Maize (imported)':'Maïs importé','Maize (local)':'Maïs local',
+  'Sorghum':'Sorgho','Sorghum (imported)':'Sorgho importé',
+  'Beans (niebe)':'Niébé','Groundnuts (shelled)':'Arachides décortiquées',
+  'Groundnuts (unshelled)':'Arachides non décortiquées','Tomatoes':'Tomates',
+  'Onions':'Oignons','Onions (imported)':'Oignons importés',
+  'Potatoes':'Pommes de terre','Beef (with bones)':'Bœuf (avec os)',
+  'Beaf meet (with bones)':'Bœuf (avec os)','Sugar':'Sucre','Vegetable oil':'Huile végétale'
+}
+
+function fr(n){return NAMES_FR[n]||n}
+
+// ============================================================
+// PREDICTION ENGINE
+// ============================================================
+// Senegal seasonal context
+const SENEGAL_SEASONS = {
+  // month (0=Jan) -> season info
+  0:{name:'Saison sèche',rain:false,harvest:false},
+  1:{name:'Saison sèche',rain:false,harvest:false},
+  2:{name:'Saison sèche',rain:false,harvest:false},
+  3:{name:'Saison sèche',rain:false,harvest:false},
+  4:{name:'Fin saison sèche',rain:false,harvest:false,lean:true},
+  5:{name:'Début pluies',rain:true,harvest:false,lean:true},
+  6:{name:'Saison des pluies',rain:true,harvest:false},
+  7:{name:'Pic des pluies',rain:true,harvest:false},
+  8:{name:'Fin des pluies',rain:true,harvest:false},
+  9:{name:'Début récoltes',rain:false,harvest:true},
+  10:{name:'Grande récolte',rain:false,harvest:true},
+  11:{name:'Post-récolte',rain:false,harvest:true},
+}
+
+// Tabaski approximate dates (Islamic calendar shifts ~11 days/year)
+const TABASKI_2026 = new Date('2026-06-27')
+
+// Ramadan 2026: approx Feb 17 - Mar 18
+const RAMADAN_2026_START = new Date('2026-02-17')
+const RAMADAN_2026_END = new Date('2026-03-18')
+
+function isNearTabaski(targetDate, weeks=6){
+  const diff=(TABASKI_2026-targetDate)/86400000
+  return diff>0&&diff<(weeks*7)
+}
+
+function isRamadan(targetDate){
+  return targetDate>=RAMADAN_2026_START&&targetDate<=RAMADAN_2026_END
+}
+
+function getCategorySeasonalFactor(category, month, history){
+  // Returns expected price change % based on season + category
+  const s=SENEGAL_SEASONS[month]||{}
+
+  if(category==='cereals and tubers'){
+    if(s.lean) return{pct:+12,driver:'Soudure (stocks bas)',direction:'up',confidence:78}
+    if(s.rain) return{pct:+6,driver:'Pluies limitent transport',direction:'up',confidence:65}
+    if(s.harvest) return{pct:-15,driver:'Arrivée des récoltes',direction:'down',confidence:85}
+    return{pct:-3,driver:'Saison sèche stable',direction:'stable',confidence:60}
+  }
+  if(category==='pulses and nuts'){
+    if(s.lean) return{pct:+8,driver:'Soudure (stocks réduits)',direction:'up',confidence:72}
+    if(s.harvest) return{pct:-12,driver:'Récolte d\'arachides',direction:'down',confidence:80}
+    if(s.rain) return{pct:+4,driver:'Accès réduit aux marchés',direction:'up',confidence:60}
+    return{pct:0,driver:'Période stable',direction:'stable',confidence:55}
+  }
+  if(category==='vegetables'){
+    if(s.rain) return{pct:+18,driver:'Pluies réduisent l\'offre maraîchère',direction:'up',confidence:75}
+    if(s.harvest) return{pct:-20,driver:'Pic de production Niayes',direction:'down',confidence:88}
+    return{pct:+5,driver:'Demande urbaine stable',direction:'stable',confidence:58}
+  }
+  if(category==='livestock'){
+    return{pct:0,driver:'Demande stable',direction:'stable',confidence:50}
+  }
+  return{pct:0,driver:'Facteurs saisonniers',direction:'stable',confidence:50}
+}
+
+function getHistoricalSeasonalAvg(history, targetMonth){
+  // Average price in the same month across all years in history
+  const relevant=history.filter(h=>{
+    if(!h.price_date)return false
+    const m=new Date(h.price_date).getMonth()
+    return m===targetMonth
+  })
+  if(!relevant.length)return null
+  return relevant.reduce((s,h)=>s+h.price,0)/relevant.length
+}
+
+function buildPrediction(currentPrice, category, history){
+  const now=new Date()
+  const months=[]
+
+  for(let i=1;i<=3;i++){
+    const targetDate=new Date(now.getFullYear(),now.getMonth()+i,1)
+    const targetMonth=targetDate.getMonth()
+    const monthName=targetDate.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})
+
+    const seasonal=getCategorySeasonalFactor(category,targetMonth,history)
+    const histAvg=getHistoricalSeasonalAvg(history,targetMonth)
+
+    // Blend seasonal factor with historical average if available
+    let predictedPrice
+    let confidence=seasonal.confidence
+    if(histAvg&&history.length>12){
+      // Weight: 60% historical average, 40% current + seasonal
+      const currentPlusSeasonal=currentPrice*(1+seasonal.pct/100)
+      predictedPrice=Math.round(histAvg*0.6+currentPlusSeasonal*0.4)
+      confidence=Math.min(seasonal.confidence+10,92)
+    } else {
+      predictedPrice=Math.round(currentPrice*(1+seasonal.pct/100))
+    }
+
+    const changePct=Math.round(((predictedPrice-currentPrice)/currentPrice)*100)
+    const direction=changePct>5?'up':changePct<-5?'down':'stable'
+
+    // Additional event factors
+    const factors=[]
+    const s=SENEGAL_SEASONS[targetMonth]||{}
+
+    if(s.rain){
+      factors.push({
+        name:'Saison des pluies',
+        desc:'Les pluies limitent le transport et réduisent l\'offre sur les marchés. Les routes rurales deviennent difficiles d\'accès.',
+        impact:'negative',
+        icon:'R'
       })
-      return res.json()
     }
-
-    const CATEGORY_EMOJI = {
-      'cereals and tubers': '🌾',
-      'pulses and nuts': '🥜',
-      'vegetables': '🥬',
-      'livestock': '🐑',
-    }
-
-    const SOURCE_LABEL = {
-      'wfp_hdx': 'WFP',
-      'auchan_scrape': 'Auchan',
-      'fao_giews': 'FAO',
-      'manual': 'Manuel',
-    }
-
-    function Header() {
-      const today = new Date().toLocaleDateString('fr-FR', {
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    if(s.harvest){
+      factors.push({
+        name:'Période de récolte',
+        desc:'L\'arrivée des nouvelles récoltes augmente l\'offre et fait baisser les prix sur les marchés de gros.',
+        impact:'positive',
+        icon:'R'
       })
-      return (
-        <header className="header">
-          <div className="header-inner">
-            <div className="logo-block">
-              <div className="logo-icon">🌾</div>
-              <div>
-                <div className="logo-name">Jàng Prix</div>
-                <div className="logo-sub">Intelligence des marchés agricoles</div>
-              </div>
+    }
+    if(s.lean){
+      factors.push({
+        name:'Période de soudure',
+        desc:'Les stocks de la saison précédente s\'épuisent. La demande dépasse l\'offre disponible.',
+        impact:'negative',
+        icon:'S'
+      })
+    }
+    if(isNearTabaski(targetDate)&&(category==='livestock'||category==='cereals and tubers')){
+      factors.push({
+        name:'Approche de Tabaski',
+        desc:'La demande de moutons et de denrées alimentaires augmente fortement dans les semaines précédant Tabaski.',
+        impact:'negative',
+        icon:'T'
+      })
+    }
+    if(isRamadan(targetDate)){
+      factors.push({
+        name:'Ramadan',
+        desc:'La consommation d\'oignons, de sucre et d\'huile augmente pendant le Ramadan, faisant monter les prix.',
+        impact:'negative',
+        icon:'R'
+      })
+    }
+    if(!factors.length){
+      factors.push({
+        name:'Marché stable',
+        desc:'Aucun facteur saisonnier majeur attendu. Les prix devraient rester proches des niveaux actuels.',
+        impact:'neutral',
+        icon:'S'
+      })
+    }
+
+    months.push({
+      monthName,targetMonth,predictedPrice,changePct,direction,confidence,
+      driver:seasonal.driver,factors
+    })
+  }
+
+  return months
+}
+
+function getPredSummary(category, history, currentPrice){
+  const now=new Date()
+  const next=new Date(now.getFullYear(),now.getMonth()+1,1)
+  const nextMonth=next.getMonth()
+  const seasonal=getCategorySeasonalFactor(category,nextMonth,history)
+  return seasonal
+}
+
+function getRec(avg,hist){
+  if(!hist||hist.length<6) return{label:'EN ATTENTE',cls:'rec-pending',reason:'Données insuffisantes. La recommandation sera disponible prochainement.',reasonCls:'pending'}
+  const old=hist.slice(-12,-1).map(h=>h.price)
+  const mean=old.reduce((a,b)=>a+b,0)/old.length
+  const pct=((avg-mean)/mean)*100
+  if(pct>8) return{label:'VENDRE',cls:'rec-sell',reason:'Prix '+Math.round(pct)+'% au-dessus de la moyenne saisonnière. Bon moment pour vendre.',reasonCls:'sell'}
+  if(pct<-8) return{label:'ATTENDRE',cls:'rec-wait',reason:'Prix '+Math.abs(Math.round(pct))+'% sous la moyenne saisonnière. Attendez une remontée.',reasonCls:'wait'}
+  return{label:'VENDRE',cls:'rec-sell',reason:'Prix dans la normale saisonnière. Conditions correctes pour vendre.',reasonCls:'sell'}
+}
+
+function getTabaski(){
+  const d=Math.ceil((TABASKI_2026-new Date())/86400000)
+  return d>0&&d<=120?d:null
+}
+
+function PredictionTab({commodity,currentPrice,history}){
+  const months=buildPrediction(currentPrice,commodity.category,history)
+
+  return(
+    <div>
+      <div className="pred-months">
+        {months.map((m,i)=>(
+          <div key={i} className="pred-month-card">
+            <div className="pred-month-name">{m.monthName}</div>
+            <div className={'pred-month-price '+m.direction}>
+              {m.predictedPrice.toLocaleString('fr-FR')} FCFA
             </div>
-            <div className="header-right">
-              <div className="live-badge"><span className="live-dot" /> LIVE</div>
-              <div className="header-date">{today}</div>
-              <div className="header-zone">Dakar · Keur Massar · Niayes</div>
+            <div className={'pred-month-change '+m.direction}>
+              {m.direction==='up'?'▲ +'+(m.changePct)+'%':
+               m.direction==='down'?'▼ '+m.changePct+'%':
+               '→ Stable (±'+Math.abs(m.changePct)+'%)'}
+            </div>
+            <div className="pred-month-driver">{m.driver}</div>
+            <div className="pred-confidence">
+              <div className="pred-conf-bar-wrap">
+                <div className="pred-conf-bar" style={{width:m.confidence+'%'}}/>
+              </div>
+              <span className="pred-conf-label">Fiabilité {m.confidence}%</span>
             </div>
           </div>
-        </header>
-      )
-    }
+        ))}
+      </div>
 
-    function StatsBar({ prices }) {
-      const markets = [...new Set(prices.map(p => p.market_name).filter(Boolean))]
-      const commodityCount = [...new Set(prices.map(p => p.commodity_id).filter(Boolean))].length
-      const sources = [...new Set(prices.map(p => p.source))]
-      const latestDate = prices.length
-        ? new Date(Math.max(...prices.map(p => new Date(p.price_date)))).toLocaleDateString('fr-FR')
-        : '—'
-      const stats = [
-        { label: 'Produits suivis', value: commodityCount, icon: '📦' },
-        { label: 'Marchés couverts', value: markets.length, icon: '🏪' },
-        { label: 'Sources de données', value: sources.length, icon: '📡' },
-        { label: 'Dernière mise à jour', value: latestDate, icon: '🕐' },
-      ]
-      return (
-        <div className="stats-bar">
-          {stats.map(s => (
-            <div key={s.label} className="stat-item">
-              <span className="stat-icon">{s.icon}</span>
-              <div>
-                <div className="stat-value">{s.value}</div>
-                <div className="stat-label">{s.label}</div>
+      <div className="pred-factors">
+        <div className="pred-factors-title">Facteurs pris en compte — mois prochain</div>
+        {months[0].factors.map((f,i)=>(
+          <div key={i} className="factor-row">
+            <div className={'factor-icon '+f.impact}>
+              <span style={{fontSize:11,fontWeight:700,color:f.impact==='positive'?'#4ade80':f.impact==='negative'?'#f87171':'#78716c'}}>{f.icon}</span>
+            </div>
+            <div>
+              <div className="factor-name">{f.name}</div>
+              <div className="factor-desc">{f.desc}</div>
+              <div className={'factor-impact '+f.impact}>
+                {f.impact==='positive'?'Impact positif sur les prix (baisse attendue)':
+                 f.impact==='negative'?'Impact négatif sur les prix (hausse attendue)':
+                 'Impact neutre'}
               </div>
             </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="pred-disclaimer">
+        Prévisions basées sur les données historiques WFP (2000-2025), les cycles saisonniers du Sénégal et le calendrier agricole. Les prix réels peuvent varier selon les conditions météorologiques, les politiques d'importation et les chocs de marché imprévus. Fiabilité indicative uniquement.
+      </div>
+    </div>
+  )
+}
+
+function DetailPanel({selected,history,histLoading}){
+  const[activeTab,setActiveTab]=React.useState('predict')
+  const[marketFilter,setMarketFilter]=React.useState('all')
+
+  const markets=[...new Set((selected.group||[]).map(p=>p.market_name).filter(Boolean))]
+  const filteredGroup=(selected.group||[]).filter(p=>marketFilter==='all'||p.market_name===marketFilter)
+  const filteredHistory=history.filter(p=>marketFilter==='all'||p.market_name===marketFilter)
+  const sortedGroup=[...filteredGroup].sort((a,b)=>a.price-b.price)
+  const min=sortedGroup[0]?.price||0
+  const max=sortedGroup[sortedGroup.length-1]?.price||0
+  const avg=filteredGroup.reduce((s,p)=>s+p.price,0)/(filteredGroup.length||1)
+
+  const monthlyMap={}
+  filteredHistory.forEach(h=>{
+    const m=h.price_date&&h.price_date.slice(0,7)
+    if(!monthlyMap[m])monthlyMap[m]=[]
+    monthlyMap[m].push(h.price)
+  })
+  const monthly=Object.entries(monthlyMap)
+    .sort((a,b)=>b[0].localeCompare(a[0])).slice(0,12)
+    .map(([month,prices])=>({month,avg:Math.round(prices.reduce((a,b)=>a+b,0)/prices.length)}))
+
+  const fmtMonth=m=>{
+    if(!m)return''
+    const[y,mo]=m.split('-')
+    return['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'][parseInt(mo)-1]+' '+y
+  }
+
+  return(
+    <div className="detail-panel">
+      <div className="detail-header">
+        <div>
+          <div className="detail-title">{fr(selected.commodity.name_fr)}</div>
+          <div className="detail-sub">{markets.length} marché(s) · {history.length} enregistrements historiques</div>
+        </div>
+        <div className="detail-tabs">
+          {[['predict','Prévision 3 mois'],['compare','Comparer marchés'],['years','Comparer années'],['trend','Tendance'],['history','Historique']].map(([k,l])=>(
+            <button type="button" key={k} className={'detail-tab'+(activeTab===k?' active':'')} onClick={e=>{e.preventDefault();setActiveTab(k)}}>{l}</button>
           ))}
         </div>
-      )
-    }
+      </div>
 
-    function CommodityGrid({ prices, commodities, markets, onSelect, selected }) {
-      if (!prices.length) return <div className="empty"><p>Aucun prix disponible.</p></div>
+      {markets.length>1&&(
+        <div className="market-filter">
+          <span style={{fontSize:11,color:'var(--text5)',alignSelf:'center',marginRight:4}}>Filtrer:</span>
+          <button type="button" className={'mkt-btn'+(marketFilter==='all'?' active':'')} onClick={e=>{e.preventDefault();setMarketFilter('all')}}>Tous les marchés</button>
+          {markets.map(m=>(
+            <button type="button" key={m} className={'mkt-btn'+(marketFilter===m?' active':'')} onClick={e=>{e.preventDefault();setMarketFilter(m)}}>{m}</button>
+          ))}
+        </div>
+      )}
 
-      const byCommodity = {}
-      prices.forEach(p => {
-        if (!byCommodity[p.commodity_id]) byCommodity[p.commodity_id] = []
-        byCommodity[p.commodity_id].push(p)
-      })
+      {activeTab==='predict'&&(
+        histLoading?(
+          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement des données...</div>
+        ):(
+          <PredictionTab commodity={selected.commodity} currentPrice={avg} history={filteredHistory}/>
+        )
+      )}
 
-      return (
-        <div className="commodity-grid">
-          {Object.entries(byCommodity).map(([commodityId, group]) => {
-            const commodity = commodities.find(c => c.id === parseInt(commodityId))
-            if (!commodity) return null
-            const avgPrice = group.reduce((sum, p) => sum + p.price, 0) / group.length
-            const emoji = CATEGORY_EMOJI[commodity.category] || '📦'
-            const isSelected = selected?.commodity_id === parseInt(commodityId)
-
-            return (
-              <div key={commodityId} className={`commodity-card ${isSelected ? 'selected' : ''}`}>
-                <div className="card-top">
-                  <div className="card-emoji">{emoji}</div>
-                  <div className="card-info">
-                    <div className="card-name">{commodity.name_fr}</div>
-                    <div className="card-markets">
-                      {group.map(p => p.market_name).filter(Boolean).join(' · ')}
+      {activeTab==='compare'&&(
+        filteredGroup.length<2?(
+          <div className="no-data">Un seul marché disponible pour ce produit.</div>
+        ):(
+          <>
+            <div className="comparison-list">
+              {sortedGroup.map(p=>{
+                const pct=max>min?((p.price-min)/(max-min))*100:50
+                return(
+                  <div key={p.id} className="comparison-row">
+                    <div className="comp-market">
+                      <span className="comp-market-name">{p.market_name}</span>
+                      <span className="comp-source-tag">{SOURCE_LABEL[p.source]||p.source} · {p.price_type==='retail'?'Détail':'Gros'}</span>
+                    </div>
+                    <div className="comp-bar-wrap">
+                      <div className="comp-bar" style={{width:Math.max(pct,5)+'%',background:p.price===min?'#4ade80':p.price===max?'#f87171':'#b45309'}}/>
+                    </div>
+                    <div className="comp-price-wrap">
+                      <span className="comp-price">{Math.round(p.price).toLocaleString('fr-FR')} F</span>
+                      {p.price===min&&<span className="comp-tag best">Meilleur</span>}
+                      {p.price===max&&<span className="comp-tag worst">Plus cher</span>}
                     </div>
                   </div>
-                </div>
-                <div className="card-price">
-                  <span className="price-value">{Math.round(avgPrice).toLocaleString('fr-FR')}</span>
-                  <span className="price-unit"> FCFA / {commodity.unit || 'kg'}</span>
-                </div>
-                <div className="card-footer">
-                  {group.map(p => (
-                    <div key={p.id} className="price-source">
-                      <span className="source-dot" style={{ background: p.price_type === 'retail' ? '#f59e0b' : '#4ade80' }} />
-                      <span className="source-name">{SOURCE_LABEL[p.source] || p.source}</span>
-                      <span className="source-price">{Math.round(p.price).toLocaleString('fr-FR')} FCFA</span>
+                )
+              })}
+            </div>
+            <div className="insight-box">
+              Ecart de <strong>{Math.round(max-min).toLocaleString('fr-FR')} FCFA/{selected.commodity.unit||'kg'}</strong> entre {sortedGroup[0].market_name} ({Math.round(min).toLocaleString('fr-FR')} F) et {sortedGroup[sortedGroup.length-1].market_name} ({Math.round(max).toLocaleString('fr-FR')} F).
+            </div>
+          </>
+        )
+      )}
+
+      {activeTab==='years'&&(
+        histLoading?(
+          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>
+        ):filteredHistory.length===0?(
+          <div className="no-data">Pas de données historiques disponibles.</div>
+        ):(()=>{
+          const now=new Date()
+          const currentYear=now.getFullYear()
+          const currentMonth=now.getMonth()
+
+          // Group history by year, only same months as current year to date
+          const byYear={}
+          filteredHistory.forEach(h=>{
+            if(!h.price_date)return
+            const d=new Date(h.price_date)
+            const y=d.getFullYear()
+            const m=d.getMonth()
+            // Only include same months (Jan to current month) for fair comparison
+            if(m>currentMonth)return
+            if(!byYear[y])byYear[y]=[]
+            byYear[y].push(h.price)
+          })
+
+          const years=Object.entries(byYear)
+            .filter(([y])=>parseInt(y)>=currentYear-5)
+            .sort((a,b)=>b[0]-a[0])
+            .map(([year,prices])=>({
+              year:parseInt(year),
+              avg:Math.round(prices.reduce((a,b)=>a+b,0)/prices.length),
+              count:prices.length
+            }))
+
+          if(years.length<2) return <div className="no-data">Pas assez d'années de données pour comparer.</div>
+
+          const currentYearData=years.find(y=>y.year===currentYear)
+          const lastYearData=years.find(y=>y.year===currentYear-1)
+
+          const months=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']
+          const periodLabel=months[0]+' – '+months[currentMonth]+' '+currentYear
+
+          return(
+            <div>
+              <div style={{fontSize:12,color:'var(--text4)',marginBottom:14}}>
+                Comparaison sur la même période ({periodLabel}) · {years.length} années disponibles
+              </div>
+              <div className="year-comp-grid">
+                {years.map((y,i)=>{
+                  const isCurrent=y.year===currentYear
+                  const vsNow=currentYearData&&!isCurrent
+                    ?Math.round(((currentYearData.avg-y.avg)/y.avg)*100)
+                    :null
+                  const direction=vsNow===null?'same':vsNow>5?'higher':vsNow<-5?'lower':'same'
+                  const vsLabel=vsNow===null?'Année en cours':
+                    vsNow>0?'Cette année: +'+vsNow+'% plus cher':
+                    vsNow<0?'Cette année: '+vsNow+'% moins cher':
+                    'Prix similaire à cette année'
+                  return(
+                    <div key={y.year} className={'year-comp-card'+(isCurrent?' current-year':'')}>
+                      <div className="year-label">{y.year}{isCurrent?' (en cours)':''}</div>
+                      <div className="year-price">{y.avg.toLocaleString('fr-FR')} FCFA</div>
+                      <div className={'year-vs-now '+direction}>{vsLabel}</div>
+                      <div className="year-months">{y.count} relevés de prix</div>
                     </div>
-                  ))}
+                  )
+                })}
+              </div>
+              {currentYearData&&lastYearData&&(
+                <div className="year-insight">
+                  {currentYearData.avg>lastYearData.avg?(
+                    <span>Les prix du <strong>{fr(selected.commodity.name_fr)}</strong> sont <strong style={{color:'var(--red)'}}>+{Math.round(((currentYearData.avg-lastYearData.avg)/lastYearData.avg)*100)}% plus élevés</strong> cette année par rapport à {currentYear-1} ({lastYearData.avg.toLocaleString('fr-FR')} FCFA en {currentYear-1} vs {currentYearData.avg.toLocaleString('fr-FR')} FCFA cette année).</span>
+                  ):currentYearData.avg<lastYearData.avg?(
+                    <span>Les prix du <strong>{fr(selected.commodity.name_fr)}</strong> sont <strong style={{color:'var(--green)'}}>+{Math.round(((lastYearData.avg-currentYearData.avg)/lastYearData.avg)*100)}% moins élevés</strong> cette année par rapport à {currentYear-1} ({lastYearData.avg.toLocaleString('fr-FR')} FCFA en {currentYear-1} vs {currentYearData.avg.toLocaleString('fr-FR')} FCFA cette année).</span>
+                  ):(
+                    <span>Les prix sont similaires à l'année dernière.</span>
+                  )}
                 </div>
-                <div className="card-date">Mis à jour: {new Date(group[0].price_date).toLocaleDateString('fr-FR')}</div>
-                <button
-                  style={{ marginTop: 12, width: '100%', padding: '8px', background: isSelected ? '#4ade80' : '#1a2e1a', border: '1px solid #2d4a2d', borderRadius: 8, color: isSelected ? '#000' : '#4ade80', cursor: 'pointer', fontFamily: 'DM Mono, monospace', fontSize: 11, fontWeight: 700 }}
-                  onClick={(e) => { e.stopPropagation(); onSelect({ commodity_id: parseInt(commodityId), commodity, group }); }}
-                >
-                  {isSelected ? '▲ MASQUER' : '▼ VOIR HISTORIQUE'}
-                </button>
+              )}
+            </div>
+          )
+        })()
+      )}
+
+      {activeTab==='trend'&&(
+        histLoading?(
+          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>
+        ):monthly.length===0?(
+          <div className="no-data">Pas de données historiques disponibles.</div>
+        ):(
+          <table className="trend-table">
+            <thead>
+              <tr><th>Mois</th><th>Prix moyen</th><th>Variation</th><th>Marchés</th></tr>
+            </thead>
+            <tbody>
+              {monthly.map((row,i)=>{
+                const prev=monthly[i+1]
+                const change=prev?Math.round(((row.avg-prev.avg)/prev.avg)*100):null
+                const cls=change===null?'flat':change>0?'up':'down'
+                const sign=change===null?'—':change>0?'+'+change+'%':change+'%'
+                const mktNames=[...new Set(filteredHistory.filter(h=>h.price_date&&h.price_date.startsWith(row.month)).map(h=>h.market_name).filter(Boolean))]
+                return(
+                  <tr key={row.month}>
+                    <td>{fmtMonth(row.month)}</td>
+                    <td className="trend-price">{row.avg.toLocaleString('fr-FR')} FCFA</td>
+                    <td className={'trend-change '+cls}>{sign}</td>
+                    <td style={{fontSize:11,color:'var(--text4)'}}>{mktNames.join(', ')||'—'}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )
+      )}
+
+      {activeTab==='history'&&(
+        histLoading?(
+          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>
+        ):filteredHistory.length===0?(
+          <div className="no-data">Pas d'historique disponible.</div>
+        ):(
+          <>
+            <div style={{fontSize:12,color:'var(--text4)',marginBottom:10}}>{filteredHistory.length} enregistrements trouvés</div>
+            <div className="history-wrap">
+              <table className="history-table">
+                <thead>
+                  <tr><th>Date</th><th>Marché</th><th>Prix</th><th>Source</th><th>Type</th></tr>
+                </thead>
+                <tbody>
+                  {[...filteredHistory].sort((a,b)=>b.price_date.localeCompare(a.price_date)).map((h,i)=>(
+                    <tr key={i}>
+                      <td>{new Date(h.price_date).toLocaleDateString('fr-FR')}</td>
+                      <td>{h.market_name}</td>
+                      <td className="h-price">{Math.round(h.price).toLocaleString('fr-FR')} FCFA</td>
+                      <td>{SOURCE_LABEL[h.source]||h.source}</td>
+                      <td><span className="type-tag">{h.price_type==='retail'?'Détail':'Gros'}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )
+      )}
+    </div>
+  )
+}
+
+function ReportModal({commodity, onClose}){
+  const[price,setPrice]=React.useState('')
+  const[market,setMarket]=React.useState('')
+  const[phone,setPhone]=React.useState('')
+  const[notes,setNotes]=React.useState('')
+  const[submitting,setSubmitting]=React.useState(false)
+  const[success,setSuccess]=React.useState(false)
+
+  const MARKETS=['Thiaroye','Tilène','Dakar','Pikine','Rufisque','Keur Massar','Castors','Gueule Tapée','Autre']
+
+  async function handleSubmit(e){
+    e.preventDefault()
+    if(!price||!market)return
+    setSubmitting(true)
+    try{
+      await fetch(SUPABASE_URL+'/rest/v1/reports',{
+        method:'POST',
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+SUPABASE_KEY,
+          'Content-Type':'application/json',
+          'Prefer':'return=minimal'
+        },
+        body:JSON.stringify({
+          commodity_id:commodity.id,
+          market_name:market,
+          price:parseFloat(price),
+          unit:commodity.unit||'kg',
+          reporter_phone:phone||null,
+          notes:notes||null
+        })
+      })
+      setSuccess(true)
+    }catch(err){
+      console.error(err)
+    }
+    setSubmitting(false)
+  }
+
+  return(
+    <div className="report-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+      <div className="report-modal">
+        {success?(
+          <div className="report-success">
+            <div className="report-success-icon">✓</div>
+            <div className="report-success-title">Prix signalé avec succès</div>
+            <div className="report-success-sub">Merci. Votre signalement aide tous les agriculteurs de la région.</div>
+            <button type="button" className="btn-primary" style={{marginTop:16,width:'100%'}} onClick={onClose}>Fermer</button>
+          </div>
+        ):(
+          <>
+            <div className="report-modal-title">Signaler un prix</div>
+            <div className="report-modal-sub">{fr(commodity.name_fr)} · Partagez le prix que vous voyez sur le marché</div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Prix observé</label>
+                <input className="form-input" type="number" min="0" placeholder="ex: 350" value={price} onChange={e=>setPrice(e.target.value)} />
+              </div>
+              <div className="form-group" style={{maxWidth:80}}>
+                <label className="form-label">Unité</label>
+                <input className="form-input" value={commodity.unit||'kg'} readOnly style={{color:'var(--text4)'}}/>
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Marché</label>
+              <select className="form-select" value={market} onChange={e=>setMarket(e.target.value)}>
+                <option value="">Choisir un marché...</option>
+                {MARKETS.map(m=><option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Téléphone (optionnel)</label>
+              <input className="form-input" type="tel" placeholder="ex: 77 123 45 67" value={phone} onChange={e=>setPhone(e.target.value)}/>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Remarques (optionnel)</label>
+              <input className="form-input" placeholder="ex: prix de gros, qualité moyenne..." value={notes} onChange={e=>setNotes(e.target.value)}/>
+            </div>
+            <div className="report-notice">
+              Les prix signalés sont vérifiés avant publication. Votre numéro de téléphone est confidentiel et ne sera jamais partagé.
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn-secondary" onClick={onClose}>Annuler</button>
+              <button type="button" className="btn-primary" onClick={handleSubmit} disabled={!price||!market||submitting}>
+                {submitting?'Envoi...':'Envoyer le prix'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function RevenueCalculator({group, unit}){
+  const[qty,setQty]=React.useState('')
+  const sorted=[...group].sort((a,b)=>b.price-a.price)
+  const maxEarning=qty?Math.round(sorted[0].price*parseFloat(qty)):null
+
+  return(
+    <div className="calc-section">
+      <div className="calc-label">Calculateur de revenus</div>
+      <div className="calc-input-row">
+        <input
+          className="calc-input"
+          type="number"
+          min="0"
+          placeholder="Quantité à vendre"
+          value={qty}
+          onChange={e=>setQty(e.target.value)}
+        />
+        <span className="calc-unit">{unit||'kg'}</span>
+      </div>
+      {qty&&parseFloat(qty)>0&&(
+        <div className="calc-results">
+          {sorted.map((p,i)=>{
+            const earning=Math.round(p.price*parseFloat(qty))
+            const isBest=i===0
+            return(
+              <div key={p.id} className={'calc-row'+(isBest?' best-market':'')}>
+                <div>
+                  <div className="calc-market">{p.market_name} · {SOURCE_LABEL[p.source]||p.source}</div>
+                  <div style={{fontSize:11,color:'var(--text5)'}}>à {Math.round(p.price).toLocaleString('fr-FR')} FCFA/{unit||'kg'}</div>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <span className={'calc-earning'+(isBest?' best':'')}>{earning.toLocaleString('fr-FR')} FCFA</span>
+                  {isBest&&<span className="calc-best-label">Meilleur</span>}
+                </div>
               </div>
             )
           })}
+          {sorted.length>1&&(
+            <div style={{fontSize:11,color:'var(--text4)',textAlign:'center',paddingTop:4}}>
+              Différence entre meilleur et moins bon marché: <strong style={{color:'var(--text3)'}}>{(Math.round(sorted[0].price*parseFloat(qty))-Math.round(sorted[sorted.length-1].price*parseFloat(qty))).toLocaleString('fr-FR')} FCFA</strong>
+            </div>
+          )}
         </div>
-      )
-    }
+      )}
+    </div>
+  )
+}
 
-    function PriceChart({ selected, history }) {
-      if (!selected || !history.length) return null
-      const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } = Recharts
+function App(){
+  const[prices,setPrices]=React.useState([])
+  const[commodities,setCommodities]=React.useState([])
+  const[selected,setSelected]=React.useState(null)
+  const[history,setHistory]=React.useState([])
+  const[histLoading,setHistLoading]=React.useState(false)
+  const[loading,setLoading]=React.useState(true)
+  const[category,setCategory]=React.useState('all')
+  const[search,setSearch]=React.useState('')
 
-      const byDate = {}
-      history.forEach(h => {
-        const date = h.price_date?.slice(0, 7)
-        if (!byDate[date]) byDate[date] = { date }
-        byDate[date][h.market_name || 'Marché'] = h.price
-      })
+  const[reportingCommodity,setReportingCommodity]=React.useState(null)
 
-      const chartData = Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date))
-      const marketNames = [...new Set(history.map(h => h.market_name).filter(Boolean))]
-      const colors = ['#4ade80', '#f59e0b', '#60a5fa', '#c084fc']
+  React.useEffect(()=>{
+    Promise.all([
+      sq('prices','?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=500'),
+      sq('commodities','?select=*'),
+      sq('markets','?select=*')
+    ]).then(([pd,cd,md])=>{
+      const mMap={}
+      if(md)md.forEach(m=>mMap[m.id]=m)
+      const enriched=(pd||[]).map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Inconnu'}))
+      const latest={}
+      enriched.forEach(p=>{const k=p.commodity_id+'_'+p.market_id;if(!latest[k])latest[k]=p})
+      setPrices(Object.values(latest))
+      setCommodities(cd||[])
+      setLoading(false)
+    })
+  },[])
 
-      const formatDate = (d) => {
-        if (!d) return ''
-        const [year, month] = d.split('-')
-        const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']
-        return `${months[parseInt(month)-1]} ${year.slice(2)}`
-      }
+  function handleSelect(item){
+    if(selected&&selected.commodity_id===item.commodity_id){setSelected(null);setHistory([]);return}
+    setSelected(item);setHistory([]);setHistLoading(true)
+    Promise.all([
+      sq('markets','?select=*'),
+      sq('prices','?commodity_id=eq.'+item.commodity_id+'&order=price_date.desc&limit=500&select=price,price_date,market_id,source,price_type')
+    ]).then(([md,pd])=>{
+      const mMap={}
+      if(md)md.forEach(m=>mMap[m.id]=m)
+      setHistory((pd||[]).map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Marché'})))
+      setHistLoading(false)
+      setTimeout(()=>{const el=document.getElementById('dp');if(el)el.scrollIntoView({behavior:'smooth'})},200)
+    })
+  }
 
-      return (
-        <div className="chart-panel">
-          <div className="chart-header">
-            <h3 className="chart-title">Historique — {selected.commodity?.name_fr}</h3>
-            <div className="chart-sub">{chartData.length} mois · {marketNames.length} marché(s)</div>
+  const tabDays=getTabaski()
+  const byCom={}
+  prices.forEach(p=>{
+    const c=commodities.find(x=>x.id===p.commodity_id)
+    if(!c)return
+    if(category!=='all'&&c.category!==category)return
+    if(search&&!fr(c.name_fr).toLowerCase().includes(search.toLowerCase()))return
+    if(!byCom[p.commodity_id])byCom[p.commodity_id]=[]
+    byCom[p.commodity_id].push(p)
+  })
+
+  const today=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+  const markets=[...new Set(prices.map(p=>p.market_name).filter(Boolean))]
+  const comCount=[...new Set(prices.map(p=>p.commodity_id))].length
+  const sources=[...new Set(prices.map(p=>p.source))]
+  const lastDate=prices.length?new Date(Math.max(...prices.map(p=>new Date(p.price_date)))).toLocaleDateString('fr-FR'):'—'
+
+  return(
+    <div>
+      <header className="header">
+        <div className="header-inner">
+          <div className="logo-block">
+            <div className="logo-mark">JP</div>
+            <div>
+              <div className="logo-name">Jàng Prix</div>
+              <div className="logo-sub">Intelligence des marchés agricoles</div>
+            </div>
           </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2f1f" />
-              <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fill: '#4a7a4a', fontSize: 10 }} tickLine={false} />
-              <YAxis tick={{ fill: '#4a7a4a', fontSize: 10 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                formatter={(value, name) => [`${value?.toLocaleString('fr-FR')} FCFA`, name]}
-                labelFormatter={formatDate}
-                contentStyle={{ background: '#0d160d', border: '1px solid #2d4a2d', borderRadius: 8, color: '#e8f5e9' }}
-              />
-              <Legend wrapperStyle={{ color: '#4a7a4a', fontSize: 11 }} />
-              {marketNames.map((m, i) => (
-                <Line key={m} type="monotone" dataKey={m} stroke={colors[i % 4]} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
+          <div className="header-right">
+            <div className="live-badge"><span className="live-dot"></span>EN DIRECT</div>
+            <div className="header-date">{today}</div>
+            <div className="header-zone">Dakar · Keur Massar · Niayes</div>
+          </div>
         </div>
-      )
-    }
+      </header>
 
-    function MarketComparison({ selected }) {
-      if (!selected || !selected.group || selected.group.length < 2) return null
-      const sorted = [...selected.group].sort((a, b) => a.price - b.price)
-      const min = sorted[0].price
-      const max = sorted[sorted.length - 1].price
-
-      return (
-        <div className="comparison-panel">
-          <div className="chart-header">
-            <h3 className="chart-title">Comparaison des marchés</h3>
-            <div className="chart-sub">{selected.commodity?.name_fr} · Prix par marché</div>
+      {tabDays&&(
+        <div className="tabaski-banner">
+          <div className="tabaski-inner">
+            <span className="tabaski-label">Tabaski</span>
+            <span className="tabaski-days">{tabDays}</span>
+            <span className="tabaski-jours">jours restants</span>
+            <span className="tabaski-tip">
+              {tabDays>60?'— Prix des moutons en hausse progressive. Attendez pour mieux vendre.':
+               tabDays>30?'— Bonne période pour vendre vos moutons. Prix en pic.':
+               '— Vendez maintenant ou dans 1 à 2 semaines. Pic de demande imminent.'}
+            </span>
           </div>
-          <div className="comparison-list">
-            {sorted.map(p => {
-              const pct = max > min ? ((p.price - min) / (max - min)) * 100 : 50
-              const isBest = p.price === min
-              const isWorst = p.price === max
-              return (
-                <div key={p.id} className="comparison-row">
-                  <div className="comp-market">
-                    <span className="comp-market-name">{p.market_name}</span>
-                    <span className="comp-source">{p.source === 'auchan_scrape' ? 'Détail' : 'Gros'}</span>
+        </div>
+      )}
+
+      <div className="stats-bar">
+        <div className="stats-inner">
+          {[{l:'Produits suivis',v:comCount},{l:'Marchés couverts',v:markets.length},{l:'Sources de données',v:sources.length},{l:'Dernière mise à jour',v:lastDate}].map(s=>(
+            <div key={s.l} className="stat-item">
+              <div className="stat-value">{s.v}</div>
+              <div className="stat-label">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <main className="main">
+        <h2 className="page-title">Prix du Marché</h2>
+        <div className="search-filter-row">
+          <input className="search-input" type="text" placeholder="Rechercher un produit... ex: mil, riz, niébé, arachides" value={search} onChange={e=>setSearch(e.target.value)}/>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {[['all','Tout'],['cereals and tubers','Céréales'],['pulses and nuts','Légumineuses']].map(([k,l])=>(
+              <button type="button" key={k} className={'cat-tab'+(category===k?' active':'')} onClick={e=>{e.preventDefault();setCategory(k)}}>{l}</button>
+            ))}
+          </div>
+        </div>
+
+        {loading?(
+          <div className="loading"><div className="spinner"></div><p>Chargement des prix...</p></div>
+        ):Object.keys(byCom).length===0?(
+          <div className="empty">Aucun produit trouvé{search?' pour "'+search+'"':''}.</div>
+        ):(
+          <div className="commodity-grid">
+            {Object.entries(byCom).map(([cid,group])=>{
+              const c=commodities.find(x=>x.id===parseInt(cid))
+              if(!c)return null
+              const avg=group.reduce((s,p)=>s+p.price,0)/group.length
+              const isSel=selected&&selected.commodity_id===parseInt(cid)
+              const rec=getRec(avg,null)
+
+              // Prediction summary for card
+              const nextMonth=(new Date().getMonth()+1)%12
+              const predSummary=getCategorySeasonalFactor(c.category,nextMonth,null)
+              const predCls=predSummary.direction
+              const predArrow=predSummary.direction==='up'?'▲':predSummary.direction==='down'?'▼':'→'
+              const predText=predSummary.direction==='up'?
+                'Prix attendu en hausse (+'+Math.abs(predSummary.pct)+'%) — '+predSummary.driver:
+                predSummary.direction==='down'?
+                'Prix attendu en baisse ('+predSummary.pct+'%) — '+predSummary.driver:
+                'Prix stable attendu — '+predSummary.driver
+
+              return(
+                <div key={cid} className={'commodity-card'+(isSel?' selected':'')}>
+                  <div className="card-header">
+                    <div>
+                      <div className="card-name">{fr(c.name_fr)}</div>
+                      <div className="card-meta">{CAT_LABEL[c.category]||c.category} · {group.map(p=>p.market_name).filter(Boolean).join(', ')}</div>
+                    </div>
+                    <div className={'rec-badge '+rec.cls}>{rec.label}</div>
                   </div>
-                  <div className="comp-bar-wrap">
-                    <div className="comp-bar" style={{ width: `${Math.max(pct, 5)}%`, background: isBest ? '#4ade80' : isWorst ? '#f87171' : '#f59e0b' }} />
+                  <div className="price-row">
+                    <span className="price-value">{Math.round(avg).toLocaleString('fr-FR')}</span>
+                    <span className="price-unit">FCFA / {c.unit||'kg'}</span>
                   </div>
-                  <div className="comp-price-wrap">
-                    <span className="comp-price">{Math.round(p.price).toLocaleString('fr-FR')} F</span>
-                    {isBest && <span className="comp-tag best">Meilleur</span>}
-                    {isWorst && <span className="comp-tag worst">Plus cher</span>}
+                  <div className={'rec-reason '+rec.reasonCls}>{rec.reason}</div>
+                  <div className={'pred-summary '+predCls}>
+                    <span className="pred-arrow">{predArrow}</span>
+                    <span>{predText}</span>
                   </div>
+                  <table className="sources-table">
+                    <tbody>
+                      {group.map(p=>(
+                        <tr key={p.id}>
+                          <td className="td-source">{SOURCE_LABEL[p.source]||p.source}</td>
+                          <td className="td-market">{p.market_name}</td>
+                          <td className="td-price">{Math.round(p.price).toLocaleString('fr-FR')} F</td>
+                          <td className="td-type"><span className="type-tag">{p.price_type==='retail'?'Détail':'Gros'}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="card-date">Mis à jour le {new Date(group[0].price_date).toLocaleDateString('fr-FR')}</div>
+                  <RevenueCalculator group={group} unit={c.unit||'kg'}/>
+                  <button type="button" className={'voir-btn'+(isSel?' active':'')}
+                    onClick={e=>{e.preventDefault();e.stopPropagation();handleSelect({commodity_id:parseInt(cid),commodity:c,group});return false}}>
+                    {isSel?'Masquer les détails':'Voir prévision et analyse complète'}
+                  </button>
+                  <button type="button" className="report-btn"
+                    onClick={e=>{e.preventDefault();e.stopPropagation();setReportingCommodity(c);return false}}>
+                    Signaler un prix sur le terrain
+                  </button>
                 </div>
               )
             })}
           </div>
-          <div className="comparison-insight">
-            <span className="insight-icon">💡</span>
-            <span>Écart de <strong>{Math.round(max - min).toLocaleString('fr-FR')} FCFA/kg</strong> entre le marché le moins cher et le plus cher.</span>
+        )}
+
+        {selected&&(
+          <div id="dp">
+            <DetailPanel selected={selected} history={history} histLoading={histLoading}/>
+          </div>
+        )}
+      </main>
+
+      {reportingCommodity&&(
+        <ReportModal commodity={reportingCommodity} onClose={()=>setReportingCommodity(null)}/>
+      )}
+
+      <footer className="footer">
+        <div className="footer-inner">
+          <div className="footer-brand">Jàng Prix</div>
+          <div className="footer-right">
+            <div className="footer-sources">Sources: WFP VAM · Auchan Sénégal · FAO GIEWS · DAPSA</div>
+            <div className="footer-note">Les prix sont indicatifs. Vérifiez toujours sur place avant de vendre.</div>
           </div>
         </div>
-      )
-    }
+      </footer>
+    </div>
+  )
+}
 
-    function App() {
-      const [prices, setPrices] = React.useState([])
-      const [commodities, setCommodities] = React.useState([])
-      const [markets, setMarkets] = React.useState([])
-      const [selected, setSelected] = React.useState(null)
-      const [history, setHistory] = React.useState([])
-      const [loading, setLoading] = React.useState(true)
-      const [activeCategory, setActiveCategory] = React.useState('all')
-
-      React.useEffect(() => { fetchData() }, [])
-
-      async function fetchData() {
-        setLoading(true)
-        const [priceData, commodityData, marketData] = await Promise.all([
-          supabaseQuery('prices', '?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=500'),
-          supabaseQuery('commodities', '?select=*'),
-          supabaseQuery('markets', '?select=*'),
-        ])
-
-        const mMap = {}
-        if (marketData) marketData.forEach(m => mMap[m.id] = m)
-
-        const enriched = (priceData || []).map(p => ({
-          ...p,
-          market_name: mMap[p.market_id]?.name || 'Inconnu'
-        }))
-
-        const latest = {}
-        enriched.forEach(p => {
-          const key = `${p.commodity_id}_${p.market_id}`
-          if (!latest[key]) latest[key] = p
-        })
-
-        setPrices(Object.values(latest))
-        setCommodities(commodityData || [])
-        setMarkets(marketData || [])
-        setLoading(false)
-      }
-
-      function handleSelect(item) {
-        if (selected?.commodity_id === item.commodity_id) {
-          setSelected(null)
-          setHistory([])
-          return
-        }
-        setSelected(item)
-        setHistory([])
-        fetchHistory(item.commodity_id).then(h => {
-          setHistory(h)
-          setTimeout(() => {
-            const el = document.getElementById('detail-panel')
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }, 200)
-        })
-      }
-
-      async function fetchHistory(commodityId) {
-        const mData = await supabaseQuery('markets', '?select=*')
-        const mMap = {}
-        if (mData) mData.forEach(m => mMap[m.id] = m)
-
-        const data = await supabaseQuery('prices',
-          `?commodity_id=eq.${commodityId}&order=price_date.asc&limit=200&select=price,price_date,market_id`)
-
-        return (data || []).map(p => ({ ...p, market_name: mMap[p.market_id]?.name || 'Marché' }))
-      }
-
-      const categories = ['all', 'cereals and tubers', 'pulses and nuts']
-
-      const filteredPrices = activeCategory === 'all'
-        ? prices
-        : prices.filter(p => {
-            const c = commodities.find(c => c.id === p.commodity_id)
-            return c?.category === activeCategory
-          })
-
-      return (
-        <div>
-          <Header />
-          <StatsBar prices={prices} />
-          <main className="main">
-            <div className="section-header">
-              <h2 className="section-title">Prix du Marché</h2>
-              <div className="category-tabs">
-                {categories.map(cat => (
-                  <button
-                    key={cat}
-                    className={`cat-tab ${activeCategory === cat ? 'active' : ''}`}
-                    onClick={() => setActiveCategory(cat)}
-                  >
-                    {cat === 'all' ? 'Tout' : cat === 'cereals and tubers' ? 'Céréales' : 'Légumineuses'}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {loading ? (
-              <div className="loading">
-                <div className="spinner" />
-                <p>Chargement des prix...</p>
-              </div>
-            ) : (
-              <CommodityGrid
-                prices={filteredPrices}
-                commodities={commodities}
-                markets={markets}
-                selected={selected}
-                onSelect={handleSelect}
-              />
-            )}
-            {selected && (
-              <div id="detail-panel" className="detail-section">
-                <PriceChart selected={selected} history={history} />
-                <MarketComparison selected={selected} />
-              </div>
-            )}
-          </main>
-          <footer className="footer">
-            <div className="footer-inner">
-              <div className="footer-brand">
-                <span>🌾 Jàng Prix</span>
-                <span className="footer-tagline">Intelligence des marchés agricoles — Dakar, Sénégal</span>
-              </div>
-              <div className="footer-sources">Sources: WFP VAM · Auchan Sénégal · FAO GIEWS · DAPSA</div>
-              <div className="footer-note">Les prix sont indicatifs. Vérifiez toujours sur place avant de vendre.</div>
-            </div>
-          </footer>
-        </div>
-      )
-    }
-
-    const root = ReactDOM.createRoot(document.getElementById('root'))
-    root.render(<App />)
-  </script>
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>)
+</script>
 </body>
 </html>
