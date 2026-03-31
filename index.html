@@ -74,14 +74,11 @@
     .rec-reason.sell{background:var(--green-bg);border-left:2px solid var(--green);color:#86efac;}
     .rec-reason.wait{background:var(--red-bg);border-left:2px solid var(--red);color:#fca5a5;}
     .rec-reason.pending{background:var(--bg3);border-left:2px solid var(--border2);color:var(--text4);}
-
-    /* PREDICTION SUMMARY ON CARD */
     .pred-summary{font-size:11px;padding:7px 10px;border-radius:6px;margin-bottom:10px;display:flex;align-items:flex-start;gap:6px;}
     .pred-summary.up{background:var(--red-bg);border:0.5px solid rgba(248,113,113,0.15);color:#fca5a5;}
     .pred-summary.down{background:var(--green-bg);border:0.5px solid rgba(74,222,128,0.15);color:#86efac;}
     .pred-summary.stable{background:var(--bg3);border:0.5px solid var(--border);color:var(--text4);}
     .pred-arrow{font-size:14px;flex-shrink:0;margin-top:1px;}
-
     .sources-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
     .sources-table td{padding:5px 0;font-size:12px;border-bottom:1px solid var(--bg3);}
     .sources-table tr:last-child td{border-bottom:none;}
@@ -94,8 +91,6 @@
     .voir-btn{width:100%;padding:8px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;border:1px solid var(--border);background:var(--bg3);color:var(--text3);}
     .voir-btn:hover{background:var(--accent2);border-color:var(--accent);color:white;}
     .voir-btn.active{background:var(--accent);color:white;border-color:var(--accent);}
-
-    /* DETAIL PANEL */
     .detail-panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:32px;}
     .detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
     .detail-title{font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:var(--text);}
@@ -108,8 +103,6 @@
     .mkt-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
     .mkt-btn:hover{border-color:var(--border2);color:var(--text2);}
     .mkt-btn.active{background:var(--bg4);color:var(--text);border-color:var(--border2);}
-
-    /* PREDICTION TAB */
     .pred-months{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
     .pred-month-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;}
     .pred-month-card.active-month{border-color:var(--accent);}
@@ -127,7 +120,6 @@
     .pred-conf-bar-wrap{flex:1;background:var(--bg);border-radius:2px;height:4px;overflow:hidden;}
     .pred-conf-bar{height:100%;border-radius:2px;background:var(--accent);}
     .pred-conf-label{font-size:10px;color:var(--text5);white-space:nowrap;}
-
     .pred-factors{margin-top:20px;}
     .pred-factors-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
     .factor-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg3);}
@@ -142,10 +134,7 @@
     .factor-impact.positive{color:var(--green);}
     .factor-impact.negative{color:var(--red);}
     .factor-impact.neutral{color:var(--text4);}
-
     .pred-disclaimer{margin-top:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text5);line-height:1.5;}
-
-    /* COMPARISON */
     .comparison-list{display:flex;flex-direction:column;gap:14px;max-width:600px;}
     .comparison-row{display:flex;align-items:center;gap:12px;}
     .comp-market{width:140px;flex-shrink:0;}
@@ -159,8 +148,6 @@
     .comp-tag.best{background:var(--green-bg);color:var(--green);border:0.5px solid rgba(74,222,128,0.2);}
     .comp-tag.worst{background:var(--red-bg);color:var(--red);border:0.5px solid rgba(248,113,113,0.2);}
     .insight-box{margin-top:16px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:7px;padding:12px 16px;font-size:13px;color:var(--text3);max-width:600px;}
-
-    /* TREND & HISTORY TABLES */
     .trend-table{width:100%;border-collapse:collapse;max-width:700px;}
     .trend-table th{padding:8px 12px;font-size:11px;font-weight:600;color:var(--text4);text-align:left;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg3);}
     .trend-table td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--bg3);color:var(--text2);}
@@ -177,8 +164,6 @@
     .history-table tr:last-child td{border-bottom:none;}
     .history-table tr:hover td{background:var(--bg3);}
     .h-price{color:var(--text);font-weight:600;}
-
-    /* REPORTING */
     .report-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text4);font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;margin-top:6px;}
     .report-btn:hover{border-color:var(--accent);color:var(--accent);}
     .report-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;}
@@ -205,8 +190,6 @@
     .report-success-title{font-size:16px;font-weight:600;color:var(--green);margin-bottom:6px;}
     .report-success-sub{font-size:13px;color:var(--text3);}
     .report-notice{font-size:11px;color:var(--text5);margin-top:12px;line-height:1.5;padding:8px 10px;background:var(--bg3);border-radius:5px;}
-
-    /* YEAR COMPARISON */
     .year-comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;}
     .year-comp-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:14px;}
     .year-comp-card.current-year{border-color:var(--accent);}
@@ -218,8 +201,6 @@
     .year-vs-now.same{color:var(--text4);}
     .year-months{font-size:11px;color:var(--text5);margin-top:4px;}
     .year-insight{background:var(--bg3);border:0.5px solid var(--border2);border-radius:7px;padding:12px 16px;font-size:13px;color:var(--text3);margin-top:4px;line-height:1.6;}
-
-    /* CALCULATOR */
     .calc-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
     .calc-label{font-size:11px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
     .calc-input-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
@@ -233,7 +214,6 @@
     .calc-earning{font-size:14px;font-weight:700;color:var(--text);}
     .calc-earning.best{color:var(--green);}
     .calc-best-label{font-size:10px;font-weight:600;color:var(--green);background:rgba(74,222,128,0.1);padding:1px 6px;border-radius:3px;}
-
     .empty{padding:60px;text-align:center;color:var(--text4);}
     .no-data{padding:32px;text-align:center;color:var(--text4);font-size:13px;}
     .footer{background:var(--bg2);border-top:1px solid var(--border);padding:20px 32px;margin-top:48px;}
@@ -242,7 +222,6 @@
     .footer-right{text-align:right;}
     .footer-sources{font-size:11px;color:var(--text5);}
     .footer-note{font-size:11px;color:var(--text5);margin-top:2px;font-style:italic;}
-
     @media(max-width:768px){
       .header-date,.header-zone,.tabaski-tip{display:none;}
       .main{padding:20px 16px;}
@@ -269,8 +248,8 @@ async function sq(table,params){
   return r.json()
 }
 
-const SOURCE_LABEL={'wfp_hdx':'WFP','auchan_scrape':'Auchan','fao_giews':'FAO','manual':'Manuel'}
-const CAT_LABEL={'cereals and tubers':'Céréales','pulses and nuts':'Légumineuses','vegetables':'Légumes','livestock':'Bétail'}
+const SOURCE_LABEL={'wfp_hdx':'WFP','auchan_scrape':'Auchan','fao_giews':'FAO','manual':'Manuel','senpoisson_scrape':'SenPoisson','thiaroye_scrape':'Thiaroye','parknadio_scrape':'Park Nadio'}
+const CAT_LABEL={'cereals and tubers':'Céréales','pulses and nuts':'Légumineuses','vegetables':'Légumes','livestock':'Bétail','fish':'Poisson','seafood':'Fruits de mer','meat':'Viande','poultry':'Volaille'}
 const NAMES_FR={
   'Millet':'Mil','Rice (imported)':'Riz importé','Rice (local)':'Riz local',
   'Rice (ordinary, first quality)':'Riz 1ère qualité','Rice (ordinary, second quality)':'Riz 2ème qualité',
@@ -286,12 +265,7 @@ const NAMES_FR={
 
 function fr(n){return NAMES_FR[n]||n}
 
-// ============================================================
-// PREDICTION ENGINE
-// ============================================================
-// Senegal seasonal context
 const SENEGAL_SEASONS = {
-  // month (0=Jan) -> season info
   0:{name:'Saison sèche',rain:false,harvest:false},
   1:{name:'Saison sèche',rain:false,harvest:false},
   2:{name:'Saison sèche',rain:false,harvest:false},
@@ -306,10 +280,7 @@ const SENEGAL_SEASONS = {
   11:{name:'Post-récolte',rain:false,harvest:true},
 }
 
-// Tabaski approximate dates (Islamic calendar shifts ~11 days/year)
 const TABASKI_2026 = new Date('2026-06-27')
-
-// Ramadan 2026: approx Feb 17 - Mar 18
 const RAMADAN_2026_START = new Date('2026-02-17')
 const RAMADAN_2026_END = new Date('2026-03-18')
 
@@ -323,7 +294,6 @@ function isRamadan(targetDate){
 }
 
 function getCategorySeasonalFactor(category, month, history){
-  // Returns expected price change % based on season + category
   const s=SENEGAL_SEASONS[month]||{}
 
   if(category==='cereals and tubers'){
@@ -343,6 +313,16 @@ function getCategorySeasonalFactor(category, month, history){
     if(s.harvest) return{pct:-20,driver:'Pic de production Niayes',direction:'down',confidence:88}
     return{pct:+5,driver:'Demande urbaine stable',direction:'stable',confidence:58}
   }
+  if(category==='fish'||category==='seafood'){
+    if(s.rain) return{pct:+15,driver:'Pluies limitent la pêche artisanale',direction:'up',confidence:70}
+    if(month>=1&&month<=4) return{pct:-10,driver:'Haute saison de pêche',direction:'down',confidence:72}
+    return{pct:+3,driver:'Demande stable en poisson',direction:'stable',confidence:55}
+  }
+  if(category==='meat'||category==='poultry'){
+    if(isNearTabaski(new Date(new Date().getFullYear(),month,1))) return{pct:+25,driver:'Approche de Tabaski — forte demande',direction:'up',confidence:85}
+    if(isRamadan(new Date(new Date().getFullYear(),month,15))) return{pct:+10,driver:'Ramadan — hausse de consommation',direction:'up',confidence:70}
+    return{pct:+2,driver:'Demande stable en viande',direction:'stable',confidence:50}
+  }
   if(category==='livestock'){
     return{pct:0,driver:'Demande stable',direction:'stable',confidence:50}
   }
@@ -350,7 +330,6 @@ function getCategorySeasonalFactor(category, month, history){
 }
 
 function getHistoricalSeasonalAvg(history, targetMonth){
-  // Average price in the same month across all years in history
   const relevant=history.filter(h=>{
     if(!h.price_date)return false
     const m=new Date(h.price_date).getMonth()
@@ -372,11 +351,9 @@ function buildPrediction(currentPrice, category, history){
     const seasonal=getCategorySeasonalFactor(category,targetMonth,history)
     const histAvg=getHistoricalSeasonalAvg(history,targetMonth)
 
-    // Blend seasonal factor with historical average if available
     let predictedPrice
     let confidence=seasonal.confidence
     if(histAvg&&history.length>12){
-      // Weight: 60% historical average, 40% current + seasonal
       const currentPlusSeasonal=currentPrice*(1+seasonal.pct/100)
       predictedPrice=Math.round(histAvg*0.6+currentPlusSeasonal*0.4)
       confidence=Math.min(seasonal.confidence+10,92)
@@ -387,63 +364,29 @@ function buildPrediction(currentPrice, category, history){
     const changePct=Math.round(((predictedPrice-currentPrice)/currentPrice)*100)
     const direction=changePct>5?'up':changePct<-5?'down':'stable'
 
-    // Additional event factors
     const factors=[]
     const s=SENEGAL_SEASONS[targetMonth]||{}
 
     if(s.rain){
-      factors.push({
-        name:'Saison des pluies',
-        desc:'Les pluies limitent le transport et réduisent l\'offre sur les marchés. Les routes rurales deviennent difficiles d\'accès.',
-        impact:'negative',
-        icon:'R'
-      })
+      factors.push({name:'Saison des pluies',desc:'Les pluies limitent le transport et réduisent l\'offre sur les marchés. Les routes rurales deviennent difficiles d\'accès.',impact:'negative',icon:'R'})
     }
     if(s.harvest){
-      factors.push({
-        name:'Période de récolte',
-        desc:'L\'arrivée des nouvelles récoltes augmente l\'offre et fait baisser les prix sur les marchés de gros.',
-        impact:'positive',
-        icon:'R'
-      })
+      factors.push({name:'Période de récolte',desc:'L\'arrivée des nouvelles récoltes augmente l\'offre et fait baisser les prix sur les marchés de gros.',impact:'positive',icon:'R'})
     }
     if(s.lean){
-      factors.push({
-        name:'Période de soudure',
-        desc:'Les stocks de la saison précédente s\'épuisent. La demande dépasse l\'offre disponible.',
-        impact:'negative',
-        icon:'S'
-      })
+      factors.push({name:'Période de soudure',desc:'Les stocks de la saison précédente s\'épuisent. La demande dépasse l\'offre disponible.',impact:'negative',icon:'S'})
     }
-    if(isNearTabaski(targetDate)&&(category==='livestock'||category==='cereals and tubers')){
-      factors.push({
-        name:'Approche de Tabaski',
-        desc:'La demande de moutons et de denrées alimentaires augmente fortement dans les semaines précédant Tabaski.',
-        impact:'negative',
-        icon:'T'
-      })
+    if(isNearTabaski(targetDate)&&(category==='livestock'||category==='cereals and tubers'||category==='meat'||category==='poultry')){
+      factors.push({name:'Approche de Tabaski',desc:'La demande de moutons et de denrées alimentaires augmente fortement dans les semaines précédant Tabaski.',impact:'negative',icon:'T'})
     }
     if(isRamadan(targetDate)){
-      factors.push({
-        name:'Ramadan',
-        desc:'La consommation d\'oignons, de sucre et d\'huile augmente pendant le Ramadan, faisant monter les prix.',
-        impact:'negative',
-        icon:'R'
-      })
+      factors.push({name:'Ramadan',desc:'La consommation d\'oignons, de sucre et d\'huile augmente pendant le Ramadan, faisant monter les prix.',impact:'negative',icon:'R'})
     }
     if(!factors.length){
-      factors.push({
-        name:'Marché stable',
-        desc:'Aucun facteur saisonnier majeur attendu. Les prix devraient rester proches des niveaux actuels.',
-        impact:'neutral',
-        icon:'S'
-      })
+      factors.push({name:'Marché stable',desc:'Aucun facteur saisonnier majeur attendu. Les prix devraient rester proches des niveaux actuels.',impact:'neutral',icon:'S'})
     }
 
-    months.push({
-      monthName,targetMonth,predictedPrice,changePct,direction,confidence,
-      driver:seasonal.driver,factors
-    })
+    months.push({monthName,targetMonth,predictedPrice,changePct,direction,confidence,driver:seasonal.driver,factors})
   }
 
   return months
@@ -481,25 +424,18 @@ function PredictionTab({commodity,currentPrice,history}){
         {months.map((m,i)=>(
           <div key={i} className="pred-month-card">
             <div className="pred-month-name">{m.monthName}</div>
-            <div className={'pred-month-price '+m.direction}>
-              {m.predictedPrice.toLocaleString('fr-FR')} FCFA
-            </div>
+            <div className={'pred-month-price '+m.direction}>{m.predictedPrice.toLocaleString('fr-FR')} FCFA</div>
             <div className={'pred-month-change '+m.direction}>
-              {m.direction==='up'?'▲ +'+(m.changePct)+'%':
-               m.direction==='down'?'▼ '+m.changePct+'%':
-               '→ Stable (±'+Math.abs(m.changePct)+'%)'}
+              {m.direction==='up'?'▲ +'+(m.changePct)+'%':m.direction==='down'?'▼ '+m.changePct+'%':'→ Stable (±'+Math.abs(m.changePct)+'%)'}
             </div>
             <div className="pred-month-driver">{m.driver}</div>
             <div className="pred-confidence">
-              <div className="pred-conf-bar-wrap">
-                <div className="pred-conf-bar" style={{width:m.confidence+'%'}}/>
-              </div>
+              <div className="pred-conf-bar-wrap"><div className="pred-conf-bar" style={{width:m.confidence+'%'}}/></div>
               <span className="pred-conf-label">Fiabilité {m.confidence}%</span>
             </div>
           </div>
         ))}
       </div>
-
       <div className="pred-factors">
         <div className="pred-factors-title">Facteurs pris en compte — mois prochain</div>
         {months[0].factors.map((f,i)=>(
@@ -511,15 +447,12 @@ function PredictionTab({commodity,currentPrice,history}){
               <div className="factor-name">{f.name}</div>
               <div className="factor-desc">{f.desc}</div>
               <div className={'factor-impact '+f.impact}>
-                {f.impact==='positive'?'Impact positif sur les prix (baisse attendue)':
-                 f.impact==='negative'?'Impact négatif sur les prix (hausse attendue)':
-                 'Impact neutre'}
+                {f.impact==='positive'?'Impact positif sur les prix (baisse attendue)':f.impact==='negative'?'Impact négatif sur les prix (hausse attendue)':'Impact neutre'}
               </div>
             </div>
           </div>
         ))}
       </div>
-
       <div className="pred-disclaimer">
         Prévisions basées sur les données historiques WFP (2000-2025), les cycles saisonniers du Sénégal et le calendrier agricole. Les prix réels peuvent varier selon les conditions météorologiques, les politiques d'importation et les chocs de marché imprévus. Fiabilité indicative uniquement.
       </div>
@@ -580,17 +513,13 @@ function DetailPanel({selected,history,histLoading}){
       )}
 
       {activeTab==='predict'&&(
-        histLoading?(
-          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement des données...</div>
-        ):(
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement des données...</div>):(
           <PredictionTab commodity={selected.commodity} currentPrice={avg} history={filteredHistory}/>
         )
       )}
 
       {activeTab==='compare'&&(
-        filteredGroup.length<2?(
-          <div className="no-data">Un seul marché disponible pour ce produit.</div>
-        ):(
+        filteredGroup.length<2?(<div className="no-data">Un seul marché disponible pour ce produit.</div>):(
           <>
             <div className="comparison-list">
               {sortedGroup.map(p=>{
@@ -621,61 +550,38 @@ function DetailPanel({selected,history,histLoading}){
       )}
 
       {activeTab==='years'&&(
-        histLoading?(
-          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>
-        ):filteredHistory.length===0?(
-          <div className="no-data">Pas de données historiques disponibles.</div>
-        ):(()=>{
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>):filteredHistory.length===0?(<div className="no-data">Pas de données historiques disponibles.</div>):(()=>{
           const now=new Date()
           const currentYear=now.getFullYear()
           const currentMonth=now.getMonth()
-
-          // Group history by year, only same months as current year to date
           const byYear={}
           filteredHistory.forEach(h=>{
             if(!h.price_date)return
             const d=new Date(h.price_date)
             const y=d.getFullYear()
             const m=d.getMonth()
-            // Only include same months (Jan to current month) for fair comparison
             if(m>currentMonth)return
             if(!byYear[y])byYear[y]=[]
             byYear[y].push(h.price)
           })
-
           const years=Object.entries(byYear)
             .filter(([y])=>parseInt(y)>=currentYear-5)
             .sort((a,b)=>b[0]-a[0])
-            .map(([year,prices])=>({
-              year:parseInt(year),
-              avg:Math.round(prices.reduce((a,b)=>a+b,0)/prices.length),
-              count:prices.length
-            }))
-
+            .map(([year,prices])=>({year:parseInt(year),avg:Math.round(prices.reduce((a,b)=>a+b,0)/prices.length),count:prices.length}))
           if(years.length<2) return <div className="no-data">Pas assez d'années de données pour comparer.</div>
-
           const currentYearData=years.find(y=>y.year===currentYear)
           const lastYearData=years.find(y=>y.year===currentYear-1)
-
           const months=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']
           const periodLabel=months[0]+' – '+months[currentMonth]+' '+currentYear
-
           return(
             <div>
-              <div style={{fontSize:12,color:'var(--text4)',marginBottom:14}}>
-                Comparaison sur la même période ({periodLabel}) · {years.length} années disponibles
-              </div>
+              <div style={{fontSize:12,color:'var(--text4)',marginBottom:14}}>Comparaison sur la même période ({periodLabel}) · {years.length} années disponibles</div>
               <div className="year-comp-grid">
                 {years.map((y,i)=>{
                   const isCurrent=y.year===currentYear
-                  const vsNow=currentYearData&&!isCurrent
-                    ?Math.round(((currentYearData.avg-y.avg)/y.avg)*100)
-                    :null
+                  const vsNow=currentYearData&&!isCurrent?Math.round(((currentYearData.avg-y.avg)/y.avg)*100):null
                   const direction=vsNow===null?'same':vsNow>5?'higher':vsNow<-5?'lower':'same'
-                  const vsLabel=vsNow===null?'Année en cours':
-                    vsNow>0?'Cette année: +'+vsNow+'% plus cher':
-                    vsNow<0?'Cette année: '+vsNow+'% moins cher':
-                    'Prix similaire à cette année'
+                  const vsLabel=vsNow===null?'Année en cours':vsNow>0?'Cette année: +'+vsNow+'% plus cher':vsNow<0?'Cette année: '+vsNow+'% moins cher':'Prix similaire à cette année'
                   return(
                     <div key={y.year} className={'year-comp-card'+(isCurrent?' current-year':'')}>
                       <div className="year-label">{y.year}{isCurrent?' (en cours)':''}</div>
@@ -692,9 +598,7 @@ function DetailPanel({selected,history,histLoading}){
                     <span>Les prix du <strong>{fr(selected.commodity.name_fr)}</strong> sont <strong style={{color:'var(--red)'}}>+{Math.round(((currentYearData.avg-lastYearData.avg)/lastYearData.avg)*100)}% plus élevés</strong> cette année par rapport à {currentYear-1} ({lastYearData.avg.toLocaleString('fr-FR')} FCFA en {currentYear-1} vs {currentYearData.avg.toLocaleString('fr-FR')} FCFA cette année).</span>
                   ):currentYearData.avg<lastYearData.avg?(
                     <span>Les prix du <strong>{fr(selected.commodity.name_fr)}</strong> sont <strong style={{color:'var(--green)'}}>+{Math.round(((lastYearData.avg-currentYearData.avg)/lastYearData.avg)*100)}% moins élevés</strong> cette année par rapport à {currentYear-1} ({lastYearData.avg.toLocaleString('fr-FR')} FCFA en {currentYear-1} vs {currentYearData.avg.toLocaleString('fr-FR')} FCFA cette année).</span>
-                  ):(
-                    <span>Les prix sont similaires à l'année dernière.</span>
-                  )}
+                  ):(<span>Les prix sont similaires à l'année dernière.</span>)}
                 </div>
               )}
             </div>
@@ -703,15 +607,9 @@ function DetailPanel({selected,history,histLoading}){
       )}
 
       {activeTab==='trend'&&(
-        histLoading?(
-          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>
-        ):monthly.length===0?(
-          <div className="no-data">Pas de données historiques disponibles.</div>
-        ):(
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>):monthly.length===0?(<div className="no-data">Pas de données historiques disponibles.</div>):(
           <table className="trend-table">
-            <thead>
-              <tr><th>Mois</th><th>Prix moyen</th><th>Variation</th><th>Marchés</th></tr>
-            </thead>
+            <thead><tr><th>Mois</th><th>Prix moyen</th><th>Variation</th><th>Marchés</th></tr></thead>
             <tbody>
               {monthly.map((row,i)=>{
                 const prev=monthly[i+1]
@@ -734,18 +632,12 @@ function DetailPanel({selected,history,histLoading}){
       )}
 
       {activeTab==='history'&&(
-        histLoading?(
-          <div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>
-        ):filteredHistory.length===0?(
-          <div className="no-data">Pas d'historique disponible.</div>
-        ):(
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>):filteredHistory.length===0?(<div className="no-data">Pas d'historique disponible.</div>):(
           <>
             <div style={{fontSize:12,color:'var(--text4)',marginBottom:10}}>{filteredHistory.length} enregistrements trouvés</div>
             <div className="history-wrap">
               <table className="history-table">
-                <thead>
-                  <tr><th>Date</th><th>Marché</th><th>Prix</th><th>Source</th><th>Type</th></tr>
-                </thead>
+                <thead><tr><th>Date</th><th>Marché</th><th>Prix</th><th>Source</th><th>Type</th></tr></thead>
                 <tbody>
                   {[...filteredHistory].sort((a,b)=>b.price_date.localeCompare(a.price_date)).map((h,i)=>(
                     <tr key={i}>
@@ -774,7 +666,7 @@ function ReportModal({commodity, onClose}){
   const[submitting,setSubmitting]=React.useState(false)
   const[success,setSuccess]=React.useState(false)
 
-  const MARKETS=['Thiaroye','Tilène','Dakar','Pikine','Rufisque','Keur Massar','Castors','Gueule Tapée','Autre']
+  const MARKETS=['Thiaroye','Tilène','Dakar','Pikine','Rufisque','Keur Massar','Castors','Gueule Tapée','Soumbédioune','Ouakam','Autre']
 
   async function handleSubmit(e){
     e.preventDefault()
@@ -783,25 +675,11 @@ function ReportModal({commodity, onClose}){
     try{
       await fetch(SUPABASE_URL+'/rest/v1/reports',{
         method:'POST',
-        headers:{
-          'apikey':SUPABASE_KEY,
-          'Authorization':'Bearer '+SUPABASE_KEY,
-          'Content-Type':'application/json',
-          'Prefer':'return=minimal'
-        },
-        body:JSON.stringify({
-          commodity_id:commodity.id,
-          market_name:market,
-          price:parseFloat(price),
-          unit:commodity.unit||'kg',
-          reporter_phone:phone||null,
-          notes:notes||null
-        })
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({commodity_id:commodity.id,market_name:market,price:parseFloat(price),unit:commodity.unit||'kg',reporter_phone:phone||null,notes:notes||null})
       })
       setSuccess(true)
-    }catch(err){
-      console.error(err)
-    }
+    }catch(err){console.error(err)}
     setSubmitting(false)
   }
 
@@ -844,14 +722,10 @@ function ReportModal({commodity, onClose}){
               <label className="form-label">Remarques (optionnel)</label>
               <input className="form-input" placeholder="ex: prix de gros, qualité moyenne..." value={notes} onChange={e=>setNotes(e.target.value)}/>
             </div>
-            <div className="report-notice">
-              Les prix signalés sont vérifiés avant publication. Votre numéro de téléphone est confidentiel et ne sera jamais partagé.
-            </div>
+            <div className="report-notice">Les prix signalés sont vérifiés avant publication. Votre numéro de téléphone est confidentiel et ne sera jamais partagé.</div>
             <div className="modal-actions">
               <button type="button" className="btn-secondary" onClick={onClose}>Annuler</button>
-              <button type="button" className="btn-primary" onClick={handleSubmit} disabled={!price||!market||submitting}>
-                {submitting?'Envoi...':'Envoyer le prix'}
-              </button>
+              <button type="button" className="btn-primary" onClick={handleSubmit} disabled={!price||!market||submitting}>{submitting?'Envoi...':'Envoyer le prix'}</button>
             </div>
           </>
         )}
@@ -869,14 +743,7 @@ function RevenueCalculator({group, unit}){
     <div className="calc-section">
       <div className="calc-label">Calculateur de revenus</div>
       <div className="calc-input-row">
-        <input
-          className="calc-input"
-          type="number"
-          min="0"
-          placeholder="Quantité à vendre"
-          value={qty}
-          onChange={e=>setQty(e.target.value)}
-        />
+        <input className="calc-input" type="number" min="0" placeholder="Quantité à vendre" value={qty} onChange={e=>setQty(e.target.value)}/>
         <span className="calc-unit">{unit||'kg'}</span>
       </div>
       {qty&&parseFloat(qty)>0&&(
@@ -917,12 +784,11 @@ function App(){
   const[loading,setLoading]=React.useState(true)
   const[category,setCategory]=React.useState('all')
   const[search,setSearch]=React.useState('')
-
   const[reportingCommodity,setReportingCommodity]=React.useState(null)
 
   React.useEffect(()=>{
     Promise.all([
-      sq('prices','?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=500'),
+      sq('prices','?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=2000'),
       sq('commodities','?select=*'),
       sq('markets','?select=*')
     ]).then(([pd,cd,md])=>{
@@ -1017,9 +883,9 @@ function App(){
       <main className="main">
         <h2 className="page-title">Prix du Marché</h2>
         <div className="search-filter-row">
-          <input className="search-input" type="text" placeholder="Rechercher un produit... ex: mil, riz, niébé, arachides" value={search} onChange={e=>setSearch(e.target.value)}/>
+          <input className="search-input" type="text" placeholder="Rechercher un produit... ex: mil, riz, thiof, carotte, poulet" value={search} onChange={e=>setSearch(e.target.value)}/>
           <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-            {[['all','Tout'],['cereals and tubers','Céréales'],['pulses and nuts','Légumineuses']].map(([k,l])=>(
+            {[['all','Tout'],['cereals and tubers','Céréales'],['pulses and nuts','Légumineuses'],['vegetables','Légumes'],['fish','Poisson'],['seafood','Fruits de mer'],['meat','Viande'],['poultry','Volaille']].map(([k,l])=>(
               <button type="button" key={k} className={'cat-tab'+(category===k?' active':'')} onClick={e=>{e.preventDefault();setCategory(k)}}>{l}</button>
             ))}
           </div>
@@ -1038,7 +904,6 @@ function App(){
               const isSel=selected&&selected.commodity_id===parseInt(cid)
               const rec=getRec(avg,null)
 
-              // Prediction summary for card
               const nextMonth=(new Date().getMonth()+1)%12
               const predSummary=getCategorySeasonalFactor(c.category,nextMonth,null)
               const predCls=predSummary.direction
@@ -1110,7 +975,7 @@ function App(){
         <div className="footer-inner">
           <div className="footer-brand">Jàng Prix</div>
           <div className="footer-right">
-            <div className="footer-sources">Sources: WFP VAM · Auchan Sénégal · FAO GIEWS · DAPSA</div>
+            <div className="footer-sources">Sources: WFP VAM · Auchan Sénégal · FAO GIEWS · SenPoisson · Le Marché Thiaroye · Park Nadio</div>
             <div className="footer-note">Les prix sont indicatifs. Vérifiez toujours sur place avant de vendre.</div>
           </div>
         </div>
