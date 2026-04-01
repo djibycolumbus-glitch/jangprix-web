@@ -249,7 +249,7 @@ async function sq(table,params){
 }
 
 const SOURCE_LABEL={'wfp_hdx':'WFP','auchan_scrape':'Auchan','fao_giews':'FAO','manual':'Manuel','senpoisson_scrape':'SenPoisson','thiaroye_scrape':'Thiaroye','parknadio_scrape':'Park Nadio'}
-const CAT_LABEL={'cereals and tubers':'Céréales','pulses and nuts':'Légumineuses','vegetables':'Légumes','livestock':'Bétail','fish':'Poisson','seafood':'Fruits de mer','meat':'Viande','poultry':'Volaille'}
+const CAT_LABEL={'cereals and tubers':'Céréales','pulses and nuts':'Légumineuses','vegetables':'Légumes','fruits and vegetables':'Fruits & Légumes','fruits':'Fruits','livestock':'Bétail','fish':'Poisson','seafood':'Fruits de mer','meat':'Viande','poultry':'Volaille'}
 const NAMES_FR={
   'Millet':'Mil','Rice (imported)':'Riz importé','Rice (local)':'Riz local',
   'Rice (ordinary, first quality)':'Riz 1ère qualité','Rice (ordinary, second quality)':'Riz 2ème qualité',
@@ -885,7 +885,7 @@ function App(){
         <div className="search-filter-row">
           <input className="search-input" type="text" placeholder="Rechercher un produit... ex: mil, riz, thiof, carotte, poulet" value={search} onChange={e=>setSearch(e.target.value)}/>
           <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-            {[['all','Tout'],['cereals and tubers','Céréales'],['pulses and nuts','Légumineuses'],['vegetables','Légumes'],['fish','Poisson'],['seafood','Fruits de mer'],['meat','Viande'],['poultry','Volaille']].map(([k,l])=>(
+            {[['all','Tout'],['cereals and tubers','Céréales'],['pulses and nuts','Légumineuses'],['fruits and vegetables','Fruits & Légumes (Auchan)'],['vegetables','Légumes'],['fruits','Fruits'],['fish','Poisson'],['seafood','Fruits de mer'],['meat','Viande'],['poultry','Volaille']].map(([k,l])=>(
               <button type="button" key={k} className={'cat-tab'+(category===k?' active':'')} onClick={e=>{e.preventDefault();setCategory(k)}}>{l}</button>
             ))}
           </div>
