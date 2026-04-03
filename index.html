@@ -649,6 +649,118 @@
     .footer-note { font-size:11px; color:#94A3B8; margin-top:3px; font-style:italic; opacity:0.7; }
     .footer-markets { font-size:11px; color:#94A3B8; margin-top:3px; }
 
+    /* ── WHATSAPP POPUP ── */
+    .wa-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      animation: waOverlayIn 0.3s ease;
+    }
+    @keyframes waOverlayIn { from{opacity:0} to{opacity:1} }
+
+    .wa-popup {
+      background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%);
+      border: 1px solid rgba(37,211,102,0.3);
+      border-radius: 20px;
+      padding: 32px 28px 28px;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 60px rgba(37,211,102,0.08);
+      position: relative;
+      animation: waPopupIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes waPopupIn {
+      from { opacity:0; transform: scale(0.85) translateY(20px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    .wa-close {
+      position: absolute; top: 14px; right: 16px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,0.07); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .wa-close:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+
+    .wa-icon-wrap {
+      display: flex; justify-content: center; margin-bottom: 20px;
+    }
+    .wa-icon {
+      width: 68px; height: 68px; border-radius: 18px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 8px 24px rgba(37,211,102,0.4);
+      animation: waPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes waPulse {
+      0%,100% { box-shadow: 0 8px 24px rgba(37,211,102,0.4); }
+      50%      { box-shadow: 0 8px 36px rgba(37,211,102,0.65); }
+    }
+
+    .wa-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 800; letter-spacing: 1px;
+      text-transform: uppercase; color: #25D366;
+      background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.25);
+      padding: 3px 10px; border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .wa-title {
+      font-size: 20px; font-weight: 800; color: var(--text-primary);
+      letter-spacing: -0.4px; margin-bottom: 10px; line-height: 1.2;
+    }
+    .wa-title span { color: #25D366; }
+    .wa-desc {
+      font-size: 13px; color: var(--text-muted); line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .wa-perks {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-bottom: 22px;
+    }
+    .wa-perk {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .wa-perk-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+
+    .wa-join-btn {
+      width: 100%; padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: white; border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 6px 20px rgba(37,211,102,0.35);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      text-decoration: none;
+    }
+    .wa-join-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(37,211,102,0.5);
+    }
+    .wa-skip {
+      width: 100%; padding: 10px;
+      background: transparent; border: none;
+      color: rgba(148,163,184,0.5); font-family: 'Inter', sans-serif;
+      font-size: 12px; cursor: pointer; margin-top: 10px;
+      transition: color 0.2s;
+    }
+    .wa-skip:hover { color: var(--text-muted); }
+
     /* ── RESPONSIVE ── */
     @media(max-width:768px){
       .header, .stats-bar, .tabaski-banner, .footer { padding-left:16px; padding-right:16px; }
@@ -1082,6 +1194,61 @@ function RevenueCalculator({group,unit}){
   )
 }
 
+/* ── WHATSAPP POPUP ── */
+function WhatsAppPopup({onClose}){
+  return(
+    <div className="wa-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+      <div className="wa-popup">
+        <button className="wa-close" onClick={onClose}>✕</button>
+
+        <div className="wa-icon-wrap">
+          <div className="wa-icon">💬</div>
+        </div>
+
+        <div style={{textAlign:'center',marginBottom:18}}>
+          <div className="wa-badge">Groupe Gratuit</div>
+          <div className="wa-title">Jàng Prix — <span>Alertes Marchés</span></div>
+          <div className="wa-desc">
+            Rejoignez notre groupe WhatsApp pour recevoir les alertes de prix en temps réel, les tendances du marché et les conseils de vente directement sur votre téléphone.
+          </div>
+        </div>
+
+        <div className="wa-perks">
+          <div className="wa-perk">
+            <div className="wa-perk-icon">📊</div>
+            <span>Alertes prix en temps réel sur les marchés de Dakar</span>
+          </div>
+          <div className="wa-perk">
+            <div className="wa-perk-icon">📈</div>
+            <span>Tendances et prévisions saisonnières chaque semaine</span>
+          </div>
+          <div className="wa-perk">
+            <div className="wa-perk-icon">💡</div>
+            <span>Conseils de vente pour maximiser vos revenus</span>
+          </div>
+          <div className="wa-perk">
+            <div className="wa-perk-icon">🤝</div>
+            <span>Communauté d'agriculteurs et vendeurs de Dakar</span>
+          </div>
+        </div>
+
+        <a
+          href="https://chat.whatsapp.com/JHIORYAolWrJBxVJoo0VT2"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="wa-join-btn"
+          onClick={onClose}
+        >
+          <span>💬</span> Rejoindre le groupe
+        </a>
+        <button className="wa-skip" onClick={onClose}>
+          Non merci, continuer sans rejoindre
+        </button>
+      </div>
+    </div>
+  )
+}
+
 /* ── APP ── */
 function App(){
   const[prices,setPrices]=React.useState([])
@@ -1093,6 +1260,20 @@ function App(){
   const[category,setCategory]=React.useState('all')
   const[search,setSearch]=React.useState('')
   const[reportingCommodity,setReportingCommodity]=React.useState(null)
+  const[showWaPopup,setShowWaPopup]=React.useState(false)
+
+  React.useEffect(()=>{
+    const lastDismissed=sessionStorage.getItem('wa_dismissed')
+    if(!lastDismissed||(Date.now()-parseInt(lastDismissed))>86400000){
+      const t=setTimeout(()=>setShowWaPopup(true),8000)
+      return()=>clearTimeout(t)
+    }
+  },[])
+
+  function closeWaPopup(){
+    setShowWaPopup(false)
+    sessionStorage.setItem('wa_dismissed',Date.now().toString())
+  }
 
   React.useEffect(()=>{
     Promise.all([
@@ -1302,6 +1483,7 @@ function App(){
       </main>
 
       {reportingCommodity&&<ReportModal commodity={reportingCommodity} onClose={()=>setReportingCommodity(null)}/>}
+      {showWaPopup&&<WhatsAppPopup onClose={closeWaPopup}/>}
 
       {/* FOOTER */}
       <footer className="footer">
