@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jàng Prix — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #0f1629;
+      --bg3: #161e35;
+      --bg4: #1d2844;
+      --border: rgba(255,255,255,0.06);
+      --border2: rgba(255,255,255,0.12);
+      --accent: #FACC15;
+      --accent2: #F59E0B;
+      --green: #22C55E;
+      --red: #EF4444;
+      --blue: #3B82F6;
+      --text: #F8FAFC;
+      --text2: #CBD5E1;
+      --text3: #94A3B8;
+      --text4: #475569;
+      --paid-bg: rgba(34,197,94,0.08);
+      --paid-border: rgba(34,197,94,0.25);
+      --free-bg: rgba(148,163,184,0.06);
+      --free-border: rgba(148,163,184,0.15);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* LOGIN */
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: radial-gradient(ellipse at 50% 0%, rgba(250,204,21,0.06) 0%, transparent 60%); }
+    .login-card { background: var(--bg2); border: 1px solid rgba(250,204,21,0.15); border-radius: 16px; padding: 40px; width: 100%; max-width: 360px; animation: fadeUp 0.4s ease; }
+    .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .login-logo-mark { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: #0a0e1a; }
+    .login-logo-name { font-size: 18px; font-weight: 800; color: var(--text); }
+    .login-logo-sub { font-size: 10px; color: var(--text4); font-family: 'JetBrains Mono', monospace; margin-top: 1px; letter-spacing: 0.5px; }
+    .login-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.4px; }
+    .login-sub { font-size: 13px; color: var(--text3); margin-bottom: 24px; }
+    .login-input { width: 100%; padding: 12px 14px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 9px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 20px; letter-spacing: 4px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; text-align: center; }
+    .login-input:focus { border-color: rgba(250,204,21,0.4); box-shadow: 0 0 0 3px rgba(250,204,21,0.08); }
+    .login-btn { width: 100%; padding: 12px; border-radius: 9px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #0a0e1a; border: none; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.2s; margin-top: 12px; box-shadow: 0 4px 16px rgba(250,204,21,0.3); }
+    .login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(250,204,21,0.45); }
+    .login-error { font-size: 12px; color: var(--red); margin-top: 10px; text-align: center; padding: 8px; background: rgba(239,68,68,0.08); border-radius: 7px; border: 1px solid rgba(239,68,68,0.2); }
+
+    /* MAIN LAYOUT */
+    .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px; animation: fadeUp 0.35s ease; }
+
+    /* TOPBAR */
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-logo { width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: #0a0e1a; }
+    .topbar-title { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+    .topbar-badge { font-size: 10px; font-weight: 700; color: var(--accent); background: rgba(250,204,21,0.1); padding: 3px 9px; border-radius: 20px; border: 1px solid rgba(250,204,21,0.2); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .logout-btn { padding: 7px 14px; border-radius: 7px; background: var(--bg3); border: 1px solid var(--border2); color: var(--text3); font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .logout-btn:hover { border-color: rgba(239,68,68,0.4); color: var(--red); }
+
+    /* STATS ROW */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .stat-card-value { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -0.5px; font-family: 'JetBrains Mono', monospace; }
+    .stat-card-value.green { color: var(--green); }
+    .stat-card-value.red { color: var(--red); }
+    .stat-card-label { font-size: 11px; color: var(--text4); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+
+    /* SEARCH + ADD */
+    .toolbar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 220px; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 9px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; outline: none; transition: border-color 0.2s; }
+    .search-input::placeholder { color: var(--text4); }
+    .search-input:focus { border-color: rgba(250,204,21,0.4); }
+    .filter-btn { padding: 10px 16px; border-radius: 9px; border: 1px solid var(--border2); background: var(--bg2); color: var(--text3); font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; }
+    .filter-btn:hover { border-color: rgba(250,204,21,0.3); color: var(--accent); }
+    .filter-btn.active { background: rgba(250,204,21,0.1); border-color: rgba(250,204,21,0.3); color: var(--accent); }
+    .refresh-btn { padding: 10px 16px; border-radius: 9px; border: 1px solid var(--border2); background: var(--bg2); color: var(--text3); font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .refresh-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    /* TABLE */
+    .table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .table-header { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1.5fr 1.2fr 1.8fr; gap: 0; padding: 12px 18px; background: var(--bg3); border-bottom: 1px solid var(--border); }
+    .th { font-size: 10px; font-weight: 700; color: var(--text4); text-transform: uppercase; letter-spacing: 1px; }
+    .table-body { }
+    .table-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1.5fr 1.2fr 1.8fr; gap: 0; padding: 14px 18px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.15s; }
+    .table-row:last-child { border-bottom: none; }
+    .table-row:hover { background: var(--bg3); }
+    .td { font-size: 13px; color: var(--text2); }
+    .td-name { font-weight: 700; color: var(--text); }
+    .td-phone { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3); }
+    .td-date { font-size: 11px; color: var(--text4); font-family: 'JetBrains Mono', monospace; }
+
+    /* STATUS BADGE */
+    .status-paid { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--green); background: var(--paid-bg); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--paid-border); }
+    .status-free { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--text3); background: var(--free-bg); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--free-border); }
+    .status-expired { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--red); background: rgba(239,68,68,0.08); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(239,68,68,0.2); }
+    .status-expiring { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--accent); background: rgba(250,204,21,0.08); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(250,204,21,0.2); }
+
+    /* ACTION BUTTONS */
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .act-btn { padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; border: 1px solid transparent; white-space: nowrap; }
+    .act-activate { background: rgba(34,197,94,0.12); color: var(--green); border-color: rgba(34,197,94,0.25); }
+    .act-activate:hover { background: rgba(34,197,94,0.2); }
+    .act-revoke { background: rgba(239,68,68,0.1); color: var(--red); border-color: rgba(239,68,68,0.2); }
+    .act-revoke:hover { background: rgba(239,68,68,0.18); }
+    .act-note { background: rgba(148,163,184,0.08); color: var(--text3); border-color: var(--border2); }
+    .act-note:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
+    .modal { background: var(--bg2); border: 1px solid rgba(250,204,21,0.2); border-radius: 14px; padding: 28px; width: 100%; max-width: 400px; animation: fadeUp 0.25s ease; }
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.3px; }
+    .modal-sub { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+    .modal-user-info { background: var(--bg3); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; margin-bottom: 20px; }
+    .modal-user-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .modal-user-phone { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+    .plan-row { display: flex; gap: 10px; margin-bottom: 16px; }
+    .plan-card { flex: 1; background: var(--bg3); border: 1px solid var(--border2); border-radius: 9px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .plan-card:hover { border-color: rgba(250,204,21,0.3); }
+    .plan-card.selected { border-color: var(--accent); background: rgba(250,204,21,0.07); }
+    .plan-card-label { font-size: 10px; font-weight: 700; color: var(--text4); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; }
+    .plan-card-price { font-size: 18px; font-weight: 800; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
+    .plan-card-note { font-size: 10px; color: var(--text4); }
+    .plan-card-save { font-size: 10px; font-weight: 700; color: var(--green); margin-top: 3px; }
+    .modal-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
+    .modal-input { width: 100%; padding: 10px 13px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; outline: none; margin-bottom: 16px; transition: border-color 0.2s; }
+    .modal-input:focus { border-color: rgba(250,204,21,0.4); }
+    .modal-input::placeholder { color: var(--text4); }
+    .modal-actions { display: flex; gap: 8px; }
+    .modal-confirm { flex: 1; padding: 11px; border-radius: 9px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #0a0e1a; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+    .modal-confirm:hover { box-shadow: 0 4px 16px rgba(250,204,21,0.4); }
+    .modal-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+    .modal-confirm.danger { background: linear-gradient(135deg, var(--red), #DC2626); color: white; }
+    .modal-cancel { padding: 11px 18px; border-radius: 9px; background: var(--bg3); color: var(--text3); border: 1px solid var(--border2); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .modal-cancel:hover { border-color: var(--border2); color: var(--text); }
+
+    /* LOADING / EMPTY */
+    .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    .loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px; color: var(--text4); }
+    .empty { padding: 60px; text-align: center; color: var(--text4); font-size: 13px; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--text); z-index: 999; animation: fadeUp 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px; }
+    .toast.success { border-color: rgba(34,197,94,0.3); color: var(--green); }
+    .toast.error { border-color: rgba(239,68,68,0.3); color: var(--red); }
+
+    @media(max-width: 768px) {
+      .table-header { display: none; }
+      .table-row { grid-template-columns: 1fr; gap: 6px; padding: 16px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .admin-wrap { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+
+const SUPABASE_URL = 'https://rwidbemcvfkkkloozrjn.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aWRiZW1jdmZra2tsb296cmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzI4NTYsImV4cCI6MjA5MDMwODg1Nn0.2z9JjrGlwGkH7QMEqHIqMj3O2aotGKTpdW6GYr5RMZM'
+const ADMIN_PASSWORD = '2026'
+
+// ── Supabase helpers ─────────────────────────────────────────────────────────
+async function dbGet(table, params) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + (params || ''), {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+  })
+  return r.json()
+}
+
+async function dbPatch(table, id, body) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(body)
+  })
+  return r.json()
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function addDays(date, days) {
+  const d = new Date(date)
+  d.setDate(d.getDate() + days)
+  return d
+}
+
+function getStatus(sub) {
+  if (sub.access_level === 'free') return 'free'
+  if (!sub.expires_at) return 'paid'
+  const now = new Date()
+  const exp = new Date(sub.expires_at)
+  const daysLeft = Math.ceil((exp - now) / 86400000)
+  if (daysLeft < 0) return 'expired'
+  if (daysLeft <= 7) return 'expiring'
+  return 'paid'
+}
+
+function fmtDate(d) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
+function daysLeft(d) {
+  if (!d) return null
+  const diff = Math.ceil((new Date(d) - new Date()) / 86400000)
+  return diff
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+let state = {
+  loggedIn: false,
+  subscribers: [],
+  loading: false,
+  search: '',
+  filter: 'all', // all | paid | free | expired
+  modal: null,   // { type: 'activate'|'revoke'|'note', sub }
+  toast: null,
+  selectedPlan: 'monthly',
+  noteText: ''
+}
+
+function setState(patch) {
+  Object.assign(state, patch)
+  render()
+}
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+async function loadSubscribers() {
+  setState({ loading: true })
+  const data = await dbGet('subscribers', '?order=activated_at.desc&limit=500')
+  setState({ subscribers: Array.isArray(data) ? data : [], loading: false })
+}
+
+async function activateUser(sub, plan, notes) {
+  const days = plan === 'yearly' ? 365 : 30
+  const expires = addDays(new Date(), days).toISOString()
+  await dbPatch('subscribers', sub.id, {
+    access_level: 'paid',
+    plan: plan,
+    expires_at: expires,
+    activated_at: new Date().toISOString(),
+    notes: notes || sub.notes || null
+  })
+  showToast('✓ ' + sub.name + ' activé — ' + (plan === 'yearly' ? '365 jours' : '30 jours'), 'success')
+  await loadSubscribers()
+}
+
+async function revokeUser(sub) {
+  await dbPatch('subscribers', sub.id, {
+    access_level: 'free',
+    plan: null,
+    expires_at: null,
+    notes: sub.notes || null
+  })
+  showToast('✓ Accès révoqué pour ' + sub.name, 'success')
+  await loadSubscribers()
+}
+
+async function saveNote(sub, note) {
+  await dbPatch('subscribers', sub.id, { notes: note })
+  showToast('✓ Note sauvegardée', 'success')
+  await loadSubscribers()
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+let toastTimer = null
+function showToast(msg, type) {
+  if (toastTimer) clearTimeout(toastTimer)
+  setState({ toast: { msg, type } })
+  toastTimer = setTimeout(() => setState({ toast: null }), 3000)
+}
+
+// ── Computed ─────────────────────────────────────────────────────────────────
+function getFiltered() {
+  let list = state.subscribers
+  if (state.search) {
+    const q = state.search.toLowerCase()
+    list = list.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.phone.includes(q) ||
+      (s.notes || '').toLowerCase().includes(q)
+    )
+  }
+  if (state.filter === 'paid') list = list.filter(s => getStatus(s) === 'paid' || getStatus(s) === 'expiring')
+  if (state.filter === 'free') list = list.filter(s => getStatus(s) === 'free')
+  if (state.filter === 'expired') list = list.filter(s => getStatus(s) === 'expired')
+  return list
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('root').innerHTML = state.loggedIn ? renderAdmin() : renderLogin()
+  bindEvents()
+}
+
+function renderLogin() {
+  return `
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="login-logo-mark">JP</div>
+          <div>
+            <div class="login-logo-name">Jàng Prix</div>
+            <div class="login-logo-sub">ADMIN · ACCÈS RESTREINT</div>
+          </div>
+        </div>
+        <div class="login-title">Panneau d'administration</div>
+        <div class="login-sub">Entrez le mot de passe pour continuer.</div>
+        <input class="login-input" type="password" id="pw-input" placeholder="••••" maxlength="20" autocomplete="off"/>
+        ${state.loginError ? `<div class="login-error">❌ Mot de passe incorrect</div>` : ''}
+        <button class="login-btn" id="login-btn">Accéder →</button>
+      </div>
+    </div>
+  `
+}
+
+function renderAdmin() {
+  const subs = state.subscribers
+  const paid = subs.filter(s => getStatus(s) === 'paid' || getStatus(s) === 'expiring').length
+  const expired = subs.filter(s => getStatus(s) === 'expired').length
+  const free = subs.filter(s => getStatus(s) === 'free').length
+  const filtered = getFiltered()
+
+  return `
+    <div class="admin-wrap">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-logo">JP</div>
+          <div class="topbar-title">Jàng Prix Admin</div>
+          <span class="topbar-badge">PRIVÉ</span>
+        </div>
+        <div class="topbar-right">
+          <button class="refresh-btn" id="refresh-btn">↻ Actualiser</button>
+          <button class="logout-btn" id="logout-btn">Déconnexion</button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-value">${subs.length}</div>
+          <div class="stat-card-label">Total inscrits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value green">${paid}</div>
+          <div class="stat-card-label">Abonnés actifs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" style="color:var(--text3)">${free}</div>
+          <div class="stat-card-label">Comptes gratuits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value red">${expired}</div>
+          <div class="stat-card-label">Expirés</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" style="color:var(--accent)">${paid > 0 ? (paid * 3500).toLocaleString('fr-FR') : '0'}</div>
+          <div class="stat-card-label">Revenus mensuels (FCFA)</div>
+        </div>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="toolbar">
+        <input class="search-input" type="text" id="search-input" placeholder="Rechercher par nom, téléphone ou note..." value="${state.search}"/>
+        <button class="filter-btn ${state.filter === 'all' ? 'active' : ''}" data-filter="all">Tous (${subs.length})</button>
+        <button class="filter-btn ${state.filter === 'paid' ? 'active' : ''}" data-filter="paid">Payants (${paid})</button>
+        <button class="filter-btn ${state.filter === 'free' ? 'active' : ''}" data-filter="free">Gratuits (${free})</button>
+        <button class="filter-btn ${state.filter === 'expired' ? 'active' : ''}" data-filter="expired">Expirés (${expired})</button>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="th">Nom</div>
+          <div class="th">Téléphone</div>
+          <div class="th">Statut</div>
+          <div class="th">Expiration</div>
+          <div class="th">Note</div>
+          <div class="th">Actions</div>
+        </div>
+        <div class="table-body">
+          ${state.loading
+            ? `<div class="loading"><div class="spinner"></div><span>Chargement...</span></div>`
+            : filtered.length === 0
+            ? `<div class="empty">Aucun abonné trouvé.</div>`
+            : filtered.map(sub => renderRow(sub)).join('')
+          }
+        </div>
+      </div>
+    </div>
+
+    ${state.modal ? renderModal() : ''}
+    ${state.toast ? `<div class="toast ${state.toast.type}">${state.toast.msg}</div>` : ''}
+  `
+}
+
+function renderRow(sub) {
+  const status = getStatus(sub)
+  const dl = daysLeft(sub.expires_at)
+
+  const statusBadge = status === 'paid'
+    ? `<span class="status-paid">● Actif</span>`
+    : status === 'expiring'
+    ? `<span class="status-expiring">⚠ ${dl}j restants</span>`
+    : status === 'expired'
+    ? `<span class="status-expired">✕ Expiré</span>`
+    : `<span class="status-free">Gratuit</span>`
+
+  const expiry = sub.expires_at
+    ? `<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${dl !== null && dl <= 7 ? 'var(--accent)' : 'var(--text4)'}">${fmtDate(sub.expires_at)}</span>`
+    : `<span style="color:var(--text4);font-size:12px">—</span>`
+
+  const canActivate = status === 'free' || status === 'expired' || status === 'expiring'
+  const canRevoke = status === 'paid' || status === 'expiring'
+
+  return `
+    <div class="table-row">
+      <div class="td td-name">${sub.name}</div>
+      <div class="td td-phone">${sub.phone}</div>
+      <div class="td">${statusBadge}</div>
+      <div class="td">${expiry}</div>
+      <div class="td td-date" style="font-size:11px;color:var(--text4);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${sub.notes || ''}">${sub.notes || '—'}</div>
+      <div class="td">
+        <div class="actions">
+          ${canActivate ? `<button class="act-btn act-activate" data-action="activate" data-id="${sub.id}">✓ Activer</button>` : ''}
+          ${canRevoke ? `<button class="act-btn act-revoke" data-action="revoke" data-id="${sub.id}">✕ Révoquer</button>` : ''}
+          <button class="act-btn act-note" data-action="note" data-id="${sub.id}">📝 Note</button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+function renderModal() {
+  const { type, sub } = state.modal
+  if (type === 'activate') {
+    return `
+      <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+          <div class="modal-title">Activer l'accès payant</div>
+          <div class="modal-sub">Choisissez le plan pour cet abonné.</div>
+          <div class="modal-user-info">
+            <div class="modal-user-name">${sub.name}</div>
+            <div class="modal-user-phone">${sub.phone}</div>
+          </div>
+          <div class="plan-row">
+            <div class="plan-card ${state.selectedPlan === 'monthly' ? 'selected' : ''}" data-plan="monthly">
+              <div class="plan-card-label">Mensuel</div>
+              <div class="plan-card-price">3 500</div>
+              <div class="plan-card-note">FCFA · 30 jours</div>
+            </div>
+            <div class="plan-card ${state.selectedPlan === 'yearly' ? 'selected' : ''}" data-plan="yearly">
+              <div class="plan-card-label">⭐ Annuel</div>
+              <div class="plan-card-price">36 000</div>
+              <div class="plan-card-note">FCFA · 365 jours</div>
+              <div class="plan-card-save">Économie 6 000 FCFA</div>
+            </div>
+          </div>
+          <div class="modal-label">Note (optionnel)</div>
+          <input class="modal-input" type="text" id="note-input" placeholder="ex: Payé via Wave le 12 jan" value="${state.noteText}"/>
+          <div class="modal-actions">
+            <button class="modal-cancel" id="modal-cancel">Annuler</button>
+            <button class="modal-confirm" id="modal-confirm">Activer →</button>
+          </div>
+        </div>
+      </div>
+    `
+  }
+  if (type === 'revoke') {
+    return `
+      <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+          <div class="modal-title">Révoquer l'accès</div>
+          <div class="modal-sub">L'abonné sera repassé au compte gratuit.</div>
+          <div class="modal-user-info">
+            <div class="modal-user-name">${sub.name}</div>
+            <div class="modal-user-phone">${sub.phone}</div>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-cancel" id="modal-cancel">Annuler</button>
+            <button class="modal-confirm danger" id="modal-confirm">Révoquer</button>
+          </div>
+        </div>
+      </div>
+    `
+  }
+  if (type === 'note') {
+    return `
+      <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+          <div class="modal-title">Ajouter une note</div>
+          <div class="modal-sub">${sub.name} · ${sub.phone}</div>
+          <div class="modal-label">Note</div>
+          <input class="modal-input" type="text" id="note-input" placeholder="ex: Payé via Wave le 12 jan" value="${sub.notes || ''}"/>
+          <div class="modal-actions">
+            <button class="modal-cancel" id="modal-cancel">Annuler</button>
+            <button class="modal-confirm" id="modal-confirm">Sauvegarder</button>
+          </div>
+        </div>
+      </div>
+    `
+  }
+  return ''
+}
+
+// ── Events ───────────────────────────────────────────────────────────────────
+function bindEvents() {
+  // LOGIN
+  const loginBtn = document.getElementById('login-btn')
+  const pwInput = document.getElementById('pw-input')
+  if (loginBtn) {
+    loginBtn.onclick = handleLogin
+    pwInput.onkeydown = e => { if (e.key === 'Enter') handleLogin() }
+    setTimeout(() => pwInput && pwInput.focus(), 50)
+  }
+
+  // ADMIN
+  const logoutBtn = document.getElementById('logout-btn')
+  if (logoutBtn) logoutBtn.onclick = () => setState({ loggedIn: false, loginError: false })
+
+  const refreshBtn = document.getElementById('refresh-btn')
+  if (refreshBtn) refreshBtn.onclick = loadSubscribers
+
+  const searchInput = document.getElementById('search-input')
+  if (searchInput) searchInput.oninput = e => setState({ search: e.target.value })
+
+  // FILTER BUTTONS
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.onclick = () => setState({ filter: btn.dataset.filter })
+  })
+
+  // ACTION BUTTONS
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.onclick = () => {
+      const sub = state.subscribers.find(s => s.id === parseInt(btn.dataset.id))
+      if (!sub) return
+      if (btn.dataset.action === 'activate') setState({ modal: { type: 'activate', sub }, selectedPlan: 'monthly', noteText: '' })
+      if (btn.dataset.action === 'revoke') setState({ modal: { type: 'revoke', sub } })
+      if (btn.dataset.action === 'note') setState({ modal: { type: 'note', sub } })
+    }
+  })
+
+  // MODAL
+  const overlay = document.getElementById('modal-overlay')
+  if (overlay) overlay.onclick = e => { if (e.target === overlay) setState({ modal: null }) }
+
+  const cancelBtn = document.getElementById('modal-cancel')
+  if (cancelBtn) cancelBtn.onclick = () => setState({ modal: null })
+
+  const confirmBtn = document.getElementById('modal-confirm')
+  if (confirmBtn) confirmBtn.onclick = handleModalConfirm
+
+  // PLAN CARDS
+  document.querySelectorAll('[data-plan]').forEach(card => {
+    card.onclick = () => setState({ selectedPlan: card.dataset.plan })
+  })
+
+  // NOTE INPUT live sync
+  const noteInput = document.getElementById('note-input')
+  if (noteInput) noteInput.oninput = e => state.noteText = e.target.value
+}
+
+function handleLogin() {
+  const pw = document.getElementById('pw-input').value
+  if (pw === ADMIN_PASSWORD) {
+    setState({ loggedIn: true, loginError: false })
+    loadSubscribers()
+  } else {
+    setState({ loginError: true })
+  }
+}
+
+async function handleModalConfirm() {
+  const { type, sub } = state.modal
+  const confirmBtn = document.getElementById('modal-confirm')
+  if (confirmBtn) confirmBtn.disabled = true
+
+  if (type === 'activate') {
+    const noteInput = document.getElementById('note-input')
+    const note = noteInput ? noteInput.value : state.noteText
+    await activateUser(sub, state.selectedPlan, note)
+  }
+  if (type === 'revoke') {
+    await revokeUser(sub)
+  }
+  if (type === 'note') {
+    const noteInput = document.getElementById('note-input')
+    const note = noteInput ? noteInput.value : state.noteText
+    await saveNote(sub, note)
+  }
+
+  setState({ modal: null })
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+render()
+</script>
+</body>
+</html>
