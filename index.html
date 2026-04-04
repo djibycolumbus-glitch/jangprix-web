@@ -7,359 +7,299 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg-start: #0F172A; --bg-end: #1E293B;
-      --card-start: #1E293B; --card-end: #0F172A;
-      --text-primary: #F8FAFC; --text-secondary: #CBD5E1; --text-muted: #94A3B8;
-      --up: #22C55E; --down: #EF4444; --stable: #FACC15; --accent: #FACC15;
-      --border: rgba(248,250,252,0.08); --border-hover: rgba(250,203,21,0.3);
-      --wa: #25D366; --wa-dark: #128C7E;
+      --bg:#1c1917;--bg2:#292524;--bg3:#3d3532;--bg4:#44403c;
+      --border:#3d3532;--border2:#57534e;
+      --accent:#b45309;--accent2:#92400e;
+      --green:#4ade80;--green-bg:#052e16;
+      --red:#f87171;--red-bg:#450a0a;
+      --amber:#fbbf24;--amber-bg:#2d1f00;
+      --blue:#60a5fa;--blue-bg:#0c1a2e;
+      --text:#fafaf9;--text2:#d6d3d1;--text3:#a8a29e;--text4:#78716c;--text5:#57534e;
     }
-    html { scroll-behavior: smooth; }
-    body { background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); background-attachment: fixed; color: var(--text-primary); font-family: 'Inter', sans-serif; min-height: 100vh; font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes spin { to{transform:rotate(360deg)} }
-    @keyframes livePulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{opacity:0.7;box-shadow:0 0 0 6px rgba(34,197,94,0)} }
-    @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-    @keyframes waPulse { 0%,100%{box-shadow:0 8px 24px rgba(37,211,102,0.4)} 50%{box-shadow:0 8px 36px rgba(37,211,102,0.65)} }
-    @keyframes waBigPulse { 0%,100%{box-shadow:0 12px 40px rgba(37,211,102,0.4)} 50%{box-shadow:0 12px 60px rgba(37,211,102,0.65)} }
-    @keyframes waOverlayIn { from{opacity:0}to{opacity:1} }
-    @keyframes waPopupIn { from{opacity:0;transform:scale(0.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:14px;line-height:1.5;}
 
-    /* HEADER */
-    .header { background: rgba(15,23,42,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 32px; position: sticky; top: 0; z-index: 100; }
-    .header-inner { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; height:64px; }
-    .logo-block { display:flex; align-items:center; gap:12px; cursor:pointer; user-select:none; }
-    .logo-mark { width:38px; height:38px; background:linear-gradient(135deg,var(--stable),#F59E0B); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; color:#0F172A; box-shadow:0 4px 15px rgba(250,204,21,0.4); }
-    .logo-name { font-size:20px; font-weight:800; color:var(--text-primary); letter-spacing:-0.5px; }
-    .logo-name span { color:var(--stable); }
-    .logo-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
-    .header-right { display:flex; align-items:center; gap:10px; }
-    .nav-btn { padding:7px 16px; border-radius:20px; border:1px solid var(--border); background:rgba(30,41,59,0.6); color:var(--text-muted); font-family:'Inter',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
-    .nav-btn:hover { border-color:var(--border-hover); color:var(--stable); }
-    .nav-btn.active { background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; border-color:transparent; box-shadow:0 4px 12px rgba(250,204,21,0.3); }
-    .nav-btn.wa-nav { color:var(--wa); border-color:rgba(37,211,102,0.25); background:rgba(37,211,102,0.06); }
-    .nav-btn.wa-nav:hover { background:rgba(37,211,102,0.12); border-color:rgba(37,211,102,0.4); }
-    .live-badge { display:flex; align-items:center; gap:7px; font-size:11px; font-weight:700; color:var(--up); letter-spacing:1px; text-transform:uppercase; background:rgba(34,197,94,0.1); padding:6px 12px; border-radius:20px; border:1px solid rgba(34,197,94,0.25); }
-    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--up); animation:livePulse 2s infinite; }
-    .header-date { font-size:12px; color:var(--text-muted); }
+    /* LOGIN GATE */
+    .gate-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+    .gate-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:40px 36px;width:100%;max-width:400px;}
+    .gate-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+    .gate-logo-mark{width:40px;height:40px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:white;}
+    .gate-logo-name{font-family:'Merriweather',serif;font-size:20px;font-weight:700;color:var(--text);}
+    .gate-logo-sub{font-size:11px;color:var(--text5);margin-top:1px;}
+    .gate-title{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .gate-sub{font-size:13px;color:var(--text4);margin-bottom:24px;line-height:1.5;}
+    .gate-form-group{margin-bottom:14px;}
+    .gate-label{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+    .gate-input{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.15s;}
+    .gate-input:focus{border-color:var(--accent);}
+    .gate-input::placeholder{color:var(--text5);}
+    .gate-btn{width:100%;padding:12px;border-radius:8px;background:var(--accent);color:white;border:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.15s;margin-top:6px;}
+    .gate-btn:hover{background:var(--accent2);}
+    .gate-btn:disabled{opacity:0.5;cursor:not-allowed;}
+    .gate-note{font-size:11px;color:var(--text5);text-align:center;margin-top:14px;line-height:1.5;}
+    .gate-error{font-size:12px;color:var(--red);margin-top:8px;padding:8px 12px;background:var(--red-bg);border-radius:6px;}
 
-    /* HOMEPAGE */
-    .homepage { animation: fadeUp 0.4s ease both; }
-    .hero { min-height:calc(100vh - 64px); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:60px 32px 40px; position:relative; overflow:hidden; }
-    .hero::before { content:''; position:absolute; top:-200px; left:50%; transform:translateX(-50%); width:800px; height:800px; border-radius:50%; background:radial-gradient(circle, rgba(250,204,21,0.06) 0%, transparent 70%); pointer-events:none; }
-    .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--stable); background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.2); padding:6px 14px; border-radius:20px; margin-bottom:28px; animation:fadeUp 0.4s 0.1s ease both; }
-    .hero-title { font-size:clamp(36px,6vw,68px); font-weight:900; color:var(--text-primary); letter-spacing:-2px; line-height:1.05; margin-bottom:20px; animation:fadeUp 0.4s 0.15s ease both; }
-    .hero-title span { color:var(--stable); }
-    .hero-title-sub { display:block; font-size:clamp(20px,3vw,36px); font-weight:400; color:var(--text-muted); letter-spacing:-0.5px; margin-top:8px; }
-    .hero-desc { font-size:clamp(14px,1.8vw,17px); color:var(--text-muted); max-width:580px; line-height:1.7; margin-bottom:36px; animation:fadeUp 0.4s 0.2s ease both; }
-    .hero-cta-row { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-bottom:60px; animation:fadeUp 0.4s 0.25s ease both; }
-    .btn-hero-primary { padding:15px 32px; border-radius:12px; background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; border:none; font-family:'Inter',sans-serif; font-size:15px; font-weight:800; cursor:pointer; transition:all 0.2s; box-shadow:0 6px 24px rgba(250,204,21,0.4); display:inline-flex; align-items:center; gap:8px; }
-    .btn-hero-primary:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(250,204,21,0.55); }
-    .btn-hero-secondary { padding:15px 28px; border-radius:12px; background:rgba(30,41,59,0.8); color:var(--text-secondary); border:1px solid var(--border); font-family:'Inter',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; }
-    .btn-hero-secondary:hover { border-color:rgba(37,211,102,0.4); color:var(--wa); background:rgba(37,211,102,0.05); }
-    .hero-stats { display:flex; gap:40px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.4s 0.3s ease both; }
-    .hero-stat { text-align:center; }
-    .hero-stat-value { font-size:28px; font-weight:900; color:var(--stable); letter-spacing:-1px; line-height:1; }
-    .hero-stat-label { font-size:11px; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.8px; font-weight:500; }
-    .features-section,.how-section,.sources-section,.wa-section { padding:80px 32px; max-width:1400px; margin:0 auto; }
-    .section-eyebrow { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--stable); margin-bottom:12px; }
-    .section-title { font-size:clamp(24px,3vw,36px); font-weight:800; color:var(--text-primary); letter-spacing:-0.8px; margin-bottom:14px; }
-    .section-title span { color:var(--stable); }
-    .section-desc { font-size:15px; color:var(--text-muted); max-width:520px; line-height:1.7; margin-bottom:48px; }
-    .features-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
-    .feature-card { background:linear-gradient(135deg,var(--card-start),var(--card-end)); border:1px solid var(--border); border-radius:16px; padding:28px; transition:all 0.25s; position:relative; overflow:hidden; animation:fadeUp 0.4s ease both; }
-    .feature-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(250,204,21,0.2),transparent); opacity:0; transition:opacity 0.25s; }
-    .feature-card:hover { border-color:rgba(250,204,21,0.2); transform:translateY(-4px); box-shadow:0 12px 32px rgba(250,203,21,0.12); }
-    .feature-card:hover::before { opacity:1; }
-    .feature-icon { width:48px; height:48px; border-radius:12px; background:rgba(250,204,21,0.1); border:1px solid rgba(250,204,21,0.15); display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:18px; }
-    .feature-title { font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:8px; }
-    .feature-desc { font-size:13px; color:var(--text-muted); line-height:1.6; }
-    .steps-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:24px; margin-top:48px; }
-    .step-card { text-align:center; padding:32px 20px; }
-    .step-num { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; font-size:18px; font-weight:900; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; box-shadow:0 4px 16px rgba(250,204,21,0.3); }
-    .step-title { font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:8px; }
-    .step-desc { font-size:13px; color:var(--text-muted); line-height:1.6; }
-    .sources-grid { display:flex; flex-wrap:wrap; gap:12px; margin-top:32px; }
-    .source-chip { padding:10px 20px; border-radius:20px; background:rgba(30,41,59,0.8); border:1px solid var(--border); font-size:13px; font-weight:600; color:var(--text-secondary); transition:all 0.2s; }
-    .source-chip:hover { border-color:rgba(250,204,21,0.3); color:var(--stable); background:rgba(250,204,21,0.05); }
-    .wa-card { background:linear-gradient(135deg,rgba(37,211,102,0.08) 0%,rgba(18,140,126,0.06) 100%); border:1px solid rgba(37,211,102,0.2); border-radius:20px; padding:48px; display:flex; align-items:center; gap:48px; flex-wrap:wrap; position:relative; overflow:hidden; }
-    .wa-card::before { content:''; position:absolute; top:-80px; right:-80px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(37,211,102,0.08),transparent 70%); pointer-events:none; }
-    .wa-card-left { flex:1; min-width:280px; }
-    .wa-card-icon { font-size:48px; margin-bottom:16px; }
-    .wa-card-title { font-size:26px; font-weight:800; color:var(--text-primary); letter-spacing:-0.5px; margin-bottom:10px; }
-    .wa-card-title span { color:var(--wa); }
-    .wa-card-desc { font-size:14px; color:var(--text-muted); line-height:1.7; max-width:460px; margin-bottom:24px; }
-    .wa-perks-inline { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
-    .wa-perk-inline { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-secondary); }
-    .wa-perk-dot { width:6px; height:6px; border-radius:50%; background:var(--wa); flex-shrink:0; }
-    .wa-join-big { display:inline-flex; align-items:center; gap:10px; padding:14px 28px; border-radius:12px; background:linear-gradient(135deg,var(--wa),var(--wa-dark)); color:white; border:none; font-family:'Inter',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 6px 20px rgba(37,211,102,0.35); text-decoration:none; }
-    .wa-join-big:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(37,211,102,0.5); }
-    .wa-card-right { flex-shrink:0; }
-    .wa-big-icon { width:120px; height:120px; border-radius:28px; background:linear-gradient(135deg,var(--wa),var(--wa-dark)); display:flex; align-items:center; justify-content:center; font-size:56px; box-shadow:0 12px 40px rgba(37,211,102,0.4); animation:waBigPulse 3s ease-in-out infinite; }
+    /* RENEWAL BANNER */
+    .renewal-banner{background:var(--amber-bg);border-bottom:1px solid #3d2e00;padding:10px 32px;}
+    .renewal-banner-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .renewal-banner-text{font-size:13px;color:var(--amber);}
+    .renewal-banner-btn{padding:6px 14px;border-radius:6px;background:var(--amber);color:#1c1100;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
 
-    /* TABASKI */
-    .tabaski-banner { background:linear-gradient(90deg,rgba(250,204,21,0.1),rgba(245,158,11,0.08),rgba(250,204,21,0.1)); border-bottom:1px solid rgba(250,204,21,0.2); padding:10px 32px; }
-    .tabaski-inner { max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-    .tabaski-label { font-size:10px; font-weight:800; color:var(--stable); text-transform:uppercase; letter-spacing:1.5px; background:rgba(250,204,21,0.12); padding:3px 10px; border-radius:20px; border:1px solid rgba(250,204,21,0.25); }
-    .tabaski-days { font-size:22px; font-weight:800; color:var(--stable); line-height:1; }
-    .tabaski-jours { font-size:13px; color:rgba(250,204,21,0.7); }
-    .tabaski-tip { font-size:12px; color:rgba(250,204,21,0.5); }
+    /* EXPIRED POPUP */
+    .expired-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;}
+    .expired-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:32px;width:100%;max-width:400px;text-align:center;}
+    .expired-icon{font-size:36px;margin-bottom:14px;}
+    .expired-title{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+    .expired-sub{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:20px;}
+    .expired-wave{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:20px;}
+    .expired-wave-label{font-size:11px;color:var(--text5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+    .expired-wave-number{font-family:'Merriweather',serif;font-size:22px;font-weight:700;color:var(--accent);}
+    .expired-wave-amount{font-size:13px;color:var(--text4);margin-top:4px;}
+    .expired-dismiss{width:100%;padding:10px;border-radius:8px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .expired-dismiss:hover{border-color:var(--border2);color:var(--text2);}
 
-    /* TICKER */
-    .ticker-wrap { background:rgba(15,23,42,0.6); border-bottom:1px solid var(--border); overflow:hidden; height:38px; display:flex; align-items:center; }
-    .ticker-label { background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:0 14px; height:100%; display:flex; align-items:center; flex-shrink:0; }
-    .ticker-track-wrap { flex:1; overflow:hidden; position:relative; }
-    .ticker-track-wrap::before { content:''; position:absolute; left:0; top:0; bottom:0; width:40px; background:linear-gradient(to right,rgba(15,23,42,0.9),transparent); z-index:1; pointer-events:none; }
-    .ticker-track-wrap::after { content:''; position:absolute; right:0; top:0; bottom:0; width:40px; background:linear-gradient(to left,rgba(15,23,42,0.9),transparent); z-index:1; pointer-events:none; }
-    .ticker-track { display:flex; animation:tickerScroll 40s linear infinite; width:max-content; }
-    .ticker-track:hover { animation-play-state:paused; }
-    .ticker-item { display:flex; align-items:center; gap:6px; padding:0 20px; font-size:12px; font-weight:600; white-space:nowrap; border-right:1px solid var(--border); height:38px; }
-    .ticker-item .t-name { color:var(--text-secondary); }
-    .ticker-item .t-price { color:var(--text-primary); font-weight:700; }
-    .ticker-item.up .t-arrow,.ticker-item.up .t-change { color:var(--up); }
-    .ticker-item.down .t-arrow,.ticker-item.down .t-change { color:var(--down); }
-    .ticker-item.stable .t-arrow,.ticker-item.stable .t-change { color:var(--stable); }
+    /* UPGRADE PROMPT */
+    .upgrade-prompt{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+    .upgrade-prompt-text{font-size:12px;color:var(--text3);}
+    .upgrade-btn{padding:7px 14px;border-radius:6px;background:var(--accent);color:white;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
+    .upgrade-btn:hover{background:var(--accent2);}
+    /* UPGRADE MODAL — fixed to visible screen */
+    .upgrade-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;}
+    .upgrade-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:28px;width:100%;max-width:400px;}
+    .upgrade-modal-title{font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .upgrade-modal-sub{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:16px;}
+    .upgrade-modal-wave{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:16px;text-align:center;}
+    .upgrade-modal-wave-label{font-size:11px;color:var(--text5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+    .upgrade-modal-wave-number{font-family:'Merriweather',serif;font-size:24px;font-weight:700;color:var(--accent);}
+    .upgrade-modal-plans{display:flex;gap:10px;margin-bottom:16px;}
+    .upgrade-modal-plan{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
+    .upgrade-modal-plan.recommended{border-color:var(--accent);}
+    .upgrade-modal-plan-label{font-size:11px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+    .upgrade-modal-plan-price{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:2px;}
+    .upgrade-modal-plan-note{font-size:10px;color:var(--text5);}
+    .upgrade-modal-plan-save{font-size:10px;font-weight:600;color:var(--green);margin-top:3px;}
 
-    /* STATS BAR */
-    .stats-bar { background:rgba(30,41,59,0.5); border-bottom:1px solid var(--border); padding:0 32px; }
-    .stats-inner { max-width:1400px; margin:0 auto; display:flex; flex-wrap:wrap; }
-    .stat-item { padding:16px 48px 16px 0; position:relative; }
-    .stat-item:not(:last-child)::after { content:''; position:absolute; right:24px; top:50%; transform:translateY(-50%); width:1px; height:24px; background:var(--border); }
-    .stat-value { font-size:26px; font-weight:800; color:var(--stable); line-height:1; letter-spacing:-0.5px; }
-    .stat-label { font-size:11px; color:var(--text-muted); margin-top:3px; text-transform:uppercase; letter-spacing:0.8px; font-weight:500; }
+    /* LOCKED FEATURE */
+    .locked-tab{opacity:0.4;cursor:not-allowed!important;position:relative;}
+    .lock-icon{font-size:10px;margin-left:4px;}
 
-    /* MAIN */
-    .main { max-width:1400px; margin:0 auto; padding:32px; }
-    .page-header { margin-bottom:28px; }
-    .page-title { font-size:28px; font-weight:800; color:var(--text-primary); letter-spacing:-0.8px; }
-    .page-title span { color:var(--stable); }
-    .page-sub { font-size:14px; color:var(--text-muted); margin-top:6px; }
-    .search-filter-row { display:flex; gap:14px; margin-bottom:28px; flex-wrap:wrap; align-items:flex-start; }
-    .search-wrap { position:relative; flex:1; min-width:280px; }
-    .search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:15px; pointer-events:none; }
-    .search-input { width:100%; padding:12px 14px 12px 42px; background:rgba(30,41,59,0.8); border:1px solid var(--border); border-radius:10px; color:var(--text-primary); font-family:'Inter',sans-serif; font-size:14px; outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
-    .search-input::placeholder { color:var(--text-muted); }
-    .search-input:focus { border-color:rgba(250,204,21,0.5); box-shadow:0 0 0 3px rgba(250,204,21,0.08); }
-    .filter-tabs { display:flex; gap:8px; flex-wrap:wrap; }
-    .cat-tab { padding:9px 18px; border-radius:20px; border:1px solid var(--border); background:rgba(30,41,59,0.6); color:var(--text-muted); font-family:'Inter',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
-    .cat-tab:hover { border-color:rgba(250,204,21,0.4); color:var(--stable); background:rgba(250,204,21,0.06); transform:scale(1.03); box-shadow:0 0 12px rgba(250,204,21,0.15); }
-    .cat-tab.active { background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; border-color:transparent; font-weight:700; box-shadow:0 4px 15px rgba(250,204,21,0.35); }
-    .loading { display:flex; flex-direction:column; align-items:center; gap:16px; padding:100px; color:var(--text-muted); }
-    .spinner { width:36px; height:36px; border:2px solid var(--border); border-top-color:var(--stable); border-radius:50%; animation:spin 0.8s linear infinite; }
+    /* FREE BADGE */
+    .free-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--text5);background:var(--bg3);padding:2px 7px;border-radius:4px;border:0.5px solid var(--border);margin-left:6px;}
+    .paid-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--amber);background:var(--amber-bg);padding:2px 7px;border-radius:4px;border:0.5px solid rgba(251,191,36,0.2);margin-left:6px;}
 
-    /* CARDS */
-    .commodity-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; margin-bottom:40px; }
-    .commodity-card { background:linear-gradient(135deg,var(--card-start) 0%,var(--card-end) 100%); border:1px solid var(--border); border-radius:16px; padding:22px; transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s ease; cursor:pointer; color:inherit; animation:fadeUp 0.4s ease both; position:relative; overflow:hidden; }
-    .commodity-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(250,204,21,0.3),transparent); opacity:0; transition:opacity 0.25s; }
-    .commodity-card:hover { transform:translateY(-6px); box-shadow:0 8px 20px rgba(250,203,21,0.5); border-color:rgba(250,204,21,0.35); }
-    .commodity-card:hover::before { opacity:1; }
-    .commodity-card.selected { border-color:rgba(250,204,21,0.5); box-shadow:0 8px 30px rgba(250,203,21,0.4); }
-    .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; gap:10px; }
-    .card-cat-chip { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; background:rgba(148,163,184,0.1); padding:3px 9px; border-radius:20px; border:1px solid var(--border); display:inline-block; margin-bottom:6px; }
-    .card-name { font-size:17px; font-weight:700; color:var(--text-primary); line-height:1.2; }
-    .card-markets { font-size:11px; color:var(--text-muted); margin-top:4px; }
-    .rec-badge { font-size:10px; font-weight:800; padding:4px 11px; border-radius:20px; flex-shrink:0; white-space:nowrap; letter-spacing:0.6px; text-transform:uppercase; }
-    .rec-sell { background:rgba(34,197,94,0.15); color:var(--up); border:1px solid rgba(34,197,94,0.3); }
-    .rec-wait { background:rgba(239,68,68,0.15); color:var(--down); border:1px solid rgba(239,68,68,0.3); }
-    .rec-pending { background:rgba(250,204,21,0.1); color:var(--stable); border:1px solid rgba(250,204,21,0.2); }
-    .price-block { margin-bottom:14px; }
-    .price-row { display:flex; align-items:center; gap:10px; margin-bottom:3px; flex-wrap:wrap; }
-    .price-value { font-size:32px; font-weight:800; color:var(--text-primary); line-height:1; letter-spacing:-1px; }
-    .price-trend-arrow { font-size:20px; font-weight:800; line-height:1; }
-    .price-trend-arrow.up { color:var(--up); }
-    .price-trend-arrow.down { color:var(--down); }
-    .price-trend-arrow.stable { color:var(--stable); }
-    .price-meta { font-size:13px; color:var(--text-muted); }
-    .rec-reason { font-size:12px; line-height:1.5; padding:9px 13px; border-radius:8px; margin-bottom:12px; }
-    .rec-reason.sell { background:rgba(34,197,94,0.08); border-left:2px solid var(--up); color:rgba(34,197,94,0.9); }
-    .rec-reason.wait { background:rgba(239,68,68,0.08); border-left:2px solid var(--down); color:rgba(239,68,68,0.9); }
-    .rec-reason.pending { background:rgba(250,204,21,0.07); border-left:2px solid var(--stable); color:rgba(250,204,21,0.8); }
-    .pred-summary { font-size:12px; padding:7px 12px; border-radius:8px; margin-bottom:14px; display:flex; align-items:center; gap:7px; font-weight:500; }
-    .pred-summary.up { background:rgba(239,68,68,0.08); color:rgba(239,68,68,0.9); border:1px solid rgba(239,68,68,0.15); }
-    .pred-summary.down { background:rgba(34,197,94,0.08); color:rgba(34,197,94,0.9); border:1px solid rgba(34,197,94,0.15); }
-    .pred-summary.stable { background:rgba(250,204,21,0.07); color:rgba(250,204,21,0.85); border:1px solid rgba(250,204,21,0.15); }
-    .sources-divider { height:1px; background:var(--border); margin-bottom:12px; }
-    .sources-table { width:100%; border-collapse:collapse; margin-bottom:12px; }
-    .sources-table td { padding:5px 0; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04); }
-    .sources-table tr:last-child td { border-bottom:none; }
-    .td-source { color:var(--text-muted); width:70px; font-weight:600; }
-    .td-market { color:var(--text-secondary); }
-    .td-price { color:var(--text-primary); font-weight:700; text-align:right; }
-    .td-type { text-align:right; }
-    .type-tag { font-size:10px; color:var(--text-muted); background:rgba(148,163,184,0.1); padding:2px 7px; border-radius:20px; border:1px solid var(--border); }
-    .card-date { font-size:11px; color:rgba(148,163,184,0.5); margin-bottom:14px; }
-    .card-actions { display:flex; flex-direction:column; gap:7px; }
-    .voir-btn { width:100%; padding:10px; border-radius:9px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; border:1px solid var(--border); background:rgba(30,41,59,0.6); color:var(--text-muted); }
-    .voir-btn:hover { border-color:rgba(250,204,21,0.4); color:var(--stable); background:rgba(250,204,21,0.07); box-shadow:0 0 12px rgba(250,204,21,0.15); }
-    .voir-btn.active { background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; border-color:transparent; box-shadow:0 4px 15px rgba(250,204,21,0.35); }
-    .calc-section { margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
-    .calc-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:9px; }
-    .calc-input-row { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-    .calc-input { flex:1; padding:8px 11px; background:rgba(15,23,42,0.6); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-family:'Inter',sans-serif; font-size:13px; outline:none; min-width:0; transition:border-color 0.2s; }
-    .calc-input:focus { border-color:rgba(250,204,21,0.4); }
-    .calc-unit { font-size:12px; color:var(--text-muted); white-space:nowrap; }
-    .calc-results { display:flex; flex-direction:column; gap:6px; }
-    .calc-row { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(15,23,42,0.5); border-radius:8px; border:1px solid var(--border); }
-    .calc-row.best-market { border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.06); }
-    .calc-market { font-size:12px; color:var(--text-secondary); }
-    .calc-earning { font-size:14px; font-weight:700; color:var(--text-primary); }
-    .calc-earning.best { color:var(--up); }
-    .calc-best-label { font-size:10px; font-weight:700; color:var(--up); background:rgba(34,197,94,0.1); padding:2px 7px; border-radius:20px; }
-
-    /* DETAIL PANEL */
-    .detail-panel { background:linear-gradient(135deg,rgba(30,41,59,0.95),rgba(15,23,42,0.98)); border:1px solid rgba(250,204,21,0.2); border-radius:16px; padding:28px; margin-bottom:40px; box-shadow:0 8px 40px rgba(250,203,21,0.08); animation:fadeUp 0.25s ease both; }
-    .detail-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:14px; }
-    .detail-title { font-size:20px; font-weight:800; color:var(--text-primary); letter-spacing:-0.5px; }
-    .detail-sub { font-size:12px; color:var(--text-muted); margin-top:4px; }
-    .detail-tabs { display:flex; gap:6px; flex-wrap:wrap; }
-    .detail-tab { padding:7px 16px; border-radius:20px; border:1px solid var(--border); background:rgba(30,41,59,0.6); color:var(--text-muted); font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; }
-    .detail-tab:hover { border-color:rgba(250,204,21,0.4); color:var(--stable); }
-    .detail-tab.active { background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; border-color:transparent; box-shadow:0 4px 12px rgba(250,204,21,0.3); }
-    .market-filter { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
-    .mkt-btn { padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:rgba(30,41,59,0.6); color:var(--text-muted); font-size:11px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; }
-    .mkt-btn:hover { border-color:rgba(250,204,21,0.3); color:var(--stable); }
-    .mkt-btn.active { background:rgba(250,204,21,0.12); color:var(--stable); border-color:rgba(250,204,21,0.3); }
-    .pred-months { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
-    .pred-month-card { background:rgba(15,23,42,0.6); border:1px solid var(--border); border-radius:12px; padding:16px; }
-    .pred-month-name { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:9px; }
-    .pred-month-price { font-size:22px; font-weight:800; margin-bottom:4px; line-height:1; }
-    .pred-month-price.up { color:var(--down); } .pred-month-price.down { color:var(--up); } .pred-month-price.stable { color:var(--text-primary); }
-    .pred-month-change { font-size:12px; margin-bottom:8px; font-weight:600; }
-    .pred-month-change.up { color:var(--down); } .pred-month-change.down { color:var(--up); } .pred-month-change.stable { color:var(--stable); }
-    .pred-month-driver { font-size:11px; color:var(--text-muted); line-height:1.4; }
-    .pred-confidence { display:flex; align-items:center; gap:8px; margin-top:10px; }
-    .pred-conf-bar-wrap { flex:1; background:rgba(255,255,255,0.08); border-radius:2px; height:3px; overflow:hidden; }
-    .pred-conf-bar { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--stable),#F59E0B); }
-    .pred-conf-label { font-size:10px; color:rgba(148,163,184,0.6); white-space:nowrap; }
-    .pred-factors { margin-top:22px; }
-    .pred-factors-title { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:14px; }
-    .factor-row { display:flex; align-items:flex-start; gap:14px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
-    .factor-row:last-child { border-bottom:none; }
-    .factor-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
-    .factor-icon.positive { background:rgba(34,197,94,0.12); } .factor-icon.negative { background:rgba(239,68,68,0.12); } .factor-icon.neutral { background:rgba(148,163,184,0.1); }
-    .factor-name { font-size:13px; font-weight:600; color:var(--text-secondary); margin-bottom:3px; }
-    .factor-desc { font-size:12px; color:var(--text-muted); line-height:1.4; }
-    .factor-impact { font-size:11px; font-weight:700; margin-top:4px; }
-    .factor-impact.positive { color:var(--up); } .factor-impact.negative { color:var(--down); } .factor-impact.neutral { color:var(--text-muted); }
-    .pred-disclaimer { margin-top:18px; padding:12px 16px; background:rgba(15,23,42,0.5); border-radius:10px; font-size:11px; color:var(--text-muted); line-height:1.6; border:1px solid var(--border); }
-    .comparison-list { display:flex; flex-direction:column; gap:13px; max-width:640px; }
-    .comparison-row { display:flex; align-items:center; gap:14px; }
-    .comp-market { width:150px; flex-shrink:0; }
-    .comp-market-name { font-size:13px; color:var(--text-primary); font-weight:600; display:block; }
-    .comp-source-tag { font-size:10px; color:var(--text-muted); }
-    .comp-bar-wrap { flex:1; background:rgba(255,255,255,0.08); border-radius:3px; height:8px; overflow:hidden; max-width:200px; }
-    .comp-bar { height:100%; border-radius:3px; }
-    .comp-price-wrap { display:flex; align-items:center; gap:8px; min-width:130px; justify-content:flex-end; }
-    .comp-price { font-size:14px; color:var(--text-primary); font-weight:700; }
-    .comp-tag { font-size:10px; font-weight:800; padding:3px 8px; border-radius:20px; text-transform:uppercase; }
-    .comp-tag.best { background:rgba(34,197,94,0.12); color:var(--up); border:1px solid rgba(34,197,94,0.25); }
-    .comp-tag.worst { background:rgba(239,68,68,0.12); color:var(--down); border:1px solid rgba(239,68,68,0.25); }
-    .insight-box { margin-top:18px; background:rgba(250,204,21,0.05); border:1px solid rgba(250,204,21,0.15); border-radius:10px; padding:14px 18px; font-size:13px; color:var(--text-secondary); max-width:640px; line-height:1.6; }
-    .trend-table { width:100%; border-collapse:collapse; max-width:740px; }
-    .trend-table th { padding:9px 14px; font-size:11px; font-weight:700; color:var(--text-muted); text-align:left; text-transform:uppercase; letter-spacing:0.8px; border-bottom:1px solid var(--border); background:rgba(15,23,42,0.5); }
-    .trend-table td { padding:10px 14px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text-secondary); }
-    .trend-table tr:last-child td { border-bottom:none; }
-    .trend-table tr:hover td { background:rgba(30,41,59,0.4); }
-    .trend-price { color:var(--text-primary); font-weight:700; }
-    .trend-change.up { color:var(--down); font-weight:700; } .trend-change.down { color:var(--up); font-weight:700; } .trend-change.flat { color:var(--stable); }
-    .history-wrap { max-height:400px; overflow-y:auto; border-radius:10px; border:1px solid var(--border); }
-    .history-wrap::-webkit-scrollbar { width:6px; }
-    .history-wrap::-webkit-scrollbar-track { background:rgba(15,23,42,0.5); }
-    .history-wrap::-webkit-scrollbar-thumb { background:rgba(250,204,21,0.2); border-radius:3px; }
-    .history-table { width:100%; border-collapse:collapse; }
-    .history-table th { padding:9px 14px; font-size:11px; font-weight:700; color:var(--text-muted); text-align:left; text-transform:uppercase; letter-spacing:0.8px; border-bottom:1px solid var(--border); background:rgba(15,23,42,0.8); position:sticky; top:0; }
-    .history-table td { padding:9px 14px; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text-muted); }
-    .history-table tr:last-child td { border-bottom:none; }
-    .history-table tr:hover td { background:rgba(30,41,59,0.4); }
-    .h-price { color:var(--text-primary); font-weight:700; }
-    .year-comp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-bottom:20px; }
-    .year-comp-card { background:rgba(15,23,42,0.6); border:1px solid var(--border); border-radius:10px; padding:16px; }
-    .year-comp-card.current-year { border-color:rgba(250,204,21,0.35); background:rgba(250,204,21,0.04); }
-    .year-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
-    .year-price { font-size:20px; font-weight:800; color:var(--text-primary); margin-bottom:4px; }
-    .year-vs-now { font-size:12px; font-weight:600; }
-    .year-vs-now.higher { color:var(--down); } .year-vs-now.lower { color:var(--up); } .year-vs-now.same { color:var(--text-muted); }
-    .year-months { font-size:11px; color:rgba(148,163,184,0.5); margin-top:4px; }
-    .year-insight { background:rgba(250,204,21,0.05); border:1px solid rgba(250,204,21,0.15); border-radius:10px; padding:14px 18px; font-size:13px; color:var(--text-secondary); line-height:1.6; }
-
-    /* REPORT MODAL */
-    .report-modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(6px); }
-    .report-modal { background:linear-gradient(135deg,#1E293B,#0F172A); border:1px solid rgba(250,204,21,0.25); border-radius:16px; padding:28px; width:100%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,0.5); animation:fadeUp 0.2s ease; }
-    .report-modal-title { font-size:18px; font-weight:800; color:var(--text-primary); margin-bottom:4px; }
-    .report-modal-sub { font-size:13px; color:var(--text-muted); margin-bottom:22px; }
-    .form-group { margin-bottom:16px; }
-    .form-label { display:block; font-size:11px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; }
-    .form-input { width:100%; padding:10px 13px; background:rgba(15,23,42,0.8); border:1px solid var(--border); border-radius:9px; color:var(--text-primary); font-family:'Inter',sans-serif; font-size:13px; outline:none; transition:border-color 0.2s; }
-    .form-input:focus { border-color:rgba(250,204,21,0.4); }
-    .form-input::placeholder { color:var(--text-muted); }
-    .form-select { width:100%; padding:10px 13px; background:rgba(15,23,42,0.8); border:1px solid var(--border); border-radius:9px; color:var(--text-primary); font-family:'Inter',sans-serif; font-size:13px; outline:none; cursor:pointer; }
-    .form-select:focus { border-color:rgba(250,204,21,0.4); }
-    .form-row { display:flex; gap:12px; }
-    .form-row .form-group { flex:1; }
-    .modal-actions { display:flex; gap:10px; margin-top:22px; }
-    .btn-primary { flex:1; padding:11px; border-radius:9px; background:linear-gradient(135deg,var(--stable),#F59E0B); color:#0F172A; border:none; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 15px rgba(250,204,21,0.3); }
-    .btn-primary:hover { box-shadow:0 6px 20px rgba(250,204,21,0.45); transform:translateY(-1px); }
-    .btn-primary:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
-    .btn-secondary { padding:11px 18px; border-radius:9px; background:rgba(30,41,59,0.8); color:var(--text-muted); border:1px solid var(--border); font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
-    .btn-secondary:hover { border-color:var(--border-hover); color:var(--text-secondary); }
-    .report-success { text-align:center; padding:24px 0; }
-    .report-success-icon { font-size:40px; margin-bottom:14px; }
-    .report-success-title { font-size:18px; font-weight:800; color:var(--up); margin-bottom:6px; }
-    .report-success-sub { font-size:13px; color:var(--text-muted); }
-    .report-notice { font-size:11px; color:rgba(148,163,184,0.6); margin-top:14px; line-height:1.5; padding:10px 12px; background:rgba(15,23,42,0.5); border-radius:8px; border:1px solid var(--border); }
-
-    /* WA POPUP */
-    .wa-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.65); z-index:300; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(6px); animation:waOverlayIn 0.3s ease; }
-    .wa-popup { background:linear-gradient(145deg,#1E293B 0%,#0F172A 100%); border:1px solid rgba(37,211,102,0.3); border-radius:20px; padding:32px 28px 28px; width:100%; max-width:400px; box-shadow:0 24px 60px rgba(0,0,0,0.6),0 0 60px rgba(37,211,102,0.08); position:relative; animation:waPopupIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
-    .wa-close { position:absolute; top:14px; right:16px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.07); border:1px solid var(--border); color:var(--text-muted); font-size:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; }
-    .wa-close:hover { background:rgba(255,255,255,0.12); color:var(--text-primary); }
-    .wa-icon-wrap { display:flex; justify-content:center; margin-bottom:20px; }
-    .wa-icon { width:68px; height:68px; border-radius:18px; background:linear-gradient(135deg,var(--wa),var(--wa-dark)); display:flex; align-items:center; justify-content:center; font-size:32px; box-shadow:0 8px 24px rgba(37,211,102,0.4); animation:waPulse 2.5s ease-in-out infinite; }
-    .wa-badge { display:inline-block; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--wa); background:rgba(37,211,102,0.1); border:1px solid rgba(37,211,102,0.25); padding:3px 10px; border-radius:20px; margin-bottom:10px; }
-    .wa-title { font-size:20px; font-weight:800; color:var(--text-primary); letter-spacing:-0.4px; margin-bottom:10px; line-height:1.2; }
-    .wa-title span { color:var(--wa); }
-    .wa-desc { font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:20px; }
-    .wa-perks { display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
-    .wa-perk { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-secondary); }
-    .wa-perk-icon { width:28px; height:28px; border-radius:8px; background:rgba(37,211,102,0.1); border:1px solid rgba(37,211,102,0.2); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
-    .wa-join-btn { width:100%; padding:14px; border-radius:12px; background:linear-gradient(135deg,var(--wa),var(--wa-dark)); color:white; border:none; font-family:'Inter',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; box-shadow:0 6px 20px rgba(37,211,102,0.35); display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; }
-    .wa-join-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(37,211,102,0.5); }
-    .wa-skip { width:100%; padding:10px; background:transparent; border:none; color:rgba(148,163,184,0.5); font-family:'Inter',sans-serif; font-size:12px; cursor:pointer; margin-top:10px; transition:color 0.2s; }
-    .wa-skip:hover { color:var(--text-muted); }
-
-    .empty { padding:80px; text-align:center; color:var(--text-muted); }
-    .no-data { padding:40px; text-align:center; color:var(--text-muted); font-size:13px; }
-
-    /* FOOTER */
-    .footer { background:rgba(15,23,42,0.8); border-top:1px solid var(--border); padding:24px 32px; margin-top:60px; backdrop-filter:blur(10px); }
-    .footer-inner { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
-    .footer-brand { font-size:16px; font-weight:800; color:var(--stable); }
-    .footer-right { text-align:right; }
-    .footer-sources { font-size:11px; color:#94A3B8; }
-    .footer-note { font-size:11px; color:#94A3B8; margin-top:3px; font-style:italic; opacity:0.7; }
-    .footer-markets { font-size:11px; color:#94A3B8; margin-top:3px; }
-
+    .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;position:sticky;top:0;z-index:100;}
+    .header-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;height:60px;}
+    .logo-block{display:flex;align-items:center;gap:10px;}
+    .logo-mark{width:30px;height:30px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:white;}
+    .logo-name{font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:var(--text);}
+    .logo-sub{font-size:11px;color:var(--text5);margin-top:1px;}
+    .header-right{display:flex;align-items:center;gap:20px;}
+    .live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--green);letter-spacing:0.5px;}
+    .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+    .header-date{font-size:12px;color:var(--text4);}
+    .header-zone{font-size:12px;color:var(--text5);}
+    .tabaski-banner{background:var(--amber-bg);border-bottom:1px solid #3d2e00;padding:9px 32px;}
+    .tabaski-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .tabaski-label{font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;background:rgba(251,191,36,0.08);padding:2px 8px;border-radius:4px;border:0.5px solid rgba(251,191,36,0.2);}
+    .tabaski-days{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--amber);}
+    .tabaski-jours{font-size:13px;color:#78580a;}
+    .tabaski-tip{font-size:12px;color:#78580a;}
+    .stats-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;}
+    .stats-inner{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;}
+    .stat-item{padding:14px 40px 14px 0;}
+    .stat-value{font-family:'Merriweather',serif;font-size:20px;font-weight:700;color:var(--accent);line-height:1;}
+    .stat-label{font-size:11px;color:var(--text5);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;}
+    .main{max-width:1400px;margin:0 auto;padding:28px 32px;}
+    .page-title{font-family:'Merriweather',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;}
+    .search-filter-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .search-input{flex:1;min-width:260px;padding:9px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;}
+    .search-input::placeholder{color:var(--text5);}
+    .search-input:focus{border-color:var(--accent);}
+    .cat-tab{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg2);color:var(--text3);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+    .cat-tab:hover{border-color:var(--border2);color:var(--text2);}
+    .cat-tab.active{background:var(--accent);color:white;border-color:var(--accent);}
+    .loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:80px;color:var(--text4);}
+    .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .commodity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;margin-bottom:32px;}
+    .commodity-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.15s;}
+    .commodity-card:hover{border-color:var(--border2);}
+    .commodity-card.selected{border-color:var(--accent);}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:10px;}
+    .card-name{font-weight:700;font-size:15px;color:var(--text);line-height:1.3;}
+    .card-meta{font-size:11px;color:var(--text5);margin-top:3px;}
+    .rec-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;flex-shrink:0;white-space:nowrap;}
+    .rec-sell{background:var(--green-bg);color:var(--green);border:0.5px solid rgba(74,222,128,0.2);}
+    .rec-wait{background:var(--red-bg);color:var(--red);border:0.5px solid rgba(248,113,113,0.2);}
+    .rec-pending{background:var(--bg3);color:var(--text4);border:0.5px solid var(--border);}
+    .price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
+    .price-value{font-family:'Merriweather',serif;font-size:30px;font-weight:700;color:var(--text);}
+    .price-unit{font-size:12px;color:var(--text4);}
+    .rec-reason{font-size:12px;line-height:1.5;padding:8px 12px;border-radius:6px;margin-bottom:10px;}
+    .rec-reason.sell{background:var(--green-bg);border-left:2px solid var(--green);color:#86efac;}
+    .rec-reason.wait{background:var(--red-bg);border-left:2px solid var(--red);color:#fca5a5;}
+    .rec-reason.pending{background:var(--bg3);border-left:2px solid var(--border2);color:var(--text4);}
+    .pred-summary{font-size:11px;padding:7px 10px;border-radius:6px;margin-bottom:10px;display:flex;align-items:flex-start;gap:6px;}
+    .pred-summary.up{background:var(--red-bg);border:0.5px solid rgba(248,113,113,0.15);color:#fca5a5;}
+    .pred-summary.down{background:var(--green-bg);border:0.5px solid rgba(74,222,128,0.15);color:#86efac;}
+    .pred-summary.stable{background:var(--bg3);border:0.5px solid var(--border);color:var(--text4);}
+    .pred-arrow{font-size:14px;flex-shrink:0;margin-top:1px;}
+    .sources-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+    .sources-table td{padding:5px 0;font-size:12px;border-bottom:1px solid var(--bg3);}
+    .sources-table tr:last-child td{border-bottom:none;}
+    .td-source{color:var(--text4);width:55px;font-weight:500;}
+    .td-market{color:var(--text3);}
+    .td-price{color:var(--text);font-weight:600;text-align:right;}
+    .td-type{text-align:right;}
+    .type-tag{font-size:10px;color:var(--text5);background:var(--bg3);padding:1px 5px;border-radius:3px;border:0.5px solid var(--border);}
+    .card-date{font-size:11px;color:var(--text5);margin-bottom:12px;}
+    .voir-btn{width:100%;padding:8px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;border:1px solid var(--border);background:var(--bg3);color:var(--text3);}
+    .voir-btn:hover{background:var(--accent2);border-color:var(--accent);color:white;}
+    .voir-btn.active{background:var(--accent);color:white;border-color:var(--accent);}
+    .detail-panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:32px;}
+    .detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+    .detail-title{font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:var(--text);}
+    .detail-sub{font-size:12px;color:var(--text4);margin-top:3px;}
+    .detail-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+    .detail-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+    .detail-tab:hover{border-color:var(--border2);color:var(--text2);}
+    .detail-tab.active{background:var(--accent);color:white;border-color:var(--accent);}
+    .market-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+    .mkt-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+    .mkt-btn:hover{border-color:var(--border2);color:var(--text2);}
+    .mkt-btn.active{background:var(--bg4);color:var(--text);border-color:var(--border2);}
+    .pred-months{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+    .pred-month-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;}
+    .pred-month-card.active-month{border-color:var(--accent);}
+    .pred-month-name{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+    .pred-month-price{font-family:'Merriweather',serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+    .pred-month-price.up{color:var(--red);}
+    .pred-month-price.down{color:var(--green);}
+    .pred-month-price.stable{color:var(--text2);}
+    .pred-month-change{font-size:11px;margin-bottom:8px;}
+    .pred-month-change.up{color:var(--red);}
+    .pred-month-change.down{color:var(--green);}
+    .pred-month-change.stable{color:var(--text4);}
+    .pred-month-driver{font-size:11px;color:var(--text4);line-height:1.4;}
+    .pred-confidence{display:flex;align-items:center;gap:6px;margin-top:8px;}
+    .pred-conf-bar-wrap{flex:1;background:var(--bg);border-radius:2px;height:4px;overflow:hidden;}
+    .pred-conf-bar{height:100%;border-radius:2px;background:var(--accent);}
+    .pred-conf-label{font-size:10px;color:var(--text5);white-space:nowrap;}
+    .pred-factors{margin-top:20px;}
+    .pred-factors-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+    .factor-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg3);}
+    .factor-row:last-child{border-bottom:none;}
+    .factor-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+    .factor-icon.positive{background:var(--green-bg);}
+    .factor-icon.negative{background:var(--red-bg);}
+    .factor-icon.neutral{background:var(--bg3);}
+    .factor-name{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:2px;}
+    .factor-desc{font-size:12px;color:var(--text4);line-height:1.4;}
+    .factor-impact{font-size:11px;font-weight:600;margin-top:3px;}
+    .factor-impact.positive{color:var(--green);}
+    .factor-impact.negative{color:var(--red);}
+    .factor-impact.neutral{color:var(--text4);}
+    .pred-disclaimer{margin-top:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text5);line-height:1.5;}
+    .comparison-list{display:flex;flex-direction:column;gap:14px;max-width:600px;}
+    .comparison-row{display:flex;align-items:center;gap:12px;}
+    .comp-market{width:140px;flex-shrink:0;}
+    .comp-market-name{font-size:13px;color:var(--text);font-weight:600;display:block;}
+    .comp-source-tag{font-size:10px;color:var(--text5);}
+    .comp-bar-wrap{flex:1;background:var(--bg3);border-radius:3px;height:6px;overflow:hidden;max-width:180px;}
+    .comp-bar{height:100%;border-radius:3px;}
+    .comp-price-wrap{display:flex;align-items:center;gap:8px;min-width:120px;justify-content:flex-end;}
+    .comp-price{font-size:13px;color:var(--text);font-weight:600;}
+    .comp-tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;}
+    .comp-tag.best{background:var(--green-bg);color:var(--green);border:0.5px solid rgba(74,222,128,0.2);}
+    .comp-tag.worst{background:var(--red-bg);color:var(--red);border:0.5px solid rgba(248,113,113,0.2);}
+    .insight-box{margin-top:16px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:7px;padding:12px 16px;font-size:13px;color:var(--text3);max-width:600px;}
+    .trend-table{width:100%;border-collapse:collapse;max-width:700px;}
+    .trend-table th{padding:8px 12px;font-size:11px;font-weight:600;color:var(--text4);text-align:left;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg3);}
+    .trend-table td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--bg3);color:var(--text2);}
+    .trend-table tr:last-child td{border-bottom:none;}
+    .trend-table tr:hover td{background:var(--bg3);}
+    .trend-price{color:var(--text);font-weight:600;}
+    .trend-change.up{color:var(--red);}
+    .trend-change.down{color:var(--green);}
+    .trend-change.flat{color:var(--text4);}
+    .history-wrap{max-height:400px;overflow-y:auto;border-radius:7px;border:1px solid var(--border);}
+    .history-table{width:100%;border-collapse:collapse;}
+    .history-table th{padding:8px 12px;font-size:11px;font-weight:600;color:var(--text4);text-align:left;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;}
+    .history-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--bg3);color:var(--text3);}
+    .history-table tr:last-child td{border-bottom:none;}
+    .history-table tr:hover td{background:var(--bg3);}
+    .h-price{color:var(--text);font-weight:600;}
+    .report-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text4);font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;margin-top:6px;}
+    .report-btn:hover{border-color:var(--accent);color:var(--accent);}
+    .report-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;}
+    .report-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;width:100%;max-width:420px;}
+    .report-modal-title{font-family:'Merriweather',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
+    .report-modal-sub{font-size:12px;color:var(--text4);margin-bottom:20px;}
+    .form-group{margin-bottom:14px;}
+    .form-label{display:block;font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+    .form-input{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;}
+    .form-input:focus{border-color:var(--accent);}
+    .form-input::placeholder{color:var(--text5);}
+    .form-select{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+    .form-select:focus{border-color:var(--accent);}
+    .form-row{display:flex;gap:10px;}
+    .form-row .form-group{flex:1;}
+    .modal-actions{display:flex;gap:8px;margin-top:20px;}
+    .btn-primary{flex:1;padding:9px;border-radius:7px;background:var(--accent);color:white;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+    .btn-primary:hover{background:var(--accent2);}
+    .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+    .btn-secondary{padding:9px 16px;border-radius:7px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+    .btn-secondary:hover{border-color:var(--border2);color:var(--text2);}
+    .report-success{text-align:center;padding:20px 0;}
+    .report-success-icon{font-size:32px;margin-bottom:12px;}
+    .report-success-title{font-size:16px;font-weight:600;color:var(--green);margin-bottom:6px;}
+    .report-success-sub{font-size:13px;color:var(--text3);}
+    .report-notice{font-size:11px;color:var(--text5);margin-top:12px;line-height:1.5;padding:8px 10px;background:var(--bg3);border-radius:5px;}
+    .year-comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;}
+    .year-comp-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:14px;}
+    .year-comp-card.current-year{border-color:var(--accent);}
+    .year-label{font-size:11px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+    .year-price{font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;}
+    .year-vs-now{font-size:12px;font-weight:600;}
+    .year-vs-now.higher{color:var(--red);}
+    .year-vs-now.lower{color:var(--green);}
+    .year-vs-now.same{color:var(--text4);}
+    .year-months{font-size:11px;color:var(--text5);margin-top:4px;}
+    .year-insight{background:var(--bg3);border:0.5px solid var(--border2);border-radius:7px;padding:12px 16px;font-size:13px;color:var(--text3);margin-top:4px;line-height:1.6;}
+    .calc-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+    .calc-label{font-size:11px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+    .calc-input-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+    .calc-input{flex:1;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;min-width:0;}
+    .calc-input:focus{border-color:var(--accent);}
+    .calc-unit{font-size:12px;color:var(--text4);white-space:nowrap;}
+    .calc-results{display:flex;flex-direction:column;gap:6px;}
+    .calc-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--bg);border-radius:6px;border:0.5px solid var(--border);}
+    .calc-row.best-market{border-color:rgba(74,222,128,0.3);background:var(--green-bg);}
+    .calc-market{font-size:12px;color:var(--text3);}
+    .calc-earning{font-size:14px;font-weight:700;color:var(--text);}
+    .calc-earning.best{color:var(--green);}
+    .calc-best-label{font-size:10px;font-weight:600;color:var(--green);background:rgba(74,222,128,0.1);padding:1px 6px;border-radius:3px;}
+    .empty{padding:60px;text-align:center;color:var(--text4);}
+    .no-data{padding:32px;text-align:center;color:var(--text4);font-size:13px;}
+    .footer{background:var(--bg2);border-top:1px solid var(--border);padding:20px 32px;margin-top:48px;}
+    .footer-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .footer-brand{font-family:'Merriweather',serif;font-size:14px;font-weight:700;color:var(--text4);}
+    .footer-right{text-align:right;}
+    .footer-sources{font-size:11px;color:var(--text5);}
+    .footer-note{font-size:11px;color:var(--text5);margin-top:2px;font-style:italic;}
     @media(max-width:768px){
-      .header,.stats-bar,.tabaski-banner,.footer { padding-left:16px; padding-right:16px; }
-      .main { padding:16px; }
-      .header-date,.tabaski-tip { display:none; }
-      .commodity-grid { grid-template-columns:1fr; }
-      .pred-months { grid-template-columns:1fr; }
-      .footer-inner { flex-direction:column; align-items:flex-start; }
-      .footer-right { text-align:left; }
-      .detail-panel { padding:18px; }
-      .hero { padding:40px 20px 32px; min-height:auto; }
-      .hero-title { letter-spacing:-1px; }
-      .features-section,.how-section,.sources-section,.wa-section { padding:48px 20px; }
-      .wa-card { padding:28px 20px; }
-      .wa-card-right { display:none; }
-      .hero-stats { gap:24px; }
-      .hero-cta-row { flex-direction:column; align-items:center; }
-      .nav-btn { padding:6px 10px; font-size:11px; }
+      .header-date,.header-zone,.tabaski-tip{display:none;}
+      .main{padding:20px 16px;}
+      .header,.stats-bar,.tabaski-banner,.renewal-banner{padding-left:16px;padding-right:16px;}
+      .commodity-grid{grid-template-columns:1fr;}
+      .pred-months{grid-template-columns:1fr;}
+      .footer{padding:16px;}
+      .footer-inner{flex-direction:column;align-items:flex-start;}
+      .footer-right{text-align:left;}
     }
   </style>
 </head>
@@ -367,191 +307,752 @@
 <div id="root"></div>
 <script type="text/babel">
 
-const SUPABASE_URL='https://rwidbemcvfkkkloozrjn.supabase.co'
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aWRiZW1jdmZra2tsb296cmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzI4NTYsImV4cCI6MjA5MDMwODg1Nn0.2z9JjrGlwGkH7QMEqHIqMj3O2aotGKTpdW6GYr5RMZM'
-const WA_LINK='https://chat.whatsapp.com/JHIORYAolWrJBxVJoo0VT2'
+const SUPABASE_URL = 'https://rwidbemcvfkkkloozrjn.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3aWRiZW1jdmZra2tsb296cmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzI4NTYsImV4cCI6MjA5MDMwODg1Nn0.2z9JjrGlwGkH7QMEqHIqMj3O2aotGKTpdW6GYr5RMZM'
 
-async function sq(t,p){const r=await fetch(SUPABASE_URL+'/rest/v1/'+t+(p||''),{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});return r.json()}
+// ─── PAYWALL GO-LIVE DATE ───────────────────────────────────────────────────
+// Site works as normal until April 30. Gate activates May 1, 2026.
+const GATE_LIVE_DATE = new Date('2026-05-01T00:00:00')
+const GATE_IS_LIVE = new Date() >= GATE_LIVE_DATE
+
+// Your Wave number shown to users who want to upgrade
+const WAVE_NUMBER = '77 545 9889'
+
+// Grace period in days after expiry before dropping to free
+const GRACE_DAYS = 3
+// ───────────────────────────────────────────────────────────────────────────
+
+async function sq(table,params){
+  const r=await fetch(SUPABASE_URL+'/rest/v1/'+table+(params||''),{
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+  })
+  return r.json()
+}
+
+async function getSubscriber(phone){
+  const clean=phone.replace(/\s/g,'')
+  const data=await sq('subscribers','?phone=eq.'+encodeURIComponent(clean)+'&limit=1')
+  return data&&data.length>0?data[0]:null
+}
+
+async function registerFreeUser(name,phone){
+  const clean=phone.replace(/\s/g,'')
+  const r=await fetch(SUPABASE_URL+'/rest/v1/subscribers',{
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+SUPABASE_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'return=representation'
+    },
+    body:JSON.stringify({name,phone:clean,access_level:'free'})
+  })
+  const d=await r.json()
+  return Array.isArray(d)?d[0]:d
+}
+
+function getAccessStatus(subscriber){
+  if(!subscriber) return{level:'free',expired:false,daysLeft:null,inGrace:false}
+  if(subscriber.access_level==='free') return{level:'free',expired:false,daysLeft:null,inGrace:false}
+
+  const now=new Date()
+  const expires=subscriber.expires_at?new Date(subscriber.expires_at):null
+
+  if(!expires) return{level:'paid',expired:false,daysLeft:null,inGrace:false}
+
+  const msLeft=expires-now
+  const daysLeft=Math.ceil(msLeft/86400000)
+  const graceDeadline=new Date(expires.getTime()+GRACE_DAYS*86400000)
+  const inGrace=now>expires&&now<=graceDeadline
+  const fullyExpired=now>graceDeadline
+
+  if(fullyExpired) return{level:'free',expired:true,daysLeft:0,inGrace:false}
+  if(inGrace) return{level:'paid',expired:false,daysLeft:0,inGrace:true}
+  return{level:'paid',expired:false,daysLeft,inGrace:false}
+}
+
+// localStorage helpers
+function saveSession(subscriber){
+  localStorage.setItem('jp_subscriber',JSON.stringify(subscriber))
+}
+function loadSession(){
+  try{return JSON.parse(localStorage.getItem('jp_subscriber'))||null}catch{return null}
+}
+function clearSession(){
+  localStorage.removeItem('jp_subscriber')
+}
 
 const SOURCE_LABEL={'wfp_hdx':'WFP','auchan_scrape':'Auchan','fao_giews':'FAO','manual':'Manuel','senpoisson_scrape':'SenPoisson','thiaroye_scrape':'Thiaroye','parknadio_scrape':'Park Nadio'}
 const CAT_LABEL={'cereals and tubers':'Céréales','pulses and nuts':'Légumineuses','vegetables':'Légumes','fruits and vegetables':'Fruits & Légumes','fruits':'Fruits','livestock':'Bétail','fish':'Poisson','seafood':'Fruits de mer','meat':'Viande','poultry':'Volaille'}
-const NAMES_FR={'Millet':'Mil','Rice (imported)':'Riz importé','Rice (local)':'Riz local','Rice (ordinary, first quality)':'Riz 1ère qualité','Rice (ordinary, second quality)':'Riz 2ème qualité','Rice (broken)':'Riz brisé','Rice (broken, imported)':'Riz brisé importé','Maize (imported)':'Maïs importé','Maize (local)':'Maïs local','Sorghum':'Sorgho','Sorghum (imported)':'Sorgho importé','Beans (niebe)':'Niébé','Groundnuts (shelled)':'Arachides décortiquées','Groundnuts (unshelled)':'Arachides non décortiquées','Tomatoes':'Tomates','Onions':'Oignons','Onions (imported)':'Oignons importés','Potatoes':'Pommes de terre','Beef (with bones)':'Bœuf (avec os)','Beaf meet (with bones)':'Bœuf (avec os)','Sugar':'Sucre','Vegetable oil':'Huile végétale'}
+const NAMES_FR={
+  'Millet':'Mil','Rice (imported)':'Riz importé','Rice (local)':'Riz local',
+  'Rice (ordinary, first quality)':'Riz 1ère qualité','Rice (ordinary, second quality)':'Riz 2ème qualité',
+  'Rice (broken)':'Riz brisé','Rice (broken, imported)':'Riz brisé importé',
+  'Maize (imported)':'Maïs importé','Maize (local)':'Maïs local',
+  'Sorghum':'Sorgho','Sorghum (imported)':'Sorgho importé',
+  'Beans (niebe)':'Niébé','Groundnuts (shelled)':'Arachides décortiquées',
+  'Groundnuts (unshelled)':'Arachides non décortiquées','Tomatoes':'Tomates',
+  'Onions':'Oignons','Onions (imported)':'Oignons importés',
+  'Potatoes':'Pommes de terre','Beef (with bones)':'Bœuf (avec os)',
+  'Beaf meet (with bones)':'Bœuf (avec os)','Sugar':'Sucre','Vegetable oil':'Huile végétale'
+}
+
 function fr(n){return NAMES_FR[n]||n}
 
-const SS={0:{r:false,h:false},1:{r:false,h:false},2:{r:false,h:false},3:{r:false,h:false},4:{r:false,h:false,l:true},5:{r:true,h:false,l:true},6:{r:true,h:false},7:{r:true,h:false},8:{r:true,h:false},9:{r:false,h:true},10:{r:false,h:true},11:{r:false,h:true}}
-const TAB=new Date('2026-06-27'),RAM_S=new Date('2026-02-17'),RAM_E=new Date('2026-03-18')
-function nearTab(d,w=6){const diff=(TAB-d)/86400000;return diff>0&&diff<w*7}
-function inRam(d){return d>=RAM_S&&d<=RAM_E}
-
-function gsf(cat,m){
-  const s=SS[m]||{}
-  if(cat==='cereals and tubers'){if(s.l)return{pct:12,dir:'up',driver:'Soudure (stocks bas)',conf:78};if(s.r)return{pct:6,dir:'up',driver:'Pluies limitent transport',conf:65};if(s.h)return{pct:-15,dir:'down',driver:'Arrivée des récoltes',conf:85};return{pct:-3,dir:'stable',driver:'Saison sèche stable',conf:60}}
-  if(cat==='pulses and nuts'){if(s.l)return{pct:8,dir:'up',driver:'Soudure (stocks réduits)',conf:72};if(s.h)return{pct:-12,dir:'down',driver:'Récolte d\'arachides',conf:80};if(s.r)return{pct:4,dir:'up',driver:'Accès réduit aux marchés',conf:60};return{pct:0,dir:'stable',driver:'Période stable',conf:55}}
-  if(cat==='vegetables'){if(s.r)return{pct:18,dir:'up',driver:'Pluies réduisent l\'offre',conf:75};if(s.h)return{pct:-20,dir:'down',driver:'Pic de production Niayes',conf:88};return{pct:5,dir:'stable',driver:'Demande urbaine stable',conf:58}}
-  if(cat==='fish'||cat==='seafood'){if(s.r)return{pct:15,dir:'up',driver:'Pluies limitent la pêche',conf:70};if(m>=1&&m<=4)return{pct:-10,dir:'down',driver:'Haute saison de pêche',conf:72};return{pct:3,dir:'stable',driver:'Demande stable en poisson',conf:55}}
-  if(cat==='meat'||cat==='poultry'){if(nearTab(new Date(new Date().getFullYear(),m,1)))return{pct:25,dir:'up',driver:'Approche de Tabaski',conf:85};if(inRam(new Date(new Date().getFullYear(),m,15)))return{pct:10,dir:'up',driver:'Ramadan',conf:70};return{pct:2,dir:'stable',driver:'Demande stable en viande',conf:50}}
-  return{pct:0,dir:'stable',driver:'Facteurs saisonniers',conf:50}
+const SENEGAL_SEASONS={
+  0:{name:'Saison sèche',rain:false,harvest:false},
+  1:{name:'Saison sèche',rain:false,harvest:false},
+  2:{name:'Saison sèche',rain:false,harvest:false},
+  3:{name:'Saison sèche',rain:false,harvest:false},
+  4:{name:'Fin saison sèche',rain:false,harvest:false,lean:true},
+  5:{name:'Début pluies',rain:true,harvest:false,lean:true},
+  6:{name:'Saison des pluies',rain:true,harvest:false},
+  7:{name:'Pic des pluies',rain:true,harvest:false},
+  8:{name:'Fin des pluies',rain:true,harvest:false},
+  9:{name:'Début récoltes',rain:false,harvest:true},
+  10:{name:'Grande récolte',rain:false,harvest:true},
+  11:{name:'Post-récolte',rain:false,harvest:true},
 }
-function histAvg(history,m){const r=history.filter(h=>h.price_date&&new Date(h.price_date).getMonth()===m);return r.length?r.reduce((s,h)=>s+h.price,0)/r.length:null}
-function buildPred(cp,cat,history){
-  const now=new Date()
-  return Array.from({length:3},(_,i)=>{
-    const d=new Date(now.getFullYear(),now.getMonth()+i+1,1),m=d.getMonth()
-    const sf=gsf(cat,m),ha=histAvg(history,m)
-    let pp,conf=sf.conf
-    if(ha&&history.length>12){pp=Math.round(ha*0.6+cp*(1+sf.pct/100)*0.4);conf=Math.min(conf+10,92)}
-    else pp=Math.round(cp*(1+sf.pct/100))
-    const chg=Math.round(((pp-cp)/cp)*100),dir=chg>5?'up':chg<-5?'down':'stable'
-    const s=SS[m]||{},facs=[]
-    if(s.r)facs.push({name:'Saison des pluies',desc:'Les pluies limitent le transport.',impact:'negative',icon:'🌧'})
-    if(s.h)facs.push({name:'Période de récolte',desc:'Nouvelles récoltes augmentent l\'offre.',impact:'positive',icon:'🌾'})
-    if(s.l)facs.push({name:'Période de soudure',desc:'Les stocks s\'épuisent.',impact:'negative',icon:'📉'})
-    if(nearTab(d)&&(cat==='livestock'||cat==='meat'||cat==='poultry'))facs.push({name:'Approche de Tabaski',desc:'Forte hausse de la demande.',impact:'negative',icon:'🐑'})
-    if(inRam(d))facs.push({name:'Ramadan',desc:'Hausse de consommation.',impact:'negative',icon:'🌙'})
-    if(!facs.length)facs.push({name:'Marché stable',desc:'Aucun facteur saisonnier majeur.',impact:'neutral',icon:'📊'})
-    return{monthName:d.toLocaleDateString(undefined,{month:'long',year:'numeric'}),pp,chg,dir,conf,driver:sf.driver,facs}
+
+const TABASKI_2026=new Date('2026-06-27')
+const RAMADAN_2026_START=new Date('2026-02-17')
+const RAMADAN_2026_END=new Date('2026-03-18')
+
+function isNearTabaski(targetDate,weeks=6){
+  const diff=(TABASKI_2026-targetDate)/86400000
+  return diff>0&&diff<(weeks*7)
+}
+function isRamadan(targetDate){
+  return targetDate>=RAMADAN_2026_START&&targetDate<=RAMADAN_2026_END
+}
+
+function getCategorySeasonalFactor(category,month,history){
+  const s=SENEGAL_SEASONS[month]||{}
+  if(category==='cereals and tubers'){
+    if(s.lean) return{pct:+12,driver:'Soudure (stocks bas)',direction:'up',confidence:78}
+    if(s.rain) return{pct:+6,driver:'Pluies limitent transport',direction:'up',confidence:65}
+    if(s.harvest) return{pct:-15,driver:'Arrivée des récoltes',direction:'down',confidence:85}
+    return{pct:-3,driver:'Saison sèche stable',direction:'stable',confidence:60}
+  }
+  if(category==='pulses and nuts'){
+    if(s.lean) return{pct:+8,driver:'Soudure (stocks réduits)',direction:'up',confidence:72}
+    if(s.harvest) return{pct:-12,driver:'Récolte d\'arachides',direction:'down',confidence:80}
+    if(s.rain) return{pct:+4,driver:'Accès réduit aux marchés',direction:'up',confidence:60}
+    return{pct:0,driver:'Période stable',direction:'stable',confidence:55}
+  }
+  if(category==='vegetables'){
+    if(s.rain) return{pct:+18,driver:'Pluies réduisent l\'offre maraîchère',direction:'up',confidence:75}
+    if(s.harvest) return{pct:-20,driver:'Pic de production Niayes',direction:'down',confidence:88}
+    return{pct:+5,driver:'Demande urbaine stable',direction:'stable',confidence:58}
+  }
+  if(category==='fish'||category==='seafood'){
+    if(s.rain) return{pct:+15,driver:'Pluies limitent la pêche artisanale',direction:'up',confidence:70}
+    if(month>=1&&month<=4) return{pct:-10,driver:'Haute saison de pêche',direction:'down',confidence:72}
+    return{pct:+3,driver:'Demande stable en poisson',direction:'stable',confidence:55}
+  }
+  if(category==='meat'||category==='poultry'){
+    if(isNearTabaski(new Date(new Date().getFullYear(),month,1))) return{pct:+25,driver:'Approche de Tabaski — forte demande',direction:'up',confidence:85}
+    if(isRamadan(new Date(new Date().getFullYear(),month,15))) return{pct:+10,driver:'Ramadan — hausse de consommation',direction:'up',confidence:70}
+    return{pct:+2,driver:'Demande stable en viande',direction:'stable',confidence:50}
+  }
+  if(category==='livestock') return{pct:0,driver:'Demande stable',direction:'stable',confidence:50}
+  return{pct:0,driver:'Facteurs saisonniers',direction:'stable',confidence:50}
+}
+
+function getHistoricalSeasonalAvg(history,targetMonth){
+  const relevant=history.filter(h=>{
+    if(!h.price_date)return false
+    return new Date(h.price_date).getMonth()===targetMonth
   })
+  if(!relevant.length)return null
+  return relevant.reduce((s,h)=>s+h.price,0)/relevant.length
 }
-function getRec(avg,hist){
-  if(!hist||hist.length<6)return{label:'EN ATTENTE',cls:'rec-pending',reason:'Données insuffisantes.',reasonCls:'pending'}
-  const old=hist.slice(-12,-1).map(h=>h.price),mean=old.reduce((a,b)=>a+b,0)/old.length,pct=((avg-mean)/mean)*100
-  if(pct>8)return{label:'VENDRE',cls:'rec-sell',reason:'Prix '+Math.round(pct)+'% au-dessus de la moyenne saisonnière.',reasonCls:'sell'}
-  if(pct<-8)return{label:'ATTENDRE',cls:'rec-wait',reason:'Prix '+Math.abs(Math.round(pct))+'% sous la moyenne saisonnière.',reasonCls:'wait'}
-  return{label:'VENDRE',cls:'rec-sell',reason:'Prix dans la normale. Bonnes conditions pour vendre.',reasonCls:'sell'}
-}
-function getTabDays(){const d=Math.ceil((TAB-new Date())/86400000);return d>0&&d<=120?d:null}
 
-function Ticker({prices,commodities}){
-  const items=React.useMemo(()=>{
-    if(!prices.length||!commodities.length)return[]
-    const bc={}
-    prices.forEach(p=>{if(!bc[p.commodity_id])bc[p.commodity_id]=[];bc[p.commodity_id].push(p)})
-    return Object.entries(bc).slice(0,20).map(([cid,g])=>{
-      const c=commodities.find(x=>x.id===parseInt(cid));if(!c)return null
-      const avg=Math.round(g.reduce((s,p)=>s+p.price,0)/g.length),sf=gsf(c.category,(new Date().getMonth()+1)%12)
-      return{name:fr(c.name_fr),price:avg,unit:c.unit||'kg',dir:sf.dir,pct:sf.pct}
-    }).filter(Boolean)
-  },[prices,commodities])
-  if(!items.length)return null
-  const doubled=[...items,...items]
+function buildPrediction(currentPrice,category,history){
+  const now=new Date()
+  const months=[]
+  for(let i=1;i<=3;i++){
+    const targetDate=new Date(now.getFullYear(),now.getMonth()+i,1)
+    const targetMonth=targetDate.getMonth()
+    const monthName=targetDate.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})
+    const seasonal=getCategorySeasonalFactor(category,targetMonth,history)
+    const histAvg=getHistoricalSeasonalAvg(history,targetMonth)
+    let predictedPrice,confidence=seasonal.confidence
+    if(histAvg&&history.length>12){
+      predictedPrice=Math.round(histAvg*0.6+currentPrice*(1+seasonal.pct/100)*0.4)
+      confidence=Math.min(seasonal.confidence+10,92)
+    } else {
+      predictedPrice=Math.round(currentPrice*(1+seasonal.pct/100))
+    }
+    const changePct=Math.round(((predictedPrice-currentPrice)/currentPrice)*100)
+    const direction=changePct>5?'up':changePct<-5?'down':'stable'
+    const factors=[]
+    const s=SENEGAL_SEASONS[targetMonth]||{}
+    if(s.rain) factors.push({name:'Saison des pluies',desc:'Les pluies limitent le transport et réduisent l\'offre sur les marchés.',impact:'negative',icon:'R'})
+    if(s.harvest) factors.push({name:'Période de récolte',desc:'L\'arrivée des nouvelles récoltes augmente l\'offre et fait baisser les prix.',impact:'positive',icon:'R'})
+    if(s.lean) factors.push({name:'Période de soudure',desc:'Les stocks s\'épuisent. La demande dépasse l\'offre disponible.',impact:'negative',icon:'S'})
+    if(isNearTabaski(targetDate)&&(category==='livestock'||category==='cereals and tubers'||category==='meat'||category==='poultry')){
+      factors.push({name:'Approche de Tabaski',desc:'La demande augmente fortement dans les semaines précédant Tabaski.',impact:'negative',icon:'T'})
+    }
+    if(isRamadan(targetDate)) factors.push({name:'Ramadan',desc:'La consommation d\'oignons, sucre et huile augmente pendant le Ramadan.',impact:'negative',icon:'R'})
+    if(!factors.length) factors.push({name:'Marché stable',desc:'Aucun facteur saisonnier majeur attendu.',impact:'neutral',icon:'S'})
+    months.push({monthName,targetMonth,predictedPrice,changePct,direction,confidence,driver:seasonal.driver,factors})
+  }
+  return months
+}
+
+function getPredSummary(category,history,currentPrice){
+  const next=new Date(new Date().getFullYear(),new Date().getMonth()+1,1)
+  return getCategorySeasonalFactor(category,next.getMonth(),history)
+}
+
+function getRec(avg,hist){
+  if(!hist||hist.length<6) return{label:'EN ATTENTE',cls:'rec-pending',reason:'Données insuffisantes.',reasonCls:'pending'}
+  const old=hist.slice(-12,-1).map(h=>h.price)
+  const mean=old.reduce((a,b)=>a+b,0)/old.length
+  const pct=((avg-mean)/mean)*100
+  if(pct>8) return{label:'VENDRE',cls:'rec-sell',reason:'Prix '+Math.round(pct)+'% au-dessus de la moyenne saisonnière.',reasonCls:'sell'}
+  if(pct<-8) return{label:'ATTENDRE',cls:'rec-wait',reason:'Prix '+Math.abs(Math.round(pct))+'% sous la moyenne saisonnière.',reasonCls:'wait'}
+  return{label:'VENDRE',cls:'rec-sell',reason:'Prix dans la normale saisonnière.',reasonCls:'sell'}
+}
+
+function getTabaski(){
+  const d=Math.ceil((TABASKI_2026-new Date())/86400000)
+  return d>0&&d<=120?d:null
+}
+
+// ─── LOGIN GATE ──────────────────────────────────────────────────────────────
+function LoginGate({onLogin}){
+  const[name,setName]=React.useState('')
+  const[phone,setPhone]=React.useState('')
+  const[loading,setLoading]=React.useState(false)
+  const[error,setError]=React.useState('')
+
+  async function handleSubmit(){
+    const trimName=name.trim()
+    const trimPhone=phone.trim().replace(/\s/g,'')
+    if(!trimName){setError('Veuillez entrer votre prénom.');return}
+    if(trimPhone.length<9){setError('Numéro de téléphone invalide. Format: 77 545 9889');return}
+    setLoading(true);setError('')
+    try{
+      let sub=await getSubscriber(trimPhone)
+      if(!sub){
+        sub=await registerFreeUser(trimName,trimPhone)
+      }
+      saveSession(sub)
+      onLogin(sub)
+    }catch(e){
+      setError('Erreur de connexion. Réessayez.')
+    }
+    setLoading(false)
+  }
+
+  function formatPhone(val){
+    const digits=val.replace(/\D/g,'').slice(0,9)
+    const parts=[]
+    if(digits.length>0) parts.push(digits.slice(0,2))
+    if(digits.length>2) parts.push(digits.slice(2,5))
+    if(digits.length>5) parts.push(digits.slice(5,7))
+    if(digits.length>7) parts.push(digits.slice(7,9))
+    return parts.join(' ')
+  }
+
   return(
-    <div className="ticker-wrap">
-      <div className="ticker-label">MARCHÉS</div>
-      <div className="ticker-track-wrap">
-        <div className="ticker-track">
-          {doubled.map((it,i)=>(
-            <div key={i} className={'ticker-item '+it.dir}>
-              <span className="t-name">{it.name}</span>
-              <span className="t-price">{it.price.toLocaleString()}</span>
-              <span style={{fontSize:10,color:'rgba(148,163,184,0.5)'}}>FCFA/{it.unit}</span>
-              <span className="t-arrow">{it.dir==='up'?'▲':it.dir==='down'?'▼':'—'}</span>
-              <span className="t-change">{it.dir==='up'?'+'+it.pct+'%':it.dir==='down'?it.pct+'%':'stable'}</span>
+    <div className="gate-overlay">
+      <div className="gate-card">
+        <div className="gate-logo">
+          <div className="gate-logo-mark">JP</div>
+          <div>
+            <div className="gate-logo-name">Jàng Prix</div>
+            <div className="gate-logo-sub">Intelligence des marchés agricoles</div>
+          </div>
+        </div>
+        <div className="gate-title">Accéder aux prix du marché</div>
+        <div className="gate-sub">Entrez votre prénom et numéro de téléphone pour consulter les prix agricoles de Dakar. Aucun mot de passe requis.</div>
+        <div className="gate-form-group">
+          <label className="gate-label">Prénom</label>
+          <input className="gate-input" type="text" placeholder="ex: Mamadou" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleSubmit()}/>
+        </div>
+        <div className="gate-form-group">
+          <label className="gate-label">Numéro de téléphone</label>
+          <input className="gate-input" type="tel" placeholder="77 545 9889" value={phone} onChange={e=>setPhone(formatPhone(e.target.value))} onKeyDown={e=>e.key==='Enter'&&handleSubmit()}/>
+        </div>
+        {error&&<div className="gate-error">{error}</div>}
+        <button className="gate-btn" onClick={handleSubmit} disabled={loading}>
+          {loading?'Connexion...':'Accéder aux prix →'}
+        </button>
+        <div className="gate-note">Vos données sont confidentielles et ne seront jamais partagées.</div>
+      </div>
+    </div>
+  )
+}
+
+// ─── EXPIRED POPUP ───────────────────────────────────────────────────────────
+function ExpiredPopup({onDismiss}){
+  return(
+    <div className="expired-overlay">
+      <div className="expired-modal">
+        <div className="expired-icon">⏰</div>
+        <div className="expired-title">Votre abonnement a expiré</div>
+        <div className="expired-sub">Vous avez été repassé au compte gratuit (prix d'hier). Pour retrouver l'accès complet — prix en direct, prévisions et analyses — renouvelez votre abonnement.</div>
+        <div className="expired-wave">
+          <div className="expired-wave-label">Renouvelez via Wave</div>
+          <div className="expired-wave-number">{WAVE_NUMBER}</div>
+          <div className="expired-wave-amount">3 500 FCFA/mois · 36 000 FCFA/an (3 000/mois)</div>
+        </div>
+        <button className="expired-dismiss" onClick={onDismiss}>Continuer avec le compte gratuit</button>
+      </div>
+    </div>
+  )
+}
+
+// ─── UPGRADE PROMPT ──────────────────────────────────────────────────────────
+function UpgradePrompt(){
+  const[show,setShow]=React.useState(false)
+  return(
+    <>
+      <div className="upgrade-prompt">
+        <div className="upgrade-prompt-text">🔒 <strong>Accès complet</strong> — Prix en direct, prévisions 3 mois, historique et analyses</div>
+        <button className="upgrade-btn" onClick={()=>setShow(true)}>Passer à Payant — 3 500 FCFA/mois</button>
+      </div>
+      {show&&(
+        <div className="upgrade-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setShow(false)}}>
+          <div className="upgrade-modal">
+            <div className="upgrade-modal-title">Passer à l'accès complet</div>
+            <div className="upgrade-modal-sub">
+              Envoyez votre paiement via Wave avec <strong>votre numéro de téléphone</strong> en message. Votre accès sera activé dans les 24h.
             </div>
-          ))}
+            <div className="upgrade-modal-wave">
+              <div className="upgrade-modal-wave-label">Envoyer via Wave à</div>
+              <div className="upgrade-modal-wave-number">{WAVE_NUMBER}</div>
+            </div>
+            <div className="upgrade-modal-plans">
+              <div className="upgrade-modal-plan">
+                <div className="upgrade-modal-plan-label">Mensuel</div>
+                <div className="upgrade-modal-plan-price">3 500 FCFA</div>
+                <div className="upgrade-modal-plan-note">par mois</div>
+              </div>
+              <div className="upgrade-modal-plan recommended">
+                <div className="upgrade-modal-plan-label">⭐ Annuel</div>
+                <div className="upgrade-modal-plan-price">36 000 FCFA</div>
+                <div className="upgrade-modal-plan-note">3 000 FCFA/mois</div>
+                <div className="upgrade-modal-plan-save">Économisez 6 000 FCFA</div>
+              </div>
+            </div>
+            <div style={{fontSize:11,color:'var(--text5)',marginBottom:16,lineHeight:1.5}}>
+              Ce que vous obtenez : prix en direct, prévisions 3 mois, tendances, comparaison annuelle et historique complet.
+            </div>
+            <button className="btn-secondary" style={{width:'100%'}} onClick={()=>setShow(false)}>Fermer</button>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+// ─── RENEWAL BANNER ──────────────────────────────────────────────────────────
+function RenewalBanner({daysLeft}){
+  const[show,setShow]=React.useState(true)
+  if(!show)return null
+  return(
+    <div className="renewal-banner">
+      <div className="renewal-banner-inner">
+        <span className="renewal-banner-text">
+          ⚠️ Votre abonnement expire dans <strong>{daysLeft} jour{daysLeft>1?'s':''}</strong> — Renouvelez pour continuer à accéder aux prix en direct et aux analyses.
+        </span>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <span style={{fontSize:12,color:'var(--amber)'}}>Wave: {WAVE_NUMBER}</span>
+          <button className="renewal-banner-btn" onClick={()=>setShow(false)}>✕</button>
         </div>
       </div>
     </div>
   )
 }
 
-function PredTab({commodity,currentPrice,history}){
-  const months=buildPred(currentPrice,commodity.category,history)
+// ─── LOCKED FEATURE PLACEHOLDER ─────────────────────────────────────────────
+function LockedFeature({feature}){
+  return(
+    <div style={{padding:'32px',textAlign:'center',background:'var(--bg3)',borderRadius:8}}>
+      <div style={{fontSize:28,marginBottom:10}}>🔒</div>
+      <div style={{fontSize:14,fontWeight:600,color:'var(--text)',marginBottom:6}}>{feature} — Fonctionnalité Payante</div>
+      <div style={{fontSize:12,color:'var(--text4)',marginBottom:14,lineHeight:1.6}}>
+        Envoyez <strong style={{color:'var(--amber)'}}>3 500 FCFA</strong> via Wave au <strong style={{color:'var(--amber)'}}>{WAVE_NUMBER}</strong><br/>pour accéder aux prévisions, tendances et historique complet.
+      </div>
+    </div>
+  )
+}
+
+function PredictionTab({commodity,currentPrice,history}){
+  const months=buildPrediction(currentPrice,commodity.category,history)
   return(
     <div>
       <div className="pred-months">
         {months.map((m,i)=>(
           <div key={i} className="pred-month-card">
             <div className="pred-month-name">{m.monthName}</div>
-            <div className={'pred-month-price '+m.dir}>{m.pp.toLocaleString()} FCFA</div>
-            <div className={'pred-month-change '+m.dir}>{m.dir==='up'?'▲ +'+m.chg+'%':m.dir==='down'?'▼ '+m.chg+'%':'→ Stable (±'+Math.abs(m.chg)+'%)'}</div>
+            <div className={'pred-month-price '+m.direction}>{m.predictedPrice.toLocaleString('fr-FR')} FCFA</div>
+            <div className={'pred-month-change '+m.direction}>
+              {m.direction==='up'?'▲ +'+(m.changePct)+'%':m.direction==='down'?'▼ '+m.changePct+'%':'→ Stable (±'+Math.abs(m.changePct)+'%)'}
+            </div>
             <div className="pred-month-driver">{m.driver}</div>
-            <div className="pred-confidence"><div className="pred-conf-bar-wrap"><div className="pred-conf-bar" style={{width:m.conf+'%'}}/></div><span className="pred-conf-label">Fiabilité {m.conf}%</span></div>
+            <div className="pred-confidence">
+              <div className="pred-conf-bar-wrap"><div className="pred-conf-bar" style={{width:m.confidence+'%'}}/></div>
+              <span className="pred-conf-label">Fiabilité {m.confidence}%</span>
+            </div>
           </div>
         ))}
       </div>
       <div className="pred-factors">
-        <div className="pred-factors-title">Facteurs — mois prochain</div>
-        {months[0].facs.map((f,i)=>(
+        <div className="pred-factors-title">Facteurs pris en compte — mois prochain</div>
+        {months[0].factors.map((f,i)=>(
           <div key={i} className="factor-row">
-            <div className={'factor-icon '+f.impact}>{f.icon}</div>
-            <div><div className="factor-name">{f.name}</div><div className="factor-desc">{f.desc}</div><div className={'factor-impact '+f.impact}>{f.impact==='positive'?'↓ Impact positif':f.impact==='negative'?'↑ Impact négatif':'→ Neutre'}</div></div>
+            <div className={'factor-icon '+f.impact}>
+              <span style={{fontSize:11,fontWeight:700,color:f.impact==='positive'?'#4ade80':f.impact==='negative'?'#f87171':'#78716c'}}>{f.icon}</span>
+            </div>
+            <div>
+              <div className="factor-name">{f.name}</div>
+              <div className="factor-desc">{f.desc}</div>
+              <div className={'factor-impact '+f.impact}>
+                {f.impact==='positive'?'Impact positif (baisse attendue)':f.impact==='negative'?'Impact négatif (hausse attendue)':'Impact neutre'}
+              </div>
+            </div>
           </div>
         ))}
       </div>
-      <div className="pred-disclaimer">Prévisions basées sur WFP VAM (2000–2025) et cycles saisonniers du Sénégal. Indicatif uniquement.</div>
+      <div className="pred-disclaimer">
+        Prévisions basées sur les données historiques WFP (2000-2025), les cycles saisonniers du Sénégal et le calendrier agricole. Les prix réels peuvent varier. Fiabilité indicative uniquement.
+      </div>
     </div>
   )
 }
 
-function DetailPanel({selected,history,histLoading}){
-  const[tab,setTab]=React.useState('predict')
-  const[mf,setMf]=React.useState('all')
-  const mkts=[...new Set((selected.group||[]).map(p=>p.market_name).filter(Boolean))]
-  const fg=(selected.group||[]).filter(p=>mf==='all'||p.market_name===mf)
-  const fh=history.filter(p=>mf==='all'||p.market_name===mf)
-  const sg=[...fg].sort((a,b)=>a.price-b.price)
-  const min=sg[0]?.price||0,max=sg[sg.length-1]?.price||0
-  const avg=fg.reduce((s,p)=>s+p.price,0)/(fg.length||1)
-  const mm={}
-  fh.forEach(h=>{const m=h.price_date&&h.price_date.slice(0,7);if(!mm[m])mm[m]=[];mm[m].push(h.price)})
-  const monthly=Object.entries(mm).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,12).map(([month,prices])=>({month,avg:Math.round(prices.reduce((a,b)=>a+b,0)/prices.length)}))
-  const fmtM=m=>{if(!m)return'';const[y,mo]=m.split('-');return['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'][parseInt(mo)-1]+' '+y}
+function DetailPanel({selected,history,histLoading,isPaid}){
+  const[activeTab,setActiveTab]=React.useState('predict')
+  const[marketFilter,setMarketFilter]=React.useState('all')
+
+  const markets=[...new Set((selected.group||[]).map(p=>p.market_name).filter(Boolean))]
+  const filteredGroup=(selected.group||[]).filter(p=>marketFilter==='all'||p.market_name===marketFilter)
+  const filteredHistory=history.filter(p=>marketFilter==='all'||p.market_name===marketFilter)
+  const sortedGroup=[...filteredGroup].sort((a,b)=>a.price-b.price)
+  const min=sortedGroup[0]?.price||0
+  const max=sortedGroup[sortedGroup.length-1]?.price||0
+  const avg=filteredGroup.reduce((s,p)=>s+p.price,0)/(filteredGroup.length||1)
+
+  const monthlyMap={}
+  filteredHistory.forEach(h=>{
+    const m=h.price_date&&h.price_date.slice(0,7)
+    if(!monthlyMap[m])monthlyMap[m]=[]
+    monthlyMap[m].push(h.price)
+  })
+  const monthly=Object.entries(monthlyMap)
+    .sort((a,b)=>b[0].localeCompare(a[0])).slice(0,12)
+    .map(([month,prices])=>({month,avg:Math.round(prices.reduce((a,b)=>a+b,0)/prices.length)}))
+
+  const fmtMonth=m=>{
+    if(!m)return''
+    const[y,mo]=m.split('-')
+    return['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'][parseInt(mo)-1]+' '+y
+  }
+
+  // Tabs: predict, compare, years, trend, history — last 4 are paid only
+  const TABS=[
+    {k:'predict',l:'Prévision 3 mois',paid:true},
+    {k:'compare',l:'Comparer marchés',paid:true},
+    {k:'years',l:'Comparer années',paid:true},
+    {k:'trend',l:'Tendance',paid:true},
+    {k:'history',l:'Historique',paid:true},
+  ]
+
   return(
     <div className="detail-panel">
       <div className="detail-header">
-        <div><div className="detail-title">{fr(selected.commodity.name_fr)}</div><div className="detail-sub">{mkts.length} marché(s) - {history.length} enregistrements</div></div>
-        <div className="detail-tabs">{[['predict','Prévision 3 mois'],['compare','Marchés'],['years','Années'],['trend','Tendance'],['history','Historique']].map(([k,l])=><button type="button" key={k} className={'detail-tab'+(tab===k?' active':'')} onClick={e=>{e.preventDefault();setTab(k)}}>{l}</button>)}</div>
+        <div>
+          <div className="detail-title">{fr(selected.commodity.name_fr)}</div>
+          <div className="detail-sub">{markets.length} marché(s) · {history.length} enregistrements</div>
+        </div>
+        <div className="detail-tabs">
+          {TABS.map(({k,l,paid})=>{
+            const locked=paid&&!isPaid
+            return(
+              <button type="button" key={k}
+                className={'detail-tab'+(activeTab===k?' active':'')+(locked?' locked-tab':'')}
+                onClick={e=>{e.preventDefault();if(!locked)setActiveTab(k)}}>
+                {l}{locked&&<span className="lock-icon">🔒</span>}
+              </button>
+            )
+          })}
+        </div>
       </div>
-      {mkts.length>1&&<div className="market-filter"><button type="button" className={'mkt-btn'+(mf==='all'?' active':'')} onClick={e=>{e.preventDefault();setMf('all')}}>Tous</button>{mkts.map(m=><button type="button" key={m} className={'mkt-btn'+(mf===m?' active':'')} onClick={e=>{e.preventDefault();setMf(m)}}>{m}</button>)}</div>}
-      {tab==='predict'&&(histLoading?<div className="no-data"><div className="spinner" style={{margin:'0 auto 12px'}}></div>Chargement...</div>:<PredTab commodity={selected.commodity} currentPrice={avg} history={fh}/>)}
-      {tab==='compare'&&(fg.length<2?<div className="no-data">Un seul marché disponible.</div>:(<><div className="comparison-list">{sg.map(p=>{const pct=max>min?((p.price-min)/(max-min))*100:50;return(<div key={p.id} className="comparison-row"><div className="comp-market"><span className="comp-market-name">{p.market_name}</span><span className="comp-source-tag">{SOURCE_LABEL[p.source]||p.source} - {p.price_type==='retail'?'Détail':'Gros'}</span></div><div className="comp-bar-wrap"><div className="comp-bar" style={{width:Math.max(pct,5)+'%',background:p.price===min?'#22C55E':p.price===max?'#EF4444':'#FACC15'}}/></div><div className="comp-price-wrap"><span className="comp-price">{Math.round(p.price).toLocaleString()} F</span>{p.price===min&&<span className="comp-tag best">Meilleur</span>}{p.price===max&&<span className="comp-tag worst">Plus cher</span>}</div></div>)})}</div><div className="insight-box">Écart de <strong>{Math.round(max-min).toLocaleString()} FCFA/{selected.commodity.unit||'kg'}</strong> entre {sg[0].market_name} et {sg[sg.length-1].market_name}.</div></>))}
-      {tab==='years'&&(histLoading?<div className="no-data"><div className="spinner" style={{margin:'0 auto 12px'}}></div>Chargement...</div>:fh.length===0?<div className="no-data">Pas de données.</div>:(()=>{const now=new Date(),cy=now.getFullYear(),cm=now.getMonth(),by={};fh.forEach(h=>{if(!h.price_date)return;const d=new Date(h.price_date),y=d.getFullYear(),m=d.getMonth();if(m>cm)return;if(!by[y])by[y]=[];by[y].push(h.price)});const years=Object.entries(by).filter(([y])=>parseInt(y)>=cy-5).sort((a,b)=>b[0]-a[0]).map(([yr,ps])=>({year:parseInt(yr),avg:Math.round(ps.reduce((a,b)=>a+b,0)/ps.length),count:ps.length}));if(years.length<2)return<div className="no-data">Pas assez de données.</div>;const cyd=years.find(y=>y.year===cy),lyd=years.find(y=>y.year===cy-1);return(<div><div style={{fontSize:12,color:'var(--text-muted)',marginBottom:16}}>{years.length} années disponibles</div><div className="year-comp-grid">{years.map(y=>{const iC=y.year===cy,vn=cyd&&!iC?Math.round(((cyd.avg-y.avg)/y.avg)*100):null,dir=vn===null?'same':vn>5?'higher':vn<-5?'lower':'same';return(<div key={y.year} className={'year-comp-card'+(iC?' current-year':'')}><div className="year-label">{y.year}{iC?' (en cours)':''}</div><div className="year-price">{y.avg.toLocaleString()} FCFA</div><div className={'year-vs-now '+dir}>{vn===null?'Année en cours':vn>0?'Cette année: +'+vn+'%':vn<0?'Cette année: '+vn+'%':'Similaire'}</div><div className="year-months">{y.count} relevés</div></div>)})}</div>{cyd&&lyd&&<div className="year-insight">{cyd.avg>lyd.avg?<span><strong>{fr(selected.commodity.name_fr)}</strong> est <strong style={{color:'#EF4444'}}>+{Math.round(((cyd.avg-lyd.avg)/lyd.avg)*100)}% plus cher</strong> cette année vs {cy-1}.</span>:cyd.avg<lyd.avg?<span><strong>{fr(selected.commodity.name_fr)}</strong> est <strong style={{color:'#22C55E'}}>{Math.round(((lyd.avg-cyd.avg)/lyd.avg)*100)}% moins cher</strong> cette année vs {cy-1}.</span>:<span>Prix similaires à l'an dernier.</span>}</div>}</div>)})())}
-      {tab==='trend'&&(histLoading?<div className="no-data"><div className="spinner" style={{margin:'0 auto 12px'}}></div>Chargement...</div>:monthly.length===0?<div className="no-data">Pas de données.</div>:(<table className="trend-table"><thead><tr><th>Mois</th><th>Prix moyen</th><th>Variation</th><th>Marchés</th></tr></thead><tbody>{monthly.map((row,i)=>{const prev=monthly[i+1],chg=prev?Math.round(((row.avg-prev.avg)/prev.avg)*100):null,cls=chg===null?'flat':chg>0?'up':'down',sign=chg===null?'—':chg>0?'+'+chg+'%':chg+'%';const mn=[...new Set(fh.filter(h=>h.price_date&&h.price_date.startsWith(row.month)).map(h=>h.market_name).filter(Boolean))];return(<tr key={row.month}><td>{fmtM(row.month)}</td><td className="trend-price">{row.avg.toLocaleString()} FCFA</td><td className={'trend-change '+cls}>{sign}</td><td style={{fontSize:11,color:'var(--text-muted)'}}>{mn.join(', ')||'—'}</td></tr>)})}</tbody></table>))}
-      {tab==='history'&&(histLoading?<div className="no-data"><div className="spinner" style={{margin:'0 auto 12px'}}></div>Chargement...</div>:fh.length===0?<div className="no-data">Pas d'historique.</div>:(<><div style={{fontSize:12,color:'var(--text-muted)',marginBottom:12}}>{fh.length} enregistrements</div><div className="history-wrap"><table className="history-table"><thead><tr><th>Date</th><th>Marché</th><th>Prix</th><th>Source</th><th>Type</th></tr></thead><tbody>{[...fh].sort((a,b)=>b.price_date.localeCompare(a.price_date)).map((h,i)=>(<tr key={i}><td>{new Date(h.price_date).toLocaleDateString()}</td><td>{h.market_name}</td><td className="h-price">{Math.round(h.price).toLocaleString()} FCFA</td><td>{SOURCE_LABEL[h.source]||h.source}</td><td><span className="type-tag">{h.price_type==='retail'?'Détail':'Gros'}</span></td></tr>))}</tbody></table></div></>))}
+
+      {!isPaid&&(
+        <div style={{marginBottom:16}}>
+          <UpgradePrompt/>
+        </div>
+      )}
+
+      {markets.length>1&&(
+        <div className="market-filter">
+          <span style={{fontSize:11,color:'var(--text5)',alignSelf:'center',marginRight:4}}>Filtrer:</span>
+          <button type="button" className={'mkt-btn'+(marketFilter==='all'?' active':'')} onClick={e=>{e.preventDefault();setMarketFilter('all')}}>Tous</button>
+          {markets.map(m=>(
+            <button type="button" key={m} className={'mkt-btn'+(marketFilter===m?' active':'')} onClick={e=>{e.preventDefault();setMarketFilter(m)}}>{m}</button>
+          ))}
+        </div>
+      )}
+
+      {activeTab==='predict'&&(
+        !isPaid?<LockedFeature feature="Prévision 3 mois"/>:
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>):(
+          <PredictionTab commodity={selected.commodity} currentPrice={avg} history={filteredHistory}/>
+        )
+      )}
+
+      {activeTab==='compare'&&(
+        !isPaid?<LockedFeature feature="Comparaison des marchés"/>:
+        filteredGroup.length<2?(<div className="no-data">Un seul marché disponible.</div>):(
+          <>
+            <div className="comparison-list">
+              {sortedGroup.map(p=>{
+                const pct=max>min?((p.price-min)/(max-min))*100:50
+                return(
+                  <div key={p.id} className="comparison-row">
+                    <div className="comp-market">
+                      <span className="comp-market-name">{p.market_name}</span>
+                      <span className="comp-source-tag">{SOURCE_LABEL[p.source]||p.source} · {p.price_type==='retail'?'Détail':'Gros'}</span>
+                    </div>
+                    <div className="comp-bar-wrap">
+                      <div className="comp-bar" style={{width:Math.max(pct,5)+'%',background:p.price===min?'#4ade80':p.price===max?'#f87171':'#b45309'}}/>
+                    </div>
+                    <div className="comp-price-wrap">
+                      <span className="comp-price">{Math.round(p.price).toLocaleString('fr-FR')} F</span>
+                      {p.price===min&&<span className="comp-tag best">Meilleur</span>}
+                      {p.price===max&&<span className="comp-tag worst">Plus cher</span>}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="insight-box">
+              Ecart de <strong>{Math.round(max-min).toLocaleString('fr-FR')} FCFA/{selected.commodity.unit||'kg'}</strong> entre {sortedGroup[0].market_name} et {sortedGroup[sortedGroup.length-1].market_name}.
+            </div>
+          </>
+        )
+      )}
+
+      {activeTab==='years'&&(
+        !isPaid?<LockedFeature feature="Comparaison annuelle"/>:
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>):filteredHistory.length===0?(<div className="no-data">Pas de données disponibles.</div>):(()=>{
+          const now=new Date()
+          const currentYear=now.getFullYear()
+          const currentMonth=now.getMonth()
+          const byYear={}
+          filteredHistory.forEach(h=>{
+            if(!h.price_date)return
+            const d=new Date(h.price_date)
+            const y=d.getFullYear()
+            if(d.getMonth()>currentMonth)return
+            if(!byYear[y])byYear[y]=[]
+            byYear[y].push(h.price)
+          })
+          const years=Object.entries(byYear)
+            .filter(([y])=>parseInt(y)>=currentYear-5)
+            .sort((a,b)=>b[0]-a[0])
+            .map(([year,prices])=>({year:parseInt(year),avg:Math.round(prices.reduce((a,b)=>a+b,0)/prices.length),count:prices.length}))
+          if(years.length<2) return <div className="no-data">Pas assez d'années pour comparer.</div>
+          const currentYearData=years.find(y=>y.year===currentYear)
+          const lastYearData=years.find(y=>y.year===currentYear-1)
+          const months=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']
+          return(
+            <div>
+              <div style={{fontSize:12,color:'var(--text4)',marginBottom:14}}>Période: {months[0]} – {months[currentMonth]} · {years.length} années</div>
+              <div className="year-comp-grid">
+                {years.map((y,i)=>{
+                  const isCurrent=y.year===currentYear
+                  const vsNow=currentYearData&&!isCurrent?Math.round(((currentYearData.avg-y.avg)/y.avg)*100):null
+                  const direction=vsNow===null?'same':vsNow>5?'higher':vsNow<-5?'lower':'same'
+                  const vsLabel=vsNow===null?'Année en cours':vsNow>0?'Cette année: +'+vsNow+'%':vsNow<0?'Cette année: '+vsNow+'%':'Prix similaire'
+                  return(
+                    <div key={y.year} className={'year-comp-card'+(isCurrent?' current-year':'')}>
+                      <div className="year-label">{y.year}{isCurrent?' (en cours)':''}</div>
+                      <div className="year-price">{y.avg.toLocaleString('fr-FR')} FCFA</div>
+                      <div className={'year-vs-now '+direction}>{vsLabel}</div>
+                      <div className="year-months">{y.count} relevés</div>
+                    </div>
+                  )
+                })}
+              </div>
+              {currentYearData&&lastYearData&&(
+                <div className="year-insight">
+                  {currentYearData.avg>lastYearData.avg?(
+                    <span>Prix <strong style={{color:'var(--red)'}}>+{Math.round(((currentYearData.avg-lastYearData.avg)/lastYearData.avg)*100)}% plus élevés</strong> cette année vs {currentYear-1}.</span>
+                  ):currentYearData.avg<lastYearData.avg?(
+                    <span>Prix <strong style={{color:'var(--green)'}}>+{Math.round(((lastYearData.avg-currentYearData.avg)/lastYearData.avg)*100)}% moins élevés</strong> cette année vs {currentYear-1}.</span>
+                  ):(<span>Prix similaires à l'année dernière.</span>)}
+                </div>
+              )}
+            </div>
+          )
+        })()
+      )}
+
+      {activeTab==='trend'&&(
+        !isPaid?<LockedFeature feature="Tendance mensuelle"/>:
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>):monthly.length===0?(<div className="no-data">Pas de données disponibles.</div>):(
+          <table className="trend-table">
+            <thead><tr><th>Mois</th><th>Prix moyen</th><th>Variation</th><th>Marchés</th></tr></thead>
+            <tbody>
+              {monthly.map((row,i)=>{
+                const prev=monthly[i+1]
+                const change=prev?Math.round(((row.avg-prev.avg)/prev.avg)*100):null
+                const cls=change===null?'flat':change>0?'up':'down'
+                const sign=change===null?'—':change>0?'+'+change+'%':change+'%'
+                const mktNames=[...new Set(filteredHistory.filter(h=>h.price_date&&h.price_date.startsWith(row.month)).map(h=>h.market_name).filter(Boolean))]
+                return(
+                  <tr key={row.month}>
+                    <td>{fmtMonth(row.month)}</td>
+                    <td className="trend-price">{row.avg.toLocaleString('fr-FR')} FCFA</td>
+                    <td className={'trend-change '+cls}>{sign}</td>
+                    <td style={{fontSize:11,color:'var(--text4)'}}>{mktNames.join(', ')||'—'}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )
+      )}
+
+      {activeTab==='history'&&(
+        !isPaid?<LockedFeature feature="Historique complet"/>:
+        histLoading?(<div className="no-data"><div className="spinner" style={{margin:'0 auto 8px'}}></div>Chargement...</div>):filteredHistory.length===0?(<div className="no-data">Pas d'historique disponible.</div>):(
+          <>
+            <div style={{fontSize:12,color:'var(--text4)',marginBottom:10}}>{filteredHistory.length} enregistrements</div>
+            <div className="history-wrap">
+              <table className="history-table">
+                <thead><tr><th>Date</th><th>Marché</th><th>Prix</th><th>Source</th><th>Type</th></tr></thead>
+                <tbody>
+                  {[...filteredHistory].sort((a,b)=>b.price_date.localeCompare(a.price_date)).map((h,i)=>(
+                    <tr key={i}>
+                      <td>{new Date(h.price_date).toLocaleDateString('fr-FR')}</td>
+                      <td>{h.market_name}</td>
+                      <td className="h-price">{Math.round(h.price).toLocaleString('fr-FR')} FCFA</td>
+                      <td>{SOURCE_LABEL[h.source]||h.source}</td>
+                      <td><span className="type-tag">{h.price_type==='retail'?'Détail':'Gros'}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )
+      )}
     </div>
   )
 }
 
 function ReportModal({commodity,onClose}){
-  const[price,setPrice]=React.useState(''),[market,setMarket]=React.useState(''),[phone,setPhone]=React.useState(''),[notes,setNotes]=React.useState(''),[submitting,setSubmitting]=React.useState(false),[success,setSuccess]=React.useState(false)
-  const MKTS=['Thiaroye','Tilène','Dakar','Pikine','Rufisque','Keur Massar','Castors','Gueule Tapée','Soumbédioune','Ouakam','Autre']
-  async function submit(){if(!price||!market)return;setSubmitting(true);try{await fetch(SUPABASE_URL+'/rest/v1/reports',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({commodity_id:commodity.id,market_name:market,price:parseFloat(price),unit:commodity.unit||'kg',reporter_phone:phone||null,notes:notes||null})});setSuccess(true)}catch(e){console.error(e)};setSubmitting(false)}
-  return(<div className="report-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}}><div className="report-modal">{success?(<div className="report-success"><div className="report-success-icon">✓</div><div className="report-success-title">Prix signalé !</div><div className="report-success-sub">Merci. Votre signalement aide tous les agriculteurs.</div><button type="button" className="btn-primary" style={{marginTop:20,width:'100%'}} onClick={onClose}>Fermer</button></div>):(<><div className="report-modal-title">Signaler un prix</div><div className="report-modal-sub">{fr(commodity.name_fr)} - Prix observé sur le marché</div><div className="form-row"><div className="form-group"><label className="form-label">Prix</label><input className="form-input" type="number" min="0" placeholder="ex: 350" value={price} onChange={e=>setPrice(e.target.value)}/></div><div className="form-group" style={{maxWidth:80}}><label className="form-label">Unité</label><input className="form-input" value={commodity.unit||'kg'} readOnly style={{color:'var(--text-muted)'}}/></div></div><div className="form-group"><label className="form-label">Marché</label><select className="form-select" value={market} onChange={e=>setMarket(e.target.value)}><option value="">Choisir...</option>{MKTS.map(m=><option key={m} value={m}>{m}</option>)}</select></div><div className="form-group"><label className="form-label">Téléphone (optionnel)</label><input className="form-input" type="tel" placeholder="ex: 77 123 45 67" value={phone} onChange={e=>setPhone(e.target.value)}/></div><div className="form-group"><label className="form-label">Remarques (optionnel)</label><input className="form-input" placeholder="ex: qualité moyenne..." value={notes} onChange={e=>setNotes(e.target.value)}/></div><div className="report-notice">Les prix sont vérifiés avant publication. Numéro confidentiel.</div><div className="modal-actions"><button type="button" className="btn-secondary" onClick={onClose}>Annuler</button><button type="button" className="btn-primary" onClick={submit} disabled={!price||!market||submitting}>{submitting?'Envoi...':'Envoyer'}</button></div></>)}</div></div>)
+  const[price,setPrice]=React.useState('')
+  const[market,setMarket]=React.useState('')
+  const[phone,setPhone]=React.useState('')
+  const[notes,setNotes]=React.useState('')
+  const[submitting,setSubmitting]=React.useState(false)
+  const[success,setSuccess]=React.useState(false)
+  const MARKETS=['Thiaroye','Tilène','Dakar','Pikine','Rufisque','Keur Massar','Castors','Gueule Tapée','Soumbédioune','Ouakam','Autre']
+  async function handleSubmit(e){
+    e.preventDefault()
+    if(!price||!market)return
+    setSubmitting(true)
+    try{
+      await fetch(SUPABASE_URL+'/rest/v1/reports',{
+        method:'POST',
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({commodity_id:commodity.id,market_name:market,price:parseFloat(price),unit:commodity.unit||'kg',reporter_phone:phone||null,notes:notes||null})
+      })
+      setSuccess(true)
+    }catch(err){console.error(err)}
+    setSubmitting(false)
+  }
+  return(
+    <div className="report-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+      <div className="report-modal">
+        {success?(
+          <div className="report-success">
+            <div className="report-success-icon">✓</div>
+            <div className="report-success-title">Prix signalé avec succès</div>
+            <div className="report-success-sub">Merci. Votre signalement aide tous les agriculteurs.</div>
+            <button type="button" className="btn-primary" style={{marginTop:16,width:'100%'}} onClick={onClose}>Fermer</button>
+          </div>
+        ):(
+          <>
+            <div className="report-modal-title">Signaler un prix</div>
+            <div className="report-modal-sub">{fr(commodity.name_fr)} · Partagez le prix que vous voyez sur le marché</div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Prix observé</label>
+                <input className="form-input" type="number" min="0" placeholder="ex: 350" value={price} onChange={e=>setPrice(e.target.value)}/>
+              </div>
+              <div className="form-group" style={{maxWidth:80}}>
+                <label className="form-label">Unité</label>
+                <input className="form-input" value={commodity.unit||'kg'} readOnly style={{color:'var(--text4)'}}/>
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Marché</label>
+              <select className="form-select" value={market} onChange={e=>setMarket(e.target.value)}>
+                <option value="">Choisir un marché...</option>
+                {MARKETS.map(m=><option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Téléphone (optionnel)</label>
+              <input className="form-input" type="tel" placeholder="77 123 45 67" value={phone} onChange={e=>setPhone(e.target.value)}/>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Remarques (optionnel)</label>
+              <input className="form-input" placeholder="ex: prix de gros, qualité moyenne..." value={notes} onChange={e=>setNotes(e.target.value)}/>
+            </div>
+            <div className="report-notice">Les prix signalés sont vérifiés avant publication.</div>
+            <div className="modal-actions">
+              <button type="button" className="btn-secondary" onClick={onClose}>Annuler</button>
+              <button type="button" className="btn-primary" onClick={handleSubmit} disabled={!price||!market||submitting}>{submitting?'Envoi...':'Envoyer le prix'}</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
 }
 
-function RevenueCalc({group,unit}){
+function RevenueCalculator({group,unit}){
   const[qty,setQty]=React.useState('')
   const sorted=[...group].sort((a,b)=>b.price-a.price)
-  const q=parseFloat(qty)
-  const showResults=qty&&q>0
   return(
     <div className="calc-section">
       <div className="calc-label">Calculateur de revenus</div>
       <div className="calc-input-row">
-        <input className="calc-input" type="number" min="0" placeholder="Quantite a vendre" value={qty} onChange={e=>setQty(e.target.value)}/>
+        <input className="calc-input" type="number" min="0" placeholder="Quantité à vendre" value={qty} onChange={e=>setQty(e.target.value)}/>
         <span className="calc-unit">{unit||'kg'}</span>
       </div>
-      {showResults&&(
+      {qty&&parseFloat(qty)>0&&(
         <div className="calc-results">
           {sorted.map((p,i)=>{
-            const earning=Math.round(p.price*q)
+            const earning=Math.round(p.price*parseFloat(qty))
             const isBest=i===0
             return(
               <div key={p.id} className={'calc-row'+(isBest?' best-market':'')}>
                 <div>
-                  <div className="calc-market">{p.market_name} - {SOURCE_LABEL[p.source]||p.source}</div>
-                  <div style={{fontSize:11,color:'rgba(148,163,184,0.5)'}}>{Math.round(p.price).toLocaleString()} FCFA/{unit||'kg'}</div>
+                  <div className="calc-market">{p.market_name} · {SOURCE_LABEL[p.source]||p.source}</div>
+                  <div style={{fontSize:11,color:'var(--text5)'}}>à {Math.round(p.price).toLocaleString('fr-FR')} FCFA/{unit||'kg'}</div>
                 </div>
                 <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <span className={'calc-earning'+(isBest?' best':'')}>{earning.toLocaleString()} FCFA</span>
+                  <span className={'calc-earning'+(isBest?' best':'')}>{earning.toLocaleString('fr-FR')} FCFA</span>
                   {isBest&&<span className="calc-best-label">Meilleur</span>}
                 </div>
               </div>
             )
           })}
           {sorted.length>1&&(
-            <div style={{fontSize:11,color:'var(--text-muted)',textAlign:'center',paddingTop:6}}>
-              Difference: <strong style={{color:'var(--text-secondary)'}}>{(Math.round(sorted[0].price*q)-Math.round(sorted[sorted.length-1].price*q)).toLocaleString()} FCFA</strong>
+            <div style={{fontSize:11,color:'var(--text4)',textAlign:'center',paddingTop:4}}>
+              Différence: <strong style={{color:'var(--text3)'}}>{(Math.round(sorted[0].price*parseFloat(qty))-Math.round(sorted[sorted.length-1].price*parseFloat(qty))).toLocaleString('fr-FR')} FCFA</strong>
             </div>
           )}
         </div>
@@ -560,133 +1061,11 @@ function RevenueCalc({group,unit}){
   )
 }
 
-function WaPopup({onClose}){
-  return(
-    <div className="wa-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
-      <div className="wa-popup">
-        <button className="wa-close" onClick={onClose}>✕</button>
-        <div className="wa-icon-wrap"><div className="wa-icon">💬</div></div>
-        <div style={{textAlign:'center',marginBottom:18}}>
-          <div className="wa-badge">Groupe Gratuit</div>
-          <div className="wa-title">Jàng Prix — <span>Alertes Marchés</span></div>
-          <div className="wa-desc">Recevez les alertes de prix en temps réel, les tendances et les conseils de vente directement sur votre téléphone.</div>
-        </div>
-        <div className="wa-perks">
-          {[['📊','Alertes prix en temps réel sur les marchés de Dakar'],['📈','Tendances et prévisions saisonnières chaque semaine'],['💡','Conseils de vente pour maximiser vos revenus'],['🤝','Communauté d\'agriculteurs et vendeurs de Dakar']].map(([icon,text],i)=>(
-            <div key={i} className="wa-perk"><div className="wa-perk-icon">{icon}</div><span>{text}</span></div>
-          ))}
-        </div>
-        <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="wa-join-btn" onClick={onClose}>💬 Rejoindre le groupe</a>
-        <button className="wa-skip" onClick={onClose}>Non merci, continuer sans rejoindre</button>
-      </div>
-    </div>
-  )
-}
-
-function HomePage({onEnter,stats}){
-  const[popup,setPopup]=React.useState(false)
-  React.useEffect(()=>{
-    const last=sessionStorage.getItem('wa_dismissed')
-    if(!last||(Date.now()-parseInt(last))>86400000){const t=setTimeout(()=>setPopup(true),8000);return()=>clearTimeout(t)}
-  },[])
-  function closePopup(){setPopup(false);sessionStorage.setItem('wa_dismissed',Date.now().toString())}
-
-  return(
-    <div className="homepage">
-      {/* HERO */}
-      <section className="hero">
-        <div className="hero-eyebrow">🌍 Intelligence agricole - Dakar, Sénégal</div>
-        <h1 className="hero-title">
-          Vendez au <span>meilleur prix</span>
-          <span className="hero-title-sub">Chaque jour. Chaque marché.</span>
-        </h1>
-        <p className="hero-desc">Jàng Prix surveille les prix agricoles en temps réel sur les marchés de Dakar et vous donne les données, prévisions et recommandations pour prendre de meilleures décisions de vente.</p>
-        <div className="hero-cta-row">
-          <button className="btn-hero-primary" onClick={onEnter}>📊 Voir les prix du marché</button>
-          <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-hero-secondary">💬 Rejoindre le groupe WhatsApp</a>
-        </div>
-        <div className="hero-stats">
-          {[{v:stats.products+'+'  ,l:'Produits suivis'},{v:stats.markets+'',l:'Marchés couverts'},{v:stats.sources+'',l:'Sources de données'},{v:'3 300+',l:'Relevés de prix'}].map(s=>(
-            <div key={s.l} className="hero-stat"><div className="hero-stat-value">{s.v}</div><div className="hero-stat-label">{s.l}</div></div>
-          ))}
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section className="features-section">
-        <div className="section-eyebrow">Ce que nous offrons</div>
-        <h2 className="section-title">Tout ce qu'il vous faut pour <span>vendre mieux</span></h2>
-        <p className="section-desc">Des données réelles, des prévisions intelligentes et des outils pratiques — conçus pour les agriculteurs et vendeurs de Dakar.</p>
-        <div className="features-grid">
-          {[{icon:'📡',t:'Prix en temps réel',d:'Collectés quotidiennement depuis Auchan, SenPoisson, Park Nadio, Le Marché Thiaroye et les institutions WFP et FAO.'},{icon:'📈',t:'Prévisions saisonnières',d:'Anticipez les hausses et baisses de prix grâce à 25 ans de données historiques et les cycles agricoles du Sénégal.'},{icon:'🏪',t:'Comparaison de marchés',d:'Comparez les prix entre différents marchés de Dakar en un coup d\'œil. Vendez toujours là où c\'est le plus rentable.'},{icon:'💰',t:'Calculateur de revenus',d:'Entrez votre quantité à vendre et découvrez instantanément combien vous pouvez gagner sur chaque marché.'},{icon:'🌊',t:'Alertes Tabaski & Ramadan',d:'Recevez des signaux automatiques avant les périodes de forte demande pour maximiser vos ventes.'},{icon:'📊',t:'Historique des prix',d:'Accédez à l\'historique complet des prix pour comprendre les tendances passées et mieux planifier vos ventes.'}].map((f,i)=>(
-            <div key={i} className="feature-card" style={{animationDelay:(i*0.06)+'s'}}>
-              <div className="feature-icon">{f.icon}</div>
-              <div className="feature-title">{f.t}</div>
-              <div className="feature-desc">{f.d}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section className="how-section">
-        <div style={{textAlign:'center'}}>
-          <div className="section-eyebrow" style={{textAlign:'center'}}>Comment ça marche</div>
-          <h2 className="section-title" style={{textAlign:'center'}}>Simple comme <span>bonjour</span></h2>
-        </div>
-        <div className="steps-grid">
-          {[{n:'1',t:'Consultez les prix',d:'Ouvrez Jàng Prix et voyez instantanément les prix actuels sur tous les marchés de Dakar.'},{n:'2',t:'Comparez les marchés',d:'Identifiez quel marché paye le mieux pour votre produit ce jour-là.'},{n:'3',t:'Consultez la prévision',d:'Regardez si les prix vont monter ou baisser dans les 3 prochains mois avant de décider.'},{n:'4',t:'Vendez au bon moment',d:'Allez au marché le plus avantageux avec la certitude de vendre au meilleur prix.'}].map((s,i)=>(
-            <div key={i} className="step-card">
-              <div className="step-num">{s.n}</div>
-              <div className="step-title">{s.t}</div>
-              <div className="step-desc">{s.d}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* SOURCES */}
-      <section className="sources-section">
-        <div className="section-eyebrow">Nos sources</div>
-        <h2 className="section-title">Des données <span>fiables</span> et vérifiées</h2>
-        <p className="section-desc">Nous agrégeons des données de sources officielles et de marchés réels pour vous donner une image complète.</p>
-        <div className="sources-grid">
-          {['WFP VAM — Programme Alimentaire Mondial','FAO GIEWS — Système mondial d\'information','Auchan Sénégal','SenPoisson — Marché du poisson','Le Marché Thiaroye','Park Nadio','ANSD — Agence nationale de statistiques','Banque Mondiale RTFP'].map((s,i)=>(<div key={i} className="source-chip">{s}</div>))}
-        </div>
-      </section>
-
-      {/* WHATSAPP PERMANENT */}
-      <section className="wa-section">
-        <div className="wa-card">
-          <div className="wa-card-left">
-            <div className="wa-card-icon">💬</div>
-            <div className="wa-card-title">Rejoignez <span>Jàng Prix Alertes</span></div>
-            <div className="wa-card-desc">Notre groupe WhatsApp gratuit pour recevoir les alertes de prix en temps réel, les tendances du marché et les conseils de vente directement sur votre téléphone.</div>
-            <div className="wa-perks-inline">
-              {['Alertes de prix en temps réel chaque matin','Signaux de hausse et baisse avant les marchés','Conseils de vente hebdomadaires','Communauté active d\'agriculteurs de Dakar'].map((p,i)=>(
-                <div key={i} className="wa-perk-inline"><div className="wa-perk-dot"></div><span>{p}</span></div>
-              ))}
-            </div>
-            <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="wa-join-big">💬 Rejoindre gratuitement</a>
-          </div>
-          <div className="wa-card-right"><div className="wa-big-icon">💬</div></div>
-        </div>
-      </section>
-
-      {/* FINAL CTA */}
-      <section style={{padding:'48px 32px',textAlign:'center',maxWidth:600,margin:'0 auto'}}>
-        <div style={{fontSize:28,fontWeight:800,color:'var(--text-primary)',letterSpacing:'-0.5px',marginBottom:12}}>Prêt à <span style={{color:'var(--stable)'}}>mieux vendre</span> ?</div>
-        <div style={{fontSize:14,color:'var(--text-muted)',marginBottom:28}}>Accédez gratuitement aux prix de tous les marchés de Dakar maintenant.</div>
-        <button className="btn-hero-primary" onClick={onEnter} style={{margin:'0 auto'}}>📊 Voir les prix maintenant</button>
-      </section>
-
-      {popup&&<WaPopup onClose={closePopup}/>}
-    </div>
-  )
-}
-
+// ─── MAIN APP ────────────────────────────────────────────────────────────────
 function App(){
-  const[page,setPage]=React.useState('home')
+  const[subscriber,setSubscriber]=React.useState(null)
+  const[showGate,setShowGate]=React.useState(false)
+  const[showExpired,setShowExpired]=React.useState(false)
   const[prices,setPrices]=React.useState([])
   const[commodities,setCommodities]=React.useState([])
   const[selected,setSelected]=React.useState(null)
@@ -697,128 +1076,265 @@ function App(){
   const[search,setSearch]=React.useState('')
   const[reportingCommodity,setReportingCommodity]=React.useState(null)
 
+  // Check if gate should be active
   React.useEffect(()=>{
-    Promise.all([sq('prices','?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=2000'),sq('commodities','?select=*'),sq('markets','?select=*')]).then(([pd,cd,md])=>{
-      const mMap={};if(md)md.forEach(m=>mMap[m.id]=m)
-      const enriched=(pd||[]).map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Inconnu'}))
-      const latest={};enriched.forEach(p=>{const k=p.commodity_id+'_'+p.market_id;if(!latest[k])latest[k]=p})
-      setPrices(Object.values(latest));setCommodities(cd||[]);setLoading(false)
-    })
+    if(!GATE_IS_LIVE){
+      // Before May 1 — no gate, no subscriber needed
+      setShowGate(false)
+      return
+    }
+    // May 1+ — check for existing session
+    const saved=loadSession()
+    if(saved){
+      setSubscriber(saved)
+      // Check if expired
+      const status=getAccessStatus(saved)
+      if(status.expired){
+        setShowExpired(true)
+      }
+    } else {
+      setShowGate(true)
+    }
   },[])
+
+  function handleLogin(sub){
+    setSubscriber(sub)
+    setShowGate(false)
+    const status=getAccessStatus(sub)
+    if(status.expired){
+      setShowExpired(true)
+    }
+  }
+
+  const accessStatus=subscriber?getAccessStatus(subscriber):{level:'free',expired:false,daysLeft:null,inGrace:false}
+  const isPaid=GATE_IS_LIVE?(accessStatus.level==='paid'):true // Before May 1, everyone sees full site
+
+  // Yesterday's date for free users
+  const yesterday=new Date()
+  yesterday.setDate(yesterday.getDate()-1)
+  const yesterdayStr=yesterday.toISOString().split('T')[0]
+
+  React.useEffect(()=>{
+    Promise.all([
+      sq('prices','?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=2000'),
+      sq('commodities','?select=*'),
+      sq('markets','?select=*')
+    ]).then(([pd,cd,md])=>{
+      const mMap={}
+      if(md)md.forEach(m=>mMap[m.id]=m)
+      const enriched=(pd||[]).map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Inconnu'}))
+
+      // For free users: only show yesterday's prices (filter out today's)
+      const filtered=GATE_IS_LIVE&&!isPaid
+        ?enriched.filter(p=>p.price_date&&p.price_date.split('T')[0]<=yesterdayStr)
+        :enriched
+
+      const latest={}
+      filtered.forEach(p=>{const k=p.commodity_id+'_'+p.market_id;if(!latest[k])latest[k]=p})
+      setPrices(Object.values(latest))
+      setCommodities(cd||[])
+      setLoading(false)
+    })
+  },[isPaid])
 
   function handleSelect(item){
     if(selected&&selected.commodity_id===item.commodity_id){setSelected(null);setHistory([]);return}
     setSelected(item);setHistory([]);setHistLoading(true)
-    Promise.all([sq('markets','?select=*'),sq('prices','?commodity_id=eq.'+item.commodity_id+'&order=price_date.desc&limit=500&select=price,price_date,market_id,source,price_type')]).then(([md,pd])=>{
-      const mMap={};if(md)md.forEach(m=>mMap[m.id]=m)
+    Promise.all([
+      sq('markets','?select=*'),
+      sq('prices','?commodity_id=eq.'+item.commodity_id+'&order=price_date.desc&limit=500&select=price,price_date,market_id,source,price_type')
+    ]).then(([md,pd])=>{
+      const mMap={}
+      if(md)md.forEach(m=>mMap[m.id]=m)
       setHistory((pd||[]).map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Marché'})))
       setHistLoading(false)
       setTimeout(()=>{const el=document.getElementById('dp');if(el)el.scrollIntoView({behavior:'smooth'})},200)
     })
   }
 
-  const tabDays=getTabDays()
+  const tabDays=getTabaski()
   const byCom={}
   prices.forEach(p=>{
-    const c=commodities.find(x=>x.id===p.commodity_id);if(!c)return
+    const c=commodities.find(x=>x.id===p.commodity_id)
+    if(!c)return
     if(category!=='all'&&c.category!==category)return
     if(search&&!fr(c.name_fr).toLowerCase().includes(search.toLowerCase()))return
     if(!byCom[p.commodity_id])byCom[p.commodity_id]=[]
     byCom[p.commodity_id].push(p)
   })
 
-  const today=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'})
-  const allMkts=[...new Set(prices.map(p=>p.market_name).filter(Boolean))]
+  const today=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+  const markets=[...new Set(prices.map(p=>p.market_name).filter(Boolean))]
   const comCount=[...new Set(prices.map(p=>p.commodity_id))].length
   const sources=[...new Set(prices.map(p=>p.source))]
-  const lastDate=prices.length?new Date(Math.max(...prices.map(p=>new Date(p.price_date)))).toLocaleDateString():'—'
-  const stats={products:comCount||40,markets:allMkts.length||6,sources:sources.length||6}
+  const lastDate=prices.length?new Date(Math.max(...prices.map(p=>new Date(p.price_date)))).toLocaleDateString('fr-FR'):'—'
 
   return(
     <div>
+      {showGate&&<LoginGate onLogin={handleLogin}/>}
+      {showExpired&&!showGate&&<ExpiredPopup onDismiss={()=>setShowExpired(false)}/>}
+
+      {/* 7-day renewal reminder */}
+      {GATE_IS_LIVE&&accessStatus.daysLeft!==null&&accessStatus.daysLeft>0&&accessStatus.daysLeft<=7&&(
+        <RenewalBanner daysLeft={accessStatus.daysLeft}/>
+      )}
+
       <header className="header">
         <div className="header-inner">
-          <div className="logo-block" onClick={()=>{setPage('home');window.scrollTo({top:0,behavior:'smooth'})}}>
+          <div className="logo-block">
             <div className="logo-mark">JP</div>
-            <div><div className="logo-name">Jàng <span>Prix</span></div><div className="logo-sub">Intelligence des marchés agricoles</div></div>
+            <div>
+              <div className="logo-name">Jàng Prix</div>
+              <div className="logo-sub">Intelligence des marchés agricoles</div>
+            </div>
           </div>
           <div className="header-right">
-            <button className={'nav-btn'+(page==='home'?' active':'')} onClick={()=>{setPage('home');window.scrollTo({top:0,behavior:'smooth'})}}>Accueil</button>
-            <button className={'nav-btn'+(page==='dashboard'?' active':'')} onClick={()=>setPage('dashboard')}>Prix du marché</button>
-            <a href={WA_LINK} target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}><button className="nav-btn wa-nav">💬 WhatsApp</button></a>
             <div className="live-badge"><span className="live-dot"></span>EN DIRECT</div>
+            {GATE_IS_LIVE&&subscriber&&(
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <span style={{fontSize:12,color:'var(--text4)'}}>{subscriber.name}</span>
+                {isPaid?(
+                  <span className="paid-badge">⭐ Payant</span>
+                ):(
+                  <span className="free-badge">Gratuit</span>
+                )}
+              </div>
+            )}
             <div className="header-date">{today}</div>
+            <div className="header-zone">Dakar · Keur Massar · Niayes</div>
           </div>
         </div>
       </header>
 
-      {page==='home'&&<HomePage onEnter={()=>{setPage('dashboard');window.scrollTo({top:0,behavior:'smooth'})}} stats={stats}/>}
-
-      {page==='dashboard'&&(
-        <div style={{animation:'fadeUp 0.3s ease both'}}>
-          {tabDays&&<div className="tabaski-banner"><div className="tabaski-inner"><span className="tabaski-label">Tabaski 2026</span><span className="tabaski-days">{tabDays}</span><span className="tabaski-jours">jours restants</span><span className="tabaski-tip">{tabDays>60?'— Prix en hausse progressive.':tabDays>30?'— Bonne période pour vendre.':'— Vendez maintenant. Pic imminent.'}</span></div></div>}
-          <Ticker prices={prices} commodities={commodities}/>
-          <div className="stats-bar"><div className="stats-inner">{[{l:'Produits suivis',v:comCount},{l:'Marchés couverts',v:allMkts.length},{l:'Sources de données',v:sources.length},{l:'Dernière mise à jour',v:lastDate}].map(s=>(<div key={s.l} className="stat-item"><div className="stat-value">{s.v}</div><div className="stat-label">{s.l}</div></div>))}</div></div>
-          <main className="main">
-            <div className="page-header">
-              <h2 className="page-title">Prix du <span>Marché</span></h2>
-              <p className="page-sub">Données en temps réel depuis les marchés de Dakar et environs</p>
-            </div>
-            <div className="search-filter-row">
-              <div className="search-wrap"><span className="search-icon">🔍</span><input className="search-input" type="text" placeholder="Rechercher un produit... ex: mil, riz, thiof, carotte" value={search} onChange={e=>setSearch(e.target.value)}/></div>
-              <div className="filter-tabs">{[['all','Tout'],['cereals and tubers','Céréales'],['pulses and nuts','Légumineuses'],['fruits and vegetables','Fruits & Légumes'],['vegetables','Légumes'],['fruits','Fruits'],['fish','Poisson'],['seafood','Fruits de mer'],['meat','Viande'],['poultry','Volaille']].map(([k,l])=>(<button type="button" key={k} className={'cat-tab'+(category===k?' active':'')} onClick={e=>{e.preventDefault();setCategory(k)}}>{l}</button>))}</div>
-            </div>
-            {loading?(<div className="loading"><div className="spinner"></div><p style={{fontWeight:500}}>Chargement des prix...</p></div>):Object.keys(byCom).length===0?(<div className="empty">Aucun produit trouvé{search?' pour "'+search+'"':''}.</div>):(
-              <div className="commodity-grid">
-                {Object.entries(byCom).map(([cid,group],idx)=>{
-                  const c=commodities.find(x=>x.id===parseInt(cid));if(!c)return null
-                  const avg=group.reduce((s,p)=>s+p.price,0)/group.length
-                  const isSel=selected&&selected.commodity_id===parseInt(cid)
-                  const rec=getRec(avg,null)
-                  const sf=gsf(c.category,(new Date().getMonth()+1)%12)
-                  const arrow=sf.dir==='up'?'▲':sf.dir==='down'?'▼':'→'
-                  const predText=sf.dir==='up'?'Hausse prévue +'+Math.abs(sf.pct)+'% — '+sf.driver:sf.dir==='down'?'Baisse prévue '+sf.pct+'% — '+sf.driver:'Stable — '+sf.driver
-                  return(
-                    <div key={cid} className={'commodity-card'+(isSel?' selected':'')} style={{animationDelay:(idx*0.04)+'s'}} onClick={()=>handleSelect({commodity_id:parseInt(cid),commodity:c,group})}>
-                      <div className="card-header">
-                        <div><div className="card-cat-chip">{CAT_LABEL[c.category]||c.category}</div><div className="card-name">{fr(c.name_fr)}</div><div className="card-markets">{group.map(p=>p.market_name).filter(Boolean).join(', ')}</div></div>
-                        <div className={'rec-badge '+rec.cls}>{rec.label}</div>
-                      </div>
-                      <div className="price-block">
-                        <div className="price-row">
-                          <span className="price-value">{Math.round(avg).toLocaleString()}</span>
-                          <span className={'price-trend-arrow '+sf.dir}>{arrow}</span>
-                          <div><div className="price-meta">FCFA / {c.unit||'kg'}</div></div>
-                        </div>
-                      </div>
-                      <div className={'rec-reason '+rec.reasonCls}>{rec.reason}</div>
-                      <div className={'pred-summary '+sf.dir}><span>{arrow}</span><span>{predText}</span></div>
-                      <div className="sources-divider"></div>
-                      <table className="sources-table"><tbody>{group.map(p=>(<tr key={p.id}><td className="td-source">{SOURCE_LABEL[p.source]||p.source}</td><td className="td-market">{p.market_name}</td><td className="td-price">{Math.round(p.price).toLocaleString()} F</td><td className="td-type"><span className="type-tag">{p.price_type==='retail'?'Détail':'Gros'}</span></td></tr>))}</tbody></table>
-                      <div className="card-date">Mis à jour le {new Date(group[0].price_date).toLocaleDateString()}</div>
-                      <RevenueCalc group={group} unit={c.unit||'kg'}/>
-                      <div className="card-actions" style={{marginTop:14}} onClick={e=>e.stopPropagation()}>
-                        <button type="button" className={'voir-btn'+(isSel?' active':'')} onClick={e=>{e.preventDefault();handleSelect({commodity_id:parseInt(cid),commodity:c,group})}}>
-                          {isSel?'Masquer les détails ↑':'Analyse complète + Prévision →'}
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-            {selected&&<div id="dp"><DetailPanel selected={selected} history={history} histLoading={histLoading}/></div>}
-          </main>
-          {reportingCommodity&&<ReportModal commodity={reportingCommodity} onClose={()=>setReportingCommodity(null)}/>}
+      {tabDays&&(
+        <div className="tabaski-banner">
+          <div className="tabaski-inner">
+            <span className="tabaski-label">Tabaski</span>
+            <span className="tabaski-days">{tabDays}</span>
+            <span className="tabaski-jours">jours restants</span>
+            <span className="tabaski-tip">
+              {tabDays>60?'— Prix des moutons en hausse progressive.':tabDays>30?'— Bonne période pour vendre vos moutons.':'— Vendez maintenant. Pic de demande imminent.'}
+            </span>
+          </div>
         </div>
+      )}
+
+      <div className="stats-bar">
+        <div className="stats-inner">
+          {[{l:'Produits suivis',v:comCount},{l:'Marchés couverts',v:markets.length},{l:'Sources de données',v:sources.length},{l:'Dernière mise à jour',v:lastDate}].map(s=>(
+            <div key={s.l} className="stat-item">
+              <div className="stat-value">{s.v}</div>
+              <div className="stat-label">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <main className="main">
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16,flexWrap:'wrap',gap:10}}>
+          <h2 className="page-title" style={{margin:0}}>
+            Prix du Marché
+            {GATE_IS_LIVE&&!isPaid&&<span style={{fontSize:12,color:'var(--text4)',fontFamily:'Inter',fontWeight:400,marginLeft:10}}>· Prix d'hier</span>}
+          </h2>
+          {GATE_IS_LIVE&&!isPaid&&<UpgradePrompt/>}
+        </div>
+
+        <div className="search-filter-row">
+          <input className="search-input" type="text" placeholder="Rechercher un produit... ex: mil, riz, thiof, carotte, poulet" value={search} onChange={e=>setSearch(e.target.value)}/>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {[['all','Tout'],['cereals and tubers','Céréales'],['pulses and nuts','Légumineuses'],['fruits and vegetables','Fruits & Légumes (Auchan)'],['vegetables','Légumes'],['fruits','Fruits'],['fish','Poisson'],['seafood','Fruits de mer'],['meat','Viande'],['poultry','Volaille']].map(([k,l])=>(
+              <button type="button" key={k} className={'cat-tab'+(category===k?' active':'')} onClick={e=>{e.preventDefault();setCategory(k)}}>{l}</button>
+            ))}
+          </div>
+        </div>
+
+        {loading?(
+          <div className="loading"><div className="spinner"></div><p>Chargement des prix...</p></div>
+        ):Object.keys(byCom).length===0?(
+          <div className="empty">Aucun produit trouvé{search?' pour "'+search+'"':''}.</div>
+        ):(
+          <div className="commodity-grid">
+            {Object.entries(byCom).map(([cid,group])=>{
+              const c=commodities.find(x=>x.id===parseInt(cid))
+              if(!c)return null
+              const avg=group.reduce((s,p)=>s+p.price,0)/group.length
+              const isSel=selected&&selected.commodity_id===parseInt(cid)
+              const rec=getRec(avg,null)
+              const nextMonth=(new Date().getMonth()+1)%12
+              const predSummary=getCategorySeasonalFactor(c.category,nextMonth,null)
+              const predCls=predSummary.direction
+              const predArrow=predSummary.direction==='up'?'▲':predSummary.direction==='down'?'▼':'→'
+              const predText=predSummary.direction==='up'?
+                'Prix attendu en hausse (+'+Math.abs(predSummary.pct)+'%) — '+predSummary.driver:
+                predSummary.direction==='down'?
+                'Prix attendu en baisse ('+predSummary.pct+'%) — '+predSummary.driver:
+                'Prix stable attendu — '+predSummary.driver
+
+              return(
+                <div key={cid} className={'commodity-card'+(isSel?' selected':'')}>
+                  <div className="card-header">
+                    <div>
+                      <div className="card-name">{fr(c.name_fr)}</div>
+                      <div className="card-meta">{CAT_LABEL[c.category]||c.category} · {group.map(p=>p.market_name).filter(Boolean).join(', ')}</div>
+                    </div>
+                    <div className={'rec-badge '+rec.cls}>{rec.label}</div>
+                  </div>
+                  <div className="price-row">
+                    <span className="price-value">{Math.round(avg).toLocaleString('fr-FR')}</span>
+                    <span className="price-unit">FCFA / {c.unit||'kg'}</span>
+                  </div>
+                  <div className={'rec-reason '+rec.reasonCls}>{rec.reason}</div>
+                  <div className={'pred-summary '+predCls}>
+                    <span className="pred-arrow">{predArrow}</span>
+                    <span>{predText}</span>
+                  </div>
+                  <table className="sources-table">
+                    <tbody>
+                      {group.map(p=>(
+                        <tr key={p.id}>
+                          <td className="td-source">{SOURCE_LABEL[p.source]||p.source}</td>
+                          <td className="td-market">{p.market_name}</td>
+                          <td className="td-price">{Math.round(p.price).toLocaleString('fr-FR')} F</td>
+                          <td className="td-type"><span className="type-tag">{p.price_type==='retail'?'Détail':'Gros'}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="card-date">
+                    {GATE_IS_LIVE&&!isPaid?'Prix du ':'Mis à jour le '}
+                    {new Date(group[0].price_date).toLocaleDateString('fr-FR')}
+                  </div>
+                  <RevenueCalculator group={group} unit={c.unit||'kg'}/>
+                  <button type="button" className={'voir-btn'+(isSel?' active':'')}
+                    onClick={e=>{e.preventDefault();e.stopPropagation();handleSelect({commodity_id:parseInt(cid),commodity:c,group});return false}}>
+                    {isSel?'Masquer les détails':'Voir prévision et analyse complète'}
+                  </button>
+                  <button type="button" className="report-btn"
+                    onClick={e=>{e.preventDefault();e.stopPropagation();setReportingCommodity(c);return false}}>
+                    Signaler un prix sur le terrain
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {selected&&(
+          <div id="dp">
+            <DetailPanel selected={selected} history={history} histLoading={histLoading} isPaid={isPaid}/>
+          </div>
+        )}
+      </main>
+
+      {reportingCommodity&&(
+        <ReportModal commodity={reportingCommodity} onClose={()=>setReportingCommodity(null)}/>
       )}
 
       <footer className="footer">
         <div className="footer-inner">
           <div className="footer-brand">Jàng Prix</div>
           <div className="footer-right">
-            <div className="footer-sources">Sources : WFP VAM - Auchan Sénégal - FAO GIEWS - SenPoisson - Thiaroye - Park Nadio</div>
-            <div className="footer-markets">Marchés : Dakar - Thiaroye - Pikine - Rufisque - Keur Massar - Niayes - Soumbédioune</div>
+            <div className="footer-sources">Sources: WFP VAM · Auchan Sénégal · FAO GIEWS · SenPoisson · Le Marché Thiaroye · Park Nadio</div>
             <div className="footer-note">Les prix sont indicatifs. Vérifiez toujours sur place avant de vendre.</div>
           </div>
         </div>
