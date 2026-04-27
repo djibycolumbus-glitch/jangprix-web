@@ -614,6 +614,16 @@
     .upgrade-modal-plan-note { font-family:var(--font-mono); font-size:10px; color:var(--t4); }
     .upgrade-modal-plan-save { font-family:var(--font-mono); font-size:9px; font-weight:700; color:var(--up); margin-top:4px; }
     .locked-feature { padding:36px; text-align:center; background:var(--ink3); border-radius:8px; border:1px solid var(--wire); }
+    .commodity-card.locked-card { cursor:pointer; padding:0; min-height:160px; position:relative; background:repeating-linear-gradient(45deg,var(--ink2),var(--ink2) 8px,var(--ink3) 8px,var(--ink3) 16px); }
+    .commodity-card.locked-card:hover { background:repeating-linear-gradient(45deg,var(--ink3),var(--ink3) 8px,var(--ink2) 8px,var(--ink2) 16px); }
+    .locked-card-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:18px; background:rgba(8,12,20,0.78); }
+    .locked-card-icon { font-size:24px; opacity:0.85; }
+    .locked-card-title { font-family:var(--font-disp); font-size:14px; font-weight:700; color:var(--t2); text-align:center; }
+    .locked-card-cta { font-family:var(--font-mono); font-size:10px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:0.6px; text-align:center; }
+    .free-tier-banner { background:var(--gold-dim); border:1px solid rgba(240,180,41,0.22); border-radius:8px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+    .free-tier-banner-text { flex:1; min-width:200px; font-size:13px; color:var(--t2); line-height:1.5; }
+    .free-tier-banner-text strong { color:var(--gold); }
+    .free-tier-banner-btn { padding:9px 18px; border-radius:5px; background:var(--gold); color:var(--ink); border:none; font-family:var(--font-mono); font-size:11px; font-weight:800; letter-spacing:0.5px; cursor:pointer; text-transform:uppercase; touch-action:manipulation; }
     .locked-tab-btn { opacity:0.4; cursor:not-allowed !important; }
     .btn-primary { flex:1; padding:10px; border-radius:6px; background:var(--gold); color:var(--ink); border:none; font-family:var(--font-ui); font-size:13px; font-weight:700; cursor:pointer; transition:opacity 0.15s; }
     .btn-primary:hover { opacity:0.9; }
@@ -909,20 +919,60 @@ const GATE_LIVE_DATE=new Date('2026-04-06T00:00:00')
 const GATE_IS_LIVE=new Date()>=GATE_LIVE_DATE
 const GRACE_DAYS=3
 
-async function getSubscriber(phone){
-  const clean=phone.replace(/\s/g,'')
-  const data=await sq('subscribers','?phone=eq.'+encodeURIComponent(clean)+'&limit=1')
-  return data&&data.length>0?data[0]:null
+// Generic RPC helper. POSTs to /rest/v1/rpc/{fn} with JSON args.
+// Throws on HTTP error so callers can decide how to handle.
+async function rpc(fn,args){
+  const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(args||{})})
+  if(!r.ok){const txt=await r.text().catch(()=>'');throw new Error('rpc '+fn+' '+r.status+': '+txt)}
+  const d=await r.json()
+  return Array.isArray(d)?(d.length>0?d[0]:null):d
 }
+// Look up a subscriber by phone. Returns row with server-computed
+// effective_tier/days_left/is_expired, or null if not found.
+// The subscribers table is locked down; access is via RPC only.
+async function getSubscriber(phone){
+  if(!phone)return null
+  const clean=phone.replace(/\s/g,'')
+  try{return await rpc('get_subscriber_by_phone',{p_phone:clean})}
+  catch(e){console.error('getSubscriber failed',e);return null}
+}
+// Register a new subscriber on the 7-day free trial.
+// Idempotent: if phone already exists, returns the existing row.
 async function registerFreeUser(name,phone){
   const clean=phone.replace(/\s/g,'')
-  const now=new Date()
-  const expiresAt=new Date(now.getTime()+14*86400000)
-  const r=await fetch(SUPABASE_URL+'/rest/v1/subscribers',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({name,phone:clean,access_level:'paid',plan:'trial',activated_at:now.toISOString(),expires_at:expiresAt.toISOString()})})
-  const d=await r.json();return Array.isArray(d)?d[0]:d
+  return await rpc('register_subscriber',{p_name:name,p_phone:clean})
 }
+// Paid users only: fetch today's (current-date) prices via RPC.
+// Server checks the phone's tier and returns [] for free / unknown phones.
+async function fetchCurrentDayPrices(phone){
+  if(!phone)return[]
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_current_day_prices',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_phone:phone.replace(/\s/g,'')})})
+    if(!r.ok)return[]
+    const d=await r.json()
+    return Array.isArray(d)?d:[]
+  }catch(e){console.error('fetchCurrentDayPrices failed',e);return[]}
+}
+// rpcMany: like rpc(), but returns the full array (for table-returning RPCs).
+async function rpcMany(fn,args){
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(args||{})})
+    if(!r.ok)return[]
+    const d=await r.json()
+    return Array.isArray(d)?d:[]
+  }catch(e){console.error('rpcMany '+fn+' failed',e);return[]}
+}
+async function getDashboardPrices(phone){return await rpcMany('get_dashboard_prices',{p_phone:(phone||'').replace(/\s/g,'')})}
+async function getCommodityHistory(phone,commodityId){return await rpcMany('get_commodity_history',{p_phone:(phone||'').replace(/\s/g,''),p_commodity_id:commodityId})}
+async function getFreeTierCommodities(){return await rpcMany('get_free_tier_commodities',{})}
 function getAccessStatus(sub){
   if(!sub)return{level:'free',expired:false,daysLeft:null}
+  // Prefer server-computed values when present (from RPC). They use the
+  // server clock and cannot be tampered with by editing localStorage.
+  if(sub.effective_tier!==undefined&&sub.effective_tier!==null){
+    return{level:sub.effective_tier||'free',expired:!!sub.is_expired,daysLeft:(sub.days_left===undefined?null:sub.days_left)}
+  }
+  // Fallback for sessions cached before server-computed fields existed.
   if(sub.access_level==='free')return{level:'free',expired:false,daysLeft:null}
   const now=new Date(),expires=sub.expires_at?new Date(sub.expires_at):null
   if(!expires)return{level:'paid',expired:false,daysLeft:null}
@@ -1265,7 +1315,7 @@ function AuthModal({onLogin, onClose}){
               {error&&<div className="auth-error" role="alert">{error}</div>}
               <button className="auth-btn" onClick={handleSignup} disabled={loading} aria-busy={loading}>{loading?'Création…':'Commencer mon essai gratuit →'}</button>
               <div style={{background:'var(--up-bg)',border:'1px solid rgba(52,211,153,0.2)',borderRadius:6,padding:'8px 12px',marginTop:10,marginBottom:6,textAlign:'center'}}>
-                <div style={{fontFamily:'var(--font-mono)',fontSize:11,fontWeight:700,color:'var(--up)'}}>14 JOURS D'ACCES COMPLET GRATUIT</div>
+                <div style={{fontFamily:'var(--font-mono)',fontSize:11,fontWeight:700,color:'var(--up)'}}>7 JOURS D'ACCES COMPLET GRATUIT</div>
                 <div style={{fontSize:11,color:'var(--t3)',marginTop:3}}>Prix en direct · Previsions · Tendances · Historique · Calendrier agricole</div>
               </div>
               <div className="auth-note">Aucun mot de passe. Aucun paiement requis. Vos donnees sont confidentielles.</div>
@@ -1313,7 +1363,7 @@ function WelcomePopup({name, onClose}){
         <div className="welcome-modal">
           <div className="welcome-icon">🎉</div>
           <div className="welcome-title">Bienvenue, <span>{name}</span> !</div>
-          <div className="welcome-sub">Votre essai gratuit de <strong>14 jours</strong> est active. Vous avez acces a toutes les fonctionnalites.</div>
+          <div className="welcome-sub">Votre essai gratuit de <strong>7 jours</strong> est active. Vous avez acces a toutes les fonctionnalites.</div>
           <div style={{background:'var(--up-bg)',border:'1px solid rgba(52,211,153,0.2)',borderRadius:8,padding:'14px 16px',marginBottom:14}}>
             <div style={{fontFamily:'var(--font-mono)',fontSize:10,fontWeight:700,color:'var(--up)',textTransform:'uppercase',letterSpacing:'1px',marginBottom:8}}>Votre essai inclut</div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px 12px'}}>
@@ -1323,7 +1373,7 @@ function WelcomePopup({name, onClose}){
             </div>
           </div>
           <div style={{background:'var(--gold-dim)',border:'1px solid rgba(240,180,41,0.2)',borderRadius:8,padding:'12px 16px',marginBottom:14}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:10,fontWeight:700,color:'var(--gold)',textTransform:'uppercase',letterSpacing:'1px',marginBottom:6}}>Apres 14 jours</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:10,fontWeight:700,color:'var(--gold)',textTransform:'uppercase',letterSpacing:'1px',marginBottom:6}}>Apres 7 jours</div>
             <div style={{fontSize:12,color:'var(--t3)',lineHeight:1.6}}>Continuez avec l'acces complet a partir de <strong style={{color:'var(--gold)'}}>3 500 FCFA/mois</strong> via Wave au <strong style={{color:'var(--gold)'}}>{WAVE_NUMBER}</strong></div>
           </div>
           <a href={WA_LINK} target="_blank" rel="noopener noreferrer" style={{textDecoration:'none',display:'block'}} onClick={onClose}>
@@ -1407,6 +1457,49 @@ function UpgradePrompt(){
   )
 }
 
+function FullUpgradeModal({show,onClose}){
+  if(!show)return null
+  return(
+    <Portal>
+      <div className="upgrade-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}} role="dialog" aria-modal="true">
+        <div className="upgrade-modal">
+          <div className="upgrade-modal-title">Cette culture est verrouillee 🔒</div>
+          <div className="upgrade-modal-sub">Le tier gratuit ne donne acces qu'au Mil. Passez a payant pour debloquer toutes les cultures, prix en direct, previsions et analyses.</div>
+          <div className="upgrade-modal-wave">
+            <div className="upgrade-modal-wave-label">Envoyer via Wave a</div>
+            <div className="upgrade-modal-wave-number">{WAVE_NUMBER}</div>
+          </div>
+          <div className="upgrade-modal-plans">
+            <div className="upgrade-modal-plan">
+              <div className="upgrade-modal-plan-label">Mensuel</div>
+              <div className="upgrade-modal-plan-price">3 500</div>
+              <div className="upgrade-modal-plan-note">FCFA/mois</div>
+            </div>
+            <div className="upgrade-modal-plan recommended">
+              <div className="upgrade-modal-plan-label">Annuel ⭐</div>
+              <div className="upgrade-modal-plan-price">36 000</div>
+              <div className="upgrade-modal-plan-note">FCFA/an</div>
+              <div className="upgrade-modal-plan-save">ECONOMISEZ 6 000 FCFA</div>
+            </div>
+          </div>
+          <div style={{fontSize:11,color:'var(--t4)',textAlign:'center',marginBottom:14,lineHeight:1.6}}>Apres paiement, indiquez votre numero en message. Acces active dans les 24h.</div>
+          <button className="btn-secondary" style={{width:'100%'}} onClick={onClose}>Fermer</button>
+        </div>
+      </div>
+    </Portal>
+  )
+}
+function LockedCommodityCard({commodity,onClick}){
+  return(
+    <article className="commodity-card locked-card" onClick={onClick} role="listitem" tabIndex={0} onKeyDown={e=>{if(e.key==='Enter')onClick()}} aria-label={fr(commodity.name_fr)+' — Verrouille, cliquer pour debloquer'}>
+      <div className="locked-card-overlay">
+        <div className="locked-card-icon">🔒</div>
+        <div className="locked-card-title">{fr(commodity.name_fr)}</div>
+        <div className="locked-card-cta">Debloquer · 3 500 FCFA/mois</div>
+      </div>
+    </article>
+  )
+}
 function LockedFeature({feature}){
   return(
     <div className="locked-feature">
@@ -1578,7 +1671,19 @@ function DetailPanel({selected,history,histLoading,isPaid}){
 function ReportModal({commodity,onClose}){
   const[price,setPrice]=React.useState(''),[market,setMarket]=React.useState(''),[phone,setPhone]=React.useState(''),[notes,setNotes]=React.useState(''),[submitting,setSubmitting]=React.useState(false),[success,setSuccess]=React.useState(false)
   const MKTS=['Thiaroye','Tilene','Dakar','Pikine','Rufisque','Keur Massar','Castors','Gueule Tapee','Soumbedioune','Ouakam','Autre']
-  async function submit(){if(!price||!market)return;setSubmitting(true);try{await fetch(SUPABASE_URL+'/rest/v1/reports',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({commodity_id:commodity.id,market_name:market,price:parseFloat(price),unit:commodity.unit||'kg',reporter_phone:phone||null,notes:notes||null})});setSuccess(true)}catch(e){console.error(e)};setSubmitting(false)}
+  async function submit(){
+    if(!price||!market)return
+    setSubmitting(true)
+    try{
+      const r=await fetch(SUPABASE_URL+'/rest/v1/reports',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({commodity_id:commodity.id,market_name:market,price:parseFloat(price),unit:commodity.unit||'kg',reporter_phone:phone||null,notes:notes||null})})
+      if(!r.ok)throw new Error('report submit failed: '+r.status)
+      setSuccess(true)
+    }catch(e){
+      console.error(e)
+      alert('Erreur lors de l\'envoi. Veuillez reessayer.')
+    }
+    setSubmitting(false)
+  }
   return(<div className="report-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}} role="dialog" aria-modal="true"><div className="report-modal">{success?(<div className="report-success"><div className="report-success-icon">✓</div><div className="report-success-title">Prix signale !</div><div className="report-success-sub">Merci. Votre signalement aide tous les agriculteurs.</div><button type="button" className="btn-primary" style={{marginTop:16,width:'100%'}} onClick={onClose}>Fermer</button></div>):(<><div className="report-modal-title">Signaler un prix</div><div className="report-modal-sub">{fr(commodity.name_fr).toUpperCase()} · PRIX OBSERVE SUR LE MARCHE</div><div className="form-row"><div className="form-group"><label className="form-label" htmlFor="rp-price">Prix</label><input id="rp-price" className="form-input" type="number" min="0" placeholder="ex: 350" value={price} onChange={e=>setPrice(e.target.value)} inputMode="decimal"/></div><div className="form-group" style={{maxWidth:80}}><label className="form-label">Unite</label><input className="form-input" value={commodity.unit||'kg'} readOnly style={{color:'var(--t5)'}}/></div></div><div className="form-group"><label className="form-label" htmlFor="rp-market">Marche</label><select id="rp-market" className="form-select" value={market} onChange={e=>setMarket(e.target.value)}><option value="">Choisir…</option>{MKTS.map(m=><option key={m} value={m}>{m}</option>)}</select></div><div className="form-group"><label className="form-label" htmlFor="rp-phone">Telephone (optionnel)</label><input id="rp-phone" className="form-input" type="tel" placeholder="ex: 77 123 45 67" value={phone} onChange={e=>setPhone(e.target.value)} inputMode="tel" autoComplete="tel"/></div><div className="form-group"><label className="form-label" htmlFor="rp-notes">Remarques (optionnel)</label><input id="rp-notes" className="form-input" placeholder="ex: qualite moyenne…" value={notes} onChange={e=>setNotes(e.target.value)}/></div><div className="report-notice">Les prix sont verifies avant publication. Numero confidentiel.</div><div className="modal-actions"><button type="button" className="btn-secondary" onClick={onClose}>Annuler</button><button type="button" className="btn-primary" onClick={submit} disabled={!price||!market||submitting} aria-busy={submitting}>{submitting?'Envoi\u2026':'Envoyer'}</button></div></>)}</div></div>)
 }
 
@@ -2134,7 +2239,7 @@ function HomePage({onEnter,onPlan,stats}){
           <span className="hero-title-sub">Agriculteurs. Commercants. Acheteurs.</span>
         </h1>
         <p className="hero-desc">Jang Prix surveille les prix agricoles en temps reel sur les marches de Dakar — donnees, previsions et calendrier de plantation pour prendre de meilleures decisions.</p>
-        <div style={{fontSize:'12px',color:'var(--t4)',marginBottom:'16px',fontFamily:'var(--font-mono)',textTransform:'uppercase',letterSpacing:'0.5px'}}>✓ Essai gratuit de 14 jours — acces complet, aucun paiement requis</div>
+        <div style={{fontSize:'12px',color:'var(--t4)',marginBottom:'16px',fontFamily:'var(--font-mono)',textTransform:'uppercase',letterSpacing:'0.5px'}}>✓ Essai gratuit de 7 jours — acces complet, aucun paiement requis</div>
         <div className="hero-cta-row">
           <button className="btn-hero-primary" onClick={onEnter}>Commencer l'essai gratuit →</button>
           <button className="btn-hero-secondary" onClick={onPlan}>Calendrier agricole →</button>
@@ -2234,7 +2339,7 @@ function HomePage({onEnter,onPlan,stats}){
 
       <section style={{padding:'48px 32px',textAlign:'center',maxWidth:560,margin:'0 auto'}}>
         <div style={{fontFamily:'var(--font-disp)',fontSize:26,fontWeight:800,color:'var(--t1)',letterSpacing:'-0.5px',marginBottom:10}}>Pret a <span style={{color:'var(--gold)'}}>mieux decider</span> ?</div>
-        <div style={{fontFamily:'var(--font-mono)',fontSize:11,color:'var(--t5)',marginBottom:12,textTransform:'uppercase',letterSpacing:'0.8px'}}>14 jours gratuits — acces complet a toutes les fonctionnalites</div>
+        <div style={{fontFamily:'var(--font-mono)',fontSize:11,color:'var(--t5)',marginBottom:12,textTransform:'uppercase',letterSpacing:'0.8px'}}>7 jours gratuits — acces complet a toutes les fonctionnalites</div>
         <div style={{fontSize:12,color:'var(--t3)',marginBottom:20,lineHeight:1.6,maxWidth:420,margin:'0 auto 20px'}}>Prix en direct, previsions 3 mois, comparaison de marches, calendrier agricole, tendances et historique complet.</div>
         <button className="btn-hero-primary" onClick={onEnter} style={{margin:'0 auto'}}>Commencer l'essai gratuit →</button>
       </section>
@@ -2249,10 +2354,10 @@ function ContactPage({onAuth}){
     <div className="contact-page">
       <div className="contact-title">Nous <span>contacter</span></div>
       <div className="contact-sub">Jàng Prix · Support & Paiements</div>
-      <div style={{fontSize:'13px',color:'var(--t3)',lineHeight:'1.7',marginBottom:'28px',paddingBottom:'20px',borderBottom:'1px solid var(--wire)'}}>Commencez avec un <strong>essai gratuit de 14 jours</strong> — aucune carte bancaire requise. Apres votre trial, choisissez un abonnement mensuel (3 500 FCFA) ou annuel (36 000 FCFA). Des questions ? Rejoignez le groupe WhatsApp ou contactez-nous ci-dessous.</div>
+      <div style={{fontSize:'13px',color:'var(--t3)',lineHeight:'1.7',marginBottom:'28px',paddingBottom:'20px',borderBottom:'1px solid var(--wire)'}}>Commencez avec un <strong>essai gratuit de 7 jours</strong> — aucune carte bancaire requise. Apres votre trial, choisissez un abonnement mensuel (3 500 FCFA) ou annuel (36 000 FCFA). Des questions ? Rejoignez le groupe WhatsApp ou contactez-nous ci-dessous.</div>
 
       <div style={{marginBottom:24,padding:'20px',background:'var(--gold-dim)',border:'1px solid rgba(240,180,41,0.25)',borderRadius:10}}>
-        <div style={{fontFamily:'var(--font-disp)',fontSize:16,fontWeight:700,color:'var(--t1)',marginBottom:6,textAlign:'center'}}>Essai gratuit de 14 jours</div>
+        <div style={{fontFamily:'var(--font-disp)',fontSize:16,fontWeight:700,color:'var(--t1)',marginBottom:6,textAlign:'center'}}>Essai gratuit de 7 jours</div>
         <div style={{fontSize:12,color:'var(--t3)',marginBottom:14,lineHeight:1.6,textAlign:'center'}}>Acces complet a toutes les fonctionnalites — aucun paiement requis.</div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:16}}>
           <div style={{background:'var(--ink3)',border:'1px solid var(--wire)',borderRadius:7,padding:12}}>
@@ -2340,11 +2445,33 @@ function App(){
   const[showFavorites,setShowFavorites]=React.useState(false)
   const[favorites,setFavorites]=React.useState(getFavorites())
   const[shareCardData,setShareCardData]=React.useState(null)
+  const[freeCommodityIds,setFreeCommodityIds]=React.useState(new Set())
+  const[showFullUpgrade,setShowFullUpgrade]=React.useState(false)
 
   React.useEffect(()=>{
     if(!GATE_IS_LIVE)return
     const saved=loadSession()
-    if(saved){setSubscriber(saved);const st=getAccessStatus(saved);if(st.expired)setShowExpired(true)}
+    if(!saved||!saved.phone)return
+    // Optimistic: show cached state so the UI doesn't flash logged-out.
+    setSubscriber(saved)
+    // Then refresh from the server. The server is the source of truth
+    // for tier/expiry — never trust the cached subscriber object alone.
+    getSubscriber(saved.phone).then(fresh=>{
+      if(fresh){
+        saveSession(fresh)
+        setSubscriber(fresh)
+        const st=getAccessStatus(fresh)
+        if(st.expired)setShowExpired(true)
+      }else{
+        // Phone no longer in DB (deleted/cleared) — log out cleanly.
+        try{localStorage.removeItem('jp_sub')}catch(e){}
+        setSubscriber(null)
+      }
+    }).catch(()=>{
+      // Network error: keep cached copy, but still flag local expiry.
+      const st=getAccessStatus(saved)
+      if(st.expired)setShowExpired(true)
+    })
   },[])
 
   function handleLogin(sub, isNew=false){
@@ -2372,24 +2499,47 @@ function App(){
   const yesterdayStr=yesterday.toISOString().split('T')[0]
 
   React.useEffect(()=>{
-    Promise.all([sq('prices','?select=id,price,price_date,source,price_type,commodity_id,market_id&order=price_date.desc&limit=600'),sq('commodities','?select=*'),sq('markets','?select=*')]).then(([pd,cd,md])=>{
+    // Server-side tier gate: get_dashboard_prices returns Mil-only for
+    // free/unknown phones, full set for paid. get_current_day_prices applies
+    // the same tier rules to today's data.
+    const phone=subscriber&&subscriber.phone?subscriber.phone:''
+    Promise.all([
+      getDashboardPrices(phone),
+      sq('commodities','?select=*'),
+      sq('markets','?select=*'),
+      fetchCurrentDayPrices(phone),
+      getFreeTierCommodities()
+    ]).then(([pd,cd,md,today,freeRows])=>{
       const mMap={};if(md)md.forEach(m=>mMap[m.id]=m)
-      const enriched=(pd||[]).map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Inconnu'}))
-      const filtered=GATE_IS_LIVE&&!isPaid?enriched.filter(p=>p.price_date&&p.price_date.split('T')[0]<=yesterdayStr):enriched
-      const latest={};filtered.forEach(p=>{const k=p.commodity_id+'_'+p.market_id;if(!latest[k])latest[k]=p})
-      setPrices(Object.values(latest));setCommodities(cd||[]);setLoading(false)
-    })
-  },[isPaid])
+      const merged=[...(today||[]),...(pd||[])]
+      const enriched=merged.map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Inconnu'}))
+      const latest={};enriched.forEach(p=>{const k=p.commodity_id+'_'+p.market_id;if(!latest[k])latest[k]=p})
+      setPrices(Object.values(latest))
+      setCommodities(cd||[])
+      setFreeCommodityIds(new Set((freeRows||[]).map(r=>r.id)))
+      setLoading(false)
+    }).catch(e=>{console.error('price fetch failed',e);setLoading(false)})
+  },[isPaid,subscriber])
 
   function handleSelect(item){
+    // Free user clicked a non-Mil card: server would return empty anyway.
+    // Open the upgrade modal instead of an empty detail panel.
+    if(GATE_IS_LIVE&&!isPaid&&!freeCommodityIds.has(item.commodity_id)){
+      setShowFullUpgrade(true)
+      return
+    }
     if(selected&&selected.commodity_id===item.commodity_id){setSelected(null);setHistory([]);return}
     setSelected(item);setHistory([]);setHistLoading(true)
-    Promise.all([sq('markets','?select=*'),sq('prices','?commodity_id=eq.'+item.commodity_id+'&order=price_date.desc&limit=500&select=price,price_date,market_id,source,price_type')]).then(([md,pd])=>{
+    const phone=subscriber&&subscriber.phone?subscriber.phone:''
+    Promise.all([
+      sq('markets','?select=*'),
+      getCommodityHistory(phone,item.commodity_id)
+    ]).then(([md,pd])=>{
       const mMap={};if(md)md.forEach(m=>mMap[m.id]=m)
       setHistory((pd||[]).map(p=>({...p,market_name:(mMap[p.market_id]||{}).name||'Marche'})))
       setHistLoading(false)
       setTimeout(()=>{const el=document.getElementById('dp');if(el)el.scrollIntoView({behavior:'smooth'})},200)
-    })
+    }).catch(e=>{console.error('history fetch failed',e);setHistLoading(false)})
   }
 
   function toggleFavorite(e,commodityId){
@@ -2419,6 +2569,7 @@ function App(){
   return(
     <div>
       {showAuthModal&&<AuthModal onLogin={handleLogin} onClose={()=>setShowAuthModal(false)}/>}
+      <FullUpgradeModal show={showFullUpgrade} onClose={()=>setShowFullUpgrade(false)}/>
       {showWelcome&&subscriber&&<WelcomePopup name={subscriber.name} onClose={()=>setShowWelcome(false)}/>}
       {showExpired&&<ExpiredPopup onDismiss={()=>setShowExpired(false)}/>}
       {GATE_IS_LIVE&&accessStatus.daysLeft!==null&&accessStatus.daysLeft>0&&accessStatus.daysLeft<=7&&<RenewalBanner daysLeft={accessStatus.daysLeft}/>}
@@ -2511,7 +2662,13 @@ function App(){
               </div>
             ):Object.keys(byCom).length===0?(
               <div className="empty">{showFavorites?'Aucun produit dans vos favoris. Cliquez sur ☆ pour en ajouter.':'Aucun produit trouve'+(search?' pour "'+search+'"':'')+'.'}</div>
-            ):(
+            ):(<>
+              {GATE_IS_LIVE&&!isPaid&&(
+                <div className="free-tier-banner">
+                  <div className="free-tier-banner-text"><strong>Tier gratuit :</strong> vous voyez le Mil. Toutes les autres cultures, les prix en direct, les previsions et l'historique complet sont reserves aux abonnes.</div>
+                  <button type="button" className="free-tier-banner-btn" onClick={()=>setShowFullUpgrade(true)}>Debloquer · 3 500 FCFA/mois</button>
+                </div>
+              )}
               <div className="commodity-grid" role="list">
                 {Object.entries(byCom).map(([cid,group],idx)=>{
                   const c=commodities.find(x=>x.id===parseInt(cid));if(!c)return null
@@ -2577,8 +2734,13 @@ function App(){
                     </article>
                   )
                 })}
+                {GATE_IS_LIVE&&!isPaid&&(()=>{
+                  const popular=['Rice (imported)','Rice (local)','Maize (local)','Tomatoes','Onions','Beef (with bones)','Sorghum','Vegetable oil']
+                  const previews=commodities.filter(c=>popular.includes(c.name_fr)&&!byCom[c.id]&&!freeCommodityIds.has(c.id))
+                  return previews.map(c=><LockedCommodityCard key={'locked-'+c.id} commodity={c} onClick={()=>setShowFullUpgrade(true)}/>)
+                })()}
               </div>
-            )}
+            </>)}
             {selected&&<div id="dp"><DetailPanel selected={selected} history={history} histLoading={histLoading} isPaid={isPaid}/></div>}
           </main>
           {shareCardData&&<ShareModal canvas={shareCardData.canvas} title={shareCardData.title} onClose={()=>setShareCardData(null)}/>}
